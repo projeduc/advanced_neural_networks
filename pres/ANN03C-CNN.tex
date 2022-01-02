@@ -1,0 +1,192 @@
+% !TEX TS-program = pdflatex
+% !TeX program = pdflatex
+% !TEX encoding = UTF-8
+% !TEX spellcheck = en
+
+\documentclass[xcolor=table]{beamer}
+
+\input{options}
+
+\title[ANN: CNN] %
+{Advanced neural networks\\Convolutional neural networks}  
+
+\changegraphpath{../img/CNN/}
+
+\begin{document}
+
+\begin{frame}
+\frametitle{Convolutional neural networks}
+\framesubtitle{Motivation}
+
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Convolutional neural networks}
+\framesubtitle{Plan}
+
+\begin{multicols}{2}
+	%	\small
+	\tableofcontents
+\end{multicols}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Convolutional neural networks}
+	\framesubtitle{A little fun}
+	
+	\hgraphpage[\textwidth]{humour-convnet.jpg}
+	
+\end{frame}
+
+\section{Traditional image processing}
+
+\begin{frame}
+\frametitle{Convolutional neural networks}
+\framesubtitle{Traditional image processing}
+
+\begin{center}
+	\hgraphpage[\textwidth]{img-learn.pdf}
+\end{center}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Convolutional neural networks}
+\framesubtitle{Traditional image processing}
+
+\begin{itemize}
+	\item Many preprocessing techniques exist (see \cite{2010-alginahi})
+	\item Here, we are interested in convolution (modify the value of a pixel based on its neighbors)
+	\item Two parameters: \optword{padding} (Surround the image with 0s in order to preserve the original size), \optword{stride} (the kernel/mask's scrolling step).
+\end{itemize}
+
+\begin{center}
+	\hgraphpage[.8\textwidth]{conv.pdf}
+\end{center}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Convolutional neural networks}
+\framesubtitle{Traditional image processing}
+
+Ua example from \href{https://fr.wikipedia.org/wiki/Noyau\_(traitement\_d\%27image)}{Wikipedia}
+
+\begin{tabular}{p{.3\textwidth}p{.1\textwidth}p{.2\textwidth}p{.2\textwidth}}
+	\hline\hline
+	Operation & original & Kernel & Transformed \\
+	\hline
+	Contour detection & 
+	\graphpage[valign=c]{Vd-Orig.png} & 
+	$\begin{bmatrix}
+	-1 & -1 & -1\\ 
+	-1 & 8 & -1\\ 
+	-1 & -1 & -1
+	\end{bmatrix}$ & 
+	\graphpage[valign=c]{Vd-Edge3.png} \\
+	
+	\hline
+	Sharpness improvement & 
+	\graphpage[valign=c]{Vd-Orig.png} & 
+	$\begin{bmatrix}
+	0 & -1 & 0\\ 
+	-1 & 5 & -1\\ 
+	0 & -1 & 0
+	\end{bmatrix}$ & 
+	\graphpage[valign=c]{Vd-Sharp.png} \\
+	
+	\hline
+	Box blur & 
+	\graphpage[valign=c]{Vd-Orig.png} & 
+	$\frac{1}{9}\begin{bmatrix}
+	1 & 1 & 1\\ 
+	1 & 1 & 1\\ 
+	1 & 1 & 1
+	\end{bmatrix}$ & 
+	\graphpage[valign=c]{Vd-Blur2.png} \\
+	\hline\hline
+	
+\end{tabular}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Convolutional neural networks: Traditional image processing}
+\framesubtitle{Limitations}
+
+According to LeCun and his colleagues \cite{1998-lecun}: 
+\begin{itemize}
+	\item When image size is large, many parameters must be trained.
+	\item To do so, a large training dataset must used.
+	\item A large memory must be used to store all the parameters. 
+	\item To train a model on images, preprocessing tasks such as translations and distortions must be applied.
+	\item Images variations, such as objects' positions, cannot be captured unless many layers are stacked.
+\end{itemize}
+
+\end{frame}
+
+\section{Convolitional layers}
+
+\begin{frame}
+	\frametitle{Convolutional neural networks}
+	\framesubtitle{Convolitional layers}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Convolutional neural networks: Convolitional layers}
+	\framesubtitle{Conv2D layer}
+
+\begin{minipage}{0.60\textwidth} 
+	\begin{itemize}
+		\item Images spatial structure is preserved.
+		\item One or many kernels are learned.
+		\item $ w' = \frac{w - w_f + 2P}{S} + 1$,  $ h' = \frac{h - h_f + 2P}{S} + 1$
+		\item Number of generated filters/kernels $k$ can be specified.
+		\item Parameters size: $w_f * h_f * c * k$ plus $k$ bias.
+		\item Example, \expword{Image: 32x32x3; Kernel : 5x5; s : 1; p: 0; k : 6}. 
+		In this case, \expword{81} parameters must be trained.
+	\end{itemize}
+\end{minipage}
+%
+\begin{minipage}{0.39\textwidth}
+	\hgraphpage[\textwidth]{conv2d.pdf}
+	
+	\hgraphpage[.8\textwidth]{conv2d-exp_.pdf}
+\end{minipage}
+
+\end{frame}
+
+\section{Pooling layers}
+
+\begin{frame}
+	\frametitle{Convolutional neural networks}
+	\framesubtitle{Pooling layers}
+	
+\end{frame}
+
+\begin{frame}
+\frametitle{Convolutional neural networks}
+\framesubtitle{Pooling layers}
+
+\begin{minipage}{0.60\textwidth} 
+	\begin{itemize}
+		\item Makes the representation smaller and more manageable.
+		\item $ w' = \frac{w - w_f + 2P}{S} + 1$,  $ h' = \frac{h - h_f + 2P}{S} + 1$
+		\item No parameters to train.
+		\item \optword{Max Pool}: the gradient go back to the wining cell (the max).
+		\item \optword{Average Pool}: the gradient passed to the participated cells is $\frac{\text{gradient}}{w_f * h_f}$. 
+	\end{itemize}
+\end{minipage}
+%
+\begin{minipage}{0.39\textwidth}
+	\hgraphpage[\textwidth]{maxpool.pdf}
+	
+	\hgraphpage[.8\textwidth]{pool-exp_.pdf}
+\end{minipage}
+
+\end{frame}
+
+
+\end{document}

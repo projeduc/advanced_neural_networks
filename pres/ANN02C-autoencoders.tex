@@ -1,0 +1,152 @@
+% !TEX TS-program = pdflatex
+% !TeX program = pdflatex
+% !TEX encoding = UTF-8
+% !TEX spellcheck = en
+
+\documentclass[xcolor=table]{beamer}
+
+\input{options}
+
+\title[ANN: Auto-encoders] %
+{Advanced neural networks\\Auto-encoders} 
+
+\changegraphpath{../img/autoencoders/}
+
+\begin{document}
+
+\begin{frame}
+\frametitle{Auto-encoders}
+\framesubtitle{Motivation}
+
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Auto-encoders}
+	\framesubtitle{A little fun}
+	
+	\hgraphpage[\textwidth]{humour-unsupervised.jpg}
+	
+\end{frame}
+
+\begin{frame}
+\frametitle{Auto-encoders}
+\framesubtitle{Plan}
+
+\begin{multicols}{2}
+	%	\small
+	\tableofcontents
+\end{multicols}
+\end{frame}
+
+
+\section{Definition}
+
+\begin{frame}
+\frametitle{Auto-encoders}
+\framesubtitle{Definition}
+
+\begin{itemize}
+	\item Multi-layers neural network.
+	\item Learns a data compression model.
+	\item Characterized by \cite{2016-keras}:
+	\begin{itemize}
+		\item Data-specific: opposed to compression algorithms such as JPEG.
+		\item Lossy: the output will not exactly similar to the input.
+		\item Unsupervised learning. 
+	\end{itemize}
+	\item Not suitable for compression task.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Auto-encoders}
+	\framesubtitle{Definition: Architecture}
+
+\hgraphpage[\textwidth]{AE.pdf}
+
+\end{frame}
+
+\section{Denoising auto-encoder}
+
+\begin{frame}
+\frametitle{Auto-encoders}
+\framesubtitle{Denoising auto-encoder}
+
+\hgraphpage[\textwidth]{AE-noise.pdf}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Auto-encoders}
+\framesubtitle{Denoising auto-encoder: Some applications}
+
+\begin{itemize}
+	\item Improving speech quality (sound) \cite{2013-lu}
+	\item Denoising Dirty Documents: \url{https://www.kaggle.com/c/denoising-dirty-documents}
+	\item Historical documents recovery \cite{2019-neji}
+	\item Completion of hidden parts of the face \cite{2017-li-al}
+\end{itemize}
+
+\end{frame}
+
+\section{Sparse auto-encoder}
+
+\begin{frame}
+\frametitle{Auto-encoders}
+\framesubtitle{Sparse auto-encoder}
+
+\begin{itemize}
+	\item Hidden layers' size can be equal to or more than the size of the input layer.
+	\item Used to automatically learn features (feature engineering) to be used in another task (such as classification).
+	\item Regularization is applied : \textbf{L1} and \textbf{Kullback-Leibler divergence}.
+	\item Some weights converge to zero, which can be used to learn some representations such as objects' contours in images.
+\end{itemize}
+
+\end{frame}
+
+\section{Variational auto-encoder}
+
+\begin{frame}
+	\frametitle{Auto-encoders}
+	\framesubtitle{Variational auto-encoder}
+
+\begin{itemize}
+	\item To generate new content, the decoder can be used with a random input (vector).
+	\item The problem is that the encoder learns to separate the different clusters perfectly.
+	\item Solution: force the auto-encoder to learn a distribution 
+\end{itemize}
+
+\begin{minipage}{0.60\textwidth} 
+	\begin{align*}
+	z = \mu + \sigma * N(0, 1) \\
+	J'(x, \hat{x}) = J(x, \hat{x}) + KL(N(\mu, \sigma), N(0, 1)) \\
+	KL(p||q) = \sum_i p(x_i) log(\frac{p(x_i)}{q(x_i)})
+	\end{align*}
+\end{minipage}
+%
+\begin{minipage}{0.39\textwidth}
+	\hgraphpage[\textwidth]{AE-var.pdf}
+\end{minipage}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Auto-encoders}
+	\framesubtitle{Variational auto-encoder}
+
+\begin{itemize}
+	\item Standard auto-encoder learns a perfect separation of clusters (non smooth representation of latent states).
+	\item Solution: force the model to learn a distribution (in general, similar to the normal distribution).
+	\item Model can learn narrow distributions.
+	\item Solution: use regularization (KL divergence).
+	\item Model can learn negative values for $\sigma$.
+	\item Solution: train on $\log \sigma$ instead.
+\end{itemize}
+
+\end{frame}
+
+\insertbibliography{ANN02-autoencoders}{*}
+
+\end{document}

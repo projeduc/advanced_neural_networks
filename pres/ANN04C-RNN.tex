@@ -1,0 +1,249 @@
+% !TEX TS-program = pdflatex
+% !TeX program = pdflatex
+% !TEX encoding = UTF-8
+% !TEX spellcheck = en
+
+\documentclass[xcolor=table]{beamer}
+
+\input{options}
+
+\title[ANN: RNN] %
+{Advanced neural networks\\Recurrent neural networks}  
+
+\changegraphpath{../img/RNN/}
+
+\begin{document}
+
+\begin{frame}
+\frametitle{Recurrent neural networks}
+\framesubtitle{Motivation}
+
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Recurrent neural networks}
+\framesubtitle{Plan}
+
+\begin{multicols}{2}
+	%	\small
+	\tableofcontents
+\end{multicols}
+\end{frame}
+
+\section{Architecture}
+
+\begin{frame}
+\frametitle{Recurrent neural networks}
+\framesubtitle{Architecture}
+
+\begin{minipage}{0.49\textwidth} 
+	\begin{itemize}
+		\item \optword{Elman network}
+		\begin{align*}
+		h_t = f(w_x x_t + w_h \textcolor{red}{h_{t-1}} + b_h) \\
+		\hat{y}_t = g(w_y h_t + b_y)
+		\end{align*}
+		\item \optword{Jordan network}
+		\begin{align*}
+		h_t = f(w_x x_t + w_h \textcolor{red}{\hat{y}_{t-1}} + b_h) \\
+		\hat{y}_t = g(w_y h_t + b_y)
+		\end{align*}
+	\end{itemize}
+\end{minipage}
+%
+\begin{minipage}{0.5\textwidth}
+	\hgraphpage[\textwidth]{RNN.pdf}
+\end{minipage}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Recurrent neural networks: Architecture}
+	\framesubtitle{Back-propagation}
+
+\begin{itemize}
+	\item  Loss function 
+	\[
+	J(\hat{y}, y) = \sum_{t=1}^{T} J(\hat{y}_t, y_t)
+	\]
+	\item Back-propagation over time is used \cite{1990-werbos}:
+	\begin{itemize}
+		\item Unfold the recurrent network over time.
+		\item Network will look like a feed-forward.
+		\item Accumulate the gradients starting from the last state. 
+		\item Update parameters when the start  point is reached.
+	\end{itemize}
+	\item Gradient vanishing/explosion problem.
+\end{itemize}
+
+%\begin{algorithm}[H]
+%	\KwData{$ X, Y, \alpha, T $}
+%	\KwResult{Les paramètres}
+%	a = []\;
+%	\For{$ t = 0 $ jusqu'à $T-1$}{
+%		Les entrées sont $a,\, x[0],\, ...\, x[t]$ 
+%		$ \theta = \theta - \alpha \Delta_\theta J(X, Y; \theta) $\;
+%		%		Mettre à jours les $\theta$\;
+%		t = t + 1 \;
+%	}
+%	\caption{Rétropropagation dans le temps (BPTT) \cite{1990-werbos}}
+%\end{algorithm}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Recurrent neural networks: Architecture}
+\framesubtitle{Applications}
+
+\begin{tabular}{p{.32\textwidth}p{.15\textwidth}p{.4\textwidth}}
+	\hline\hline
+	Type & Illustration & Example \\
+	\hline
+	Many to many& 
+	\vgraphpage[1.5cm, valign=c]{RNNpp1.pdf} & 
+	Named entities recognition\\
+	
+	\hline
+	Many to Many& 
+	\vgraphpage[1.5cm, valign=c]{RNNpp2.pdf} & 
+	Machine translation\\
+	
+	\hline
+	Many to one& 
+	\vgraphpage[1.5cm, valign=c]{RNNp1.pdf} & 
+	Sentiment detection\\
+	
+	\hline
+	One to many& 
+	\vgraphpage[1.5cm, valign=c]{RNN1p.pdf} & 
+	Image captioning\\
+	
+	\hline\hline
+	
+\end{tabular}
+
+
+\end{frame}
+
+\section{Long Short-Term Memory (LSTM)}
+
+\begin{frame}
+	\frametitle{Recurrent neural networks}
+	\framesubtitle{Long Short-Term Memory (LSTM)}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Recurrent neural networks: LSTM}
+	\framesubtitle{Architecture}
+
+\begin{minipage}{0.50\textwidth} 
+	\begin{itemize}
+		\item $i$ : \optword{Input/Update gate} ;
+		How much information must be added to the cell's internal state?
+		\item $f$ : \optword{Forget gate} ;
+		Will the past context be forgotten ?
+		\item $o$ : \optword{Output gate} ;
+		Generated output based on cell's internal and current state.	
+	\end{itemize}
+\end{minipage}
+%
+\begin{minipage}{0.49\textwidth}
+	\hgraphpage[\textwidth]{LSTM.pdf}
+\end{minipage}
+
+\begin{itemize}
+	\item $g$ : \optword{Candidate gate} ;
+	Will the stated be increased or decreased ?
+	(often considered part of the input gate)
+%	\item La dérivée de l'erreur sera ue somme de la porte d'oubli avec d'autres dérivées
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Recurrent neural networks: LSTM}
+	\framesubtitle{Equations}
+	
+	\begin{align*}
+	f_t &= \sigma(W_f X_t + U_f h_{t-1} + b_f) \\
+	i_t &= \sigma(W_i X_t + U_i h_{t-1} + b_i) \\
+	g_t &= \tanh(W_g X_t + U_g h_{t-1} + b_g) \\
+	o_t &= \tanh(W_o X_t + U_o h_{t-1} + b_o) \\
+	c_t &= f_t \circ c_{t-1} \oplus i_t \circ g_t \\
+	h_t &= o_t + \tanh(c_t)
+	\end{align*}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Recurrent neural networks: LSTM}
+	\framesubtitle{A little fun}
+
+\begin{center}
+	\hgraphpage[.5\textwidth]{humour-lstm.jpg}
+\end{center}
+
+\end{frame}
+
+\section{Gated Recurrent Unit (GRU)}
+
+\begin{frame}
+	\frametitle{Recurrent neural networks}
+	\framesubtitle{Gated Recurrent Unit (GRU)}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Recurrent neural networks: GRU}
+	\framesubtitle{Architecture}
+	
+	\begin{minipage}{0.50\textwidth} 
+		\begin{itemize}
+			\item $z$ : \optword{Update gate} ; 
+			Merges input and forget gates of LSTMs.
+			\item $r$ : \optword{Reset gate} ; 
+			How much information is retained from the previous state ?
+			\item $h'$ : \optword{Candidate state gate} ;
+			current state.
+		\end{itemize}
+	\end{minipage}
+	%
+	\begin{minipage}{0.49\textwidth}
+		\hgraphpage[\textwidth]{GRU.pdf}
+	\end{minipage}
+	
+%	\begin{itemize}
+%		\item $g$ : \optword{Porte de modulation d'entrée} (souvent considérée comme partie de la porte d'entrée) : 
+%		Est-ce qu'on augmente ou diminuer l'état ?
+%		%	\item La dérivée de l'erreur sera ue somme de la porte d'oubli avec d'autres dérivées
+%	\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Recurrent neural networks: GRU}
+	\framesubtitle{Equations}
+	
+	\begin{align*}
+	z_t &= \sigma(W_z X_t + U_z h_{t-1} + b_z) \\
+	r_t &= \sigma(W_r X_t + U_r h_{t-1} + b_r) \\
+	h'_t &= \tanh(W X_t + U (h_{t-1} \circ r_t) + b) \\
+	h_t &= z_t \circ h_{t-1} \oplus (1-z_t) \circ h'_{t-1}
+	\end{align*}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Recurrent neural networks: GRU}
+	\framesubtitle{A little fun}
+	
+	\begin{center}
+		\vgraphpage{humour-gru.png}
+	\end{center}
+	
+\end{frame}
+
+\insertbibliography{ML-RNN}{*}
+
+\end{document}

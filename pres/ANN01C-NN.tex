@@ -1,0 +1,1129 @@
+% !TEX TS-program = pdflatex
+% !TeX program = pdflatex
+% !TEX encoding = UTF-8
+% !TEX spellcheck = en
+
+\documentclass[xcolor=table]{beamer}
+
+\input{options}
+
+\title[ANN: Neural networks] %
+{Advanced neural networks\\Neural networks}  
+
+\changegraphpath{../img/NN/}
+
+\begin{document}
+
+\begin{frame}
+\frametitle{Neural networks}
+\framesubtitle{Motivation}
+
+\begin{figure}
+	\centering
+	\hgraphpage[.8\textwidth]{neuron.png}
+	\caption{Biological neuron structure \cite{2017-cain}}
+\end{figure}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Neural networks}
+\framesubtitle{Plan}
+
+\begin{multicols}{2}
+	%	\small
+	\tableofcontents
+\end{multicols}
+\end{frame}
+
+\section{Neuron}
+
+\begin{frame}
+\frametitle{Neural networks}
+\framesubtitle{Neuron}
+
+\begin{itemize}
+	\item Let's recall \optword{Logistic regression}
+	\item Features are combined linearly: this can be seen as a accumulation of signals
+	\[z(x) = \theta_0 + \sum\limits_{j=1}^{N} \theta_j x_j\]
+	\item Logistic function is applied on this sum: It is called \keyword{activation function} (send the signal based on a threshold) 
+	\[\sigma(z) = \frac{1}{1 + e^{-z}}\] 
+	\item To calculate the learning error, a \keyword{cost function} is used
+	\item To train te parameters, an \keyword{optimization function} is used
+\end{itemize}
+
+\end{frame}
+
+\subsection{Structure}
+
+\begin{frame}
+\frametitle{Neural networks: Neuron}
+\framesubtitle{Structure}
+
+\hgraphpage[\textwidth]{neuron_structure.pdf}
+
+\end{frame}
+
+\subsection{Activation functions}
+
+\begin{frame}
+	\frametitle{Neural networks: Neuron}
+	\framesubtitle{Activation functions}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Neural networks: Neuron}
+	\framesubtitle{Activation functions: Sigmoid functions}
+	
+	\begin{tabular}{ll}
+		Logistic function & Hyperbolic tangent \\
+		\hgraphpage[.4\textwidth]{logistique.png} & 
+		\hgraphpage[.4\textwidth]{tanh.png} \\
+		$\color{blue}\sigma(x) = \frac{1}{1 + e^{-x}}$ & 
+		$\color{blue}tanh(x) = \frac{e^{x} - e^{-x}}{e^{x} + e^{-x}} = \frac{2}{1 + e^{-2x}} - 1$ \\
+		
+		$\sigma(x) \in ]0, 1[$ & 
+		$tanh(x) \in ]-1, 1[$ \\
+		
+		$\color{red}\sigma'(x) = \sigma(x) (1-\sigma(x))$ & 
+		$\color{red}tanh'(x) = 1 - tanh(x)^2$ \\
+	\end{tabular}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Neural networks: Neuron}
+	\framesubtitle{Activation functions: Sigmoid functions (2)}
+	
+	\begin{tabular}{ll}
+		Arctangent & Softsign \\
+		\hgraphpage[.4\textwidth]{arctan.png} & 
+		\hgraphpage[.4\textwidth]{so.png} \\
+		$\color{blue}f(x) = \frac{2}{\pi} tan^{-1}(x)$ & 
+		$\color{blue}f(x) = \frac{x}{1 + |x|}$ \\
+		
+		$f(x) \in ]-1, 1[$ & 
+		$f(x) \in ]-1, 1[$ \\
+		
+		$\color{red}f'(x) = \frac{2}{\pi} \frac{1}{x^2 + 1}$ & 
+		$\color{red}f'(x) = \frac{1}{(1 + |x|)^2}$ \\
+	\end{tabular}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Neural networks: Neuron}
+	\framesubtitle{Activation functions: Linear functions}
+	
+	\begin{tabular}{ll}
+		linear function & Identity function \\
+		\hgraphpage[.4\textwidth]{lineaire.png} & 
+		\hgraphpage[.4\textwidth]{identite.png} \\
+		$\color{blue} f(x) = k x$ & 
+		$\color{blue} f(x) = x$ \\
+		
+		$f(x) \in ]-\infty, +\infty[$ & 
+		$f(x) \in ]-\infty, +\infty[$ \\
+		
+		$\color{red}f'(x) = k$ & 
+		$\color{red}f'(x) = 1$ \\
+	\end{tabular}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Neural networks: Neuron}
+	\framesubtitle{Activation functions: Step functions}
+	
+	\begin{tabular}{ll}
+		Heaviside & Sign \\
+		\hgraphpage[.4\textwidth]{heaviside.png} & 
+		\hgraphpage[.4\textwidth]{signe.png} \\
+		$\color{blue} H(x) = \begin{cases}
+		0 & \text{si } x < 0 \\
+		1 & \text{sinon}
+		\end{cases}$ & 
+		$\color{blue} S(x) = \begin{cases}
+		-1 & \text{si } x < 0 \\
+		1 & \text{sinon}
+		\end{cases} = 2 H(x) - 1$ \\
+		
+		$H(x) \in \{0, 1\}$ & 
+		$S(x) \in \{-1, 1\}$ \\
+		
+		$\color{red}H'(x) = \begin{cases}
+		0 & \text{si } x \ne 0 \\
+		+\infty & \text{sinon}
+		\end{cases}$ & 
+		$\color{red}S'(x) = 2H'(x)$ \\
+	\end{tabular}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Neural networks: Neuron}
+	\framesubtitle{Activation functions: Hockey functions}
+	
+	\begin{tabular}{ll}
+		Rectified Linear Unit & Parametric ReLU \\
+		\hgraphpage[.4\textwidth]{relu.png} & 
+		\hgraphpage[.4\textwidth]{prelu.png} \\
+		$\color{blue} ReLU(x) = x H(x) = \max(0, x)$ & 
+		$\color{blue} PReLU(\alpha, x) = \begin{cases}
+		\alpha x & \text{si } x < 0 \\
+		x & \text{sinon}
+		\end{cases}$ \\
+		
+		$ReLU(x) \in [0, +\infty[$ & 
+		$PReLU(x) \in ]-\infty, +\infty[$ \\
+		
+		$\color{red}ReLU'(x) = H(x) = \begin{cases}
+		0 & \text{si } x < 0 \\
+		1 & \text{sinon}
+		\end{cases}$ & 
+		$\color{red}PReLU'(x) = \begin{cases}
+		\alpha & \text{si } x < 0 \\
+		1 & \text{sinon}
+		\end{cases}$ \\
+	\end{tabular}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Neural networks: Neuron}
+	\framesubtitle{Activation functions: Hockey functions (2)}
+	
+	\begin{tabular}{ll}
+		Exponential linear unit & Sigmoid Linear Unit \\
+		\hgraphpage[.4\textwidth]{elu.png} & 
+		\hgraphpage[.4\textwidth]{slu.png} \\
+		$\color{blue} ELU(\alpha, x) = \begin{cases}
+		\alpha (e^x - 1) & \text{si } x < 0 \\
+		x & \text{sinon}
+		\end{cases}$ & 
+		$\color{blue} SiLU(x) = x \sigma(x) = \frac{x}{1 + e^{-x}}$ \\
+		
+		$ELU(\alpha, x) \in ]-\infty, +\infty[$ & 
+		$SiLU(x) \in ]-\infty, +\infty[$ \\
+		
+		$\color{red}ELU'(\alpha, x) = \begin{cases}
+		ELU(\alpha, x) + \alpha & \text{si } x < 0 \\
+		1 & \text{sinon}
+		\end{cases}$ & 
+		$\color{red}SiLU'(x) = \sigma(x) (1 + x \sigma(-x))$ \\
+	\end{tabular}
+	
+\end{frame}
+
+\section{Feed Forward}
+
+\begin{frame}
+\frametitle{Neural networks}
+\framesubtitle{Feed Forward}
+
+\begin{minipage}{0.59\textwidth}
+\begin{itemize}
+	\item For complex tasks, one neuron is not enough.
+	\item For example, \expword{XOR function over two variables}.
+	\item If a logistic regression is applied (one neuron with logistic function as activation), the algorithme will try to separate the samples linearly.
+	\item any decision line will miss at least one sample.
+\end{itemize}
+\end{minipage}
+\begin{minipage}{0.4\textwidth}
+	\hgraphpage[\textwidth]{xor.png}
+\end{minipage}
+
+\end{frame}
+
+\subsection{Architecture}
+
+\begin{frame}
+	\frametitle{Neural Network: Feed Forward}
+	\framesubtitle{Architecture}
+	
+	\begin{minipage}{0.59\textwidth}
+		\begin{itemize}
+			\item \optword{Input layer}: information input, \expword{like the dendrites}.
+			\item \optword{Hidden layers}: each layer's input is the output of the previous one. 
+			It contains a number of neurons. 
+			\item \optword{Output layer}: contains the neurons which calculate the output. 
+		\end{itemize}
+	\end{minipage}
+	\begin{minipage}{0.4\textwidth}
+		\hgraphpage[\textwidth]{NN.pdf}
+	\end{minipage}
+	
+\end{frame}
+
+\subsection{Input layer}
+
+\begin{frame}
+	\frametitle{Neural networks: Feed Forward}
+	\framesubtitle{Input layer}
+	
+\end{frame}
+
+\subsection{Hidden layers}
+
+\begin{frame}
+	\frametitle{Neural networks: Feed Forward}
+	\framesubtitle{Hidden layers}
+	
+\end{frame}
+
+\subsection{Output layer}
+
+\begin{frame}
+	\frametitle{Neural networks: Feed Forward}
+	\framesubtitle{Output layer}
+	
+\end{frame}
+
+
+\section{Training}
+
+\begin{frame}
+	\frametitle{Neural networks}
+	\framesubtitle{Training}
+	
+\end{frame}
+
+\subsection{Cost functions}
+
+\begin{frame}
+	\frametitle{Neural networks: Training}
+	\framesubtitle{Cost functions}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Neural networks: Training}
+	\framesubtitle{Cost functions: Regression (MSE)}
+
+%\begin{minipage}{0.68\textwidth}
+\begin{columns}
+	\begin{column}{.68\linewidth}
+		\begin{block}{Mean squared error, L2 loss}
+			\[MSE = \frac{1}{2} (y - \hat{y})^2\]
+			
+			\[
+			\frac{\partial MSE}{\partial \hat{y}} = \hat{y} - y
+			\]
+		\end{block}
+		
+		%\end{minipage}
+		%\begin{minipage}{0.3\textwidth}
+	\end{column}%
+	\begin{column}{.3\linewidth}
+		\begin{figure}
+			\hgraphpage[\textwidth]{regression-loss_.pdf}
+			\caption{Regression cost function \cite{2017-rosenberg}}
+		\end{figure}
+		%\end{minipage}
+	\end{column}
+\end{columns}
+
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Neural networks: Training}
+	\framesubtitle{Cost functions: Regression (MSE)}
+
+\begin{itemize}
+	\item \optword{Advantages}
+	\begin{itemize}
+		\item Quadratic function has a unique minimum.
+	\end{itemize}
+	\item \optword{Disadvantages}
+	\begin{itemize}
+		\item MSE is less robust to outliers.
+	\end{itemize}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Neural networks: Training}
+	\framesubtitle{Cost functions: Regression (MAE)}
+
+%\begin{minipage}{0.59\textwidth}
+\begin{columns}
+	\begin{column}{.68\linewidth}
+		\begin{block}{Mean Absolute Error, L1 loss}
+			\[MAE = |y - \hat{y}|\]
+			
+			\[
+			\frac{\partial MAE}{\partial \hat{y}} = 
+			\begin{cases}
+			+1 & \text{ si } \hat{y} > y \\
+			-1 & \text{ si } \hat{y} < y \\
+			[-1, +1] & \text{ si } \hat{y} = y \\
+			\end{cases}
+			\]
+		\end{block}
+	\end{column}%
+	\begin{column}{.3\linewidth}
+		%\end{minipage}
+		%\begin{minipage}{0.4\textwidth}
+		\begin{figure}
+			\hgraphpage[\textwidth]{regression-loss_.pdf}
+			\caption{Cost functions for regression \cite{2017-rosenberg}}
+		\end{figure}
+		%\end{minipage}
+	\end{column}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Neural networks: Training}
+	\framesubtitle{Cost functions: Regression (MAE)}
+
+\begin{itemize}
+	\item \optword{Advantages}
+	\begin{itemize}
+		\item Less sensitive to outliers.
+	\end{itemize}
+	\item \optword{Disadvantages}
+	\begin{itemize}
+		\item The gradient's magnitude does not depend on the error's size; only on the sign of y - ŷ. 
+		This leads to the magnitude of the gradient being large even when the error is small.
+	\end{itemize}
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Neural networks: Training}
+	\framesubtitle{Cost functions: Regression (Huber)}
+
+\begin{columns}
+\begin{column}{.68\linewidth}
+%\begin{minipage}{0.59\textwidth}
+\begin{block}{Huber Loss}
+	\[J = %\frac{1}{M} \sum\limits_{i=1}^{M} 
+	\begin{cases}
+	\frac{1}{2} (y - \hat{y})^2 & \text{si } |y - \hat{y}| \le \delta \\
+	\delta |y - \hat{y}| - \frac{1}{2} \delta^2 & \text{sinon }\\
+	\end{cases}
+	\]
+	
+	\[
+	\frac{\partial J}{\partial \hat{y}} = 
+	\begin{cases}
+	\hat{y} - y & \text{ si } |\hat{y} - y| \le \delta \\
+	-\delta & \text{ si } \hat{y} - y < -\delta \\
+	+\delta & \text{ si } \hat{y} - y > \delta \\
+	\end{cases}
+	\]
+	
+\end{block}
+
+%\end{minipage}
+\end{column}%
+\begin{column}{.3\linewidth}
+%\begin{minipage}{0.4\textwidth}
+\begin{figure}
+	\hgraphpage[\textwidth]{regression-loss_.pdf}
+	\caption{Cost functions for regression \cite{2017-rosenberg}}
+\end{figure}
+%\end{minipage}
+\end{column}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Neural networks: Training}
+	\framesubtitle{Cost functions: Regression (Huber)}
+
+\begin{itemize}
+	\item \optword{Advantages}
+	\begin{itemize}
+		\item Has both advantages of MSE and MAE.
+	\end{itemize}
+	\item \optword{Disadvantages}
+	\begin{itemize}
+		\item Hyper-parameter $\delta$ must be trained.
+	\end{itemize}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Neural networks: Training}
+	\framesubtitle{Cost functions: Classification (BCE)}
+
+\begin{block}{Binary Cross Entropy Loss}
+	\[J = - (y \log(\hat{y}) + (1 - y) \log(1 - \hat{y}))\]
+	
+	\[
+	\frac{\partial J}{\partial \hat{y}} = \frac{\hat{y} - y}{\hat{y} - \hat{y}^2}
+	\]
+\end{block}
+
+\begin{itemize}
+	\item \optword{Advantages}
+	\begin{itemize}
+		\item Works well with activation functions which model probabilities (sigmoid).
+		\item Which means, better probabilities' estimation.
+	\end{itemize}
+	\item \optword{Disadvantages}
+	\begin{itemize}
+		\item Linear separation margin is not guaranteed to be optimal.
+	\end{itemize}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Neural networks: Training}
+	\framesubtitle{Cost functions: Classification (Hinge)}
+
+\begin{block}{Hinge Loss (SVM Loss)}
+	\[J = \max(0, 1 - y \hat{y}), y \in \{-1, 1\}\]
+	
+	\[
+	\frac{\partial J}{\partial \hat{y}} = 
+	\begin{cases}
+	0 & \text{si } y \hat{y} \ge 1 \\
+	-y & \text{sinon}
+	\end{cases}
+	\]
+\end{block}
+
+\begin{itemize}
+	\item \optword{Advantages}
+	\begin{itemize}
+		\item Better precision.
+	\end{itemize}
+	\item \optword{Disadvantages}
+	\begin{itemize}
+		\item Not smooth and not differentiable; therefore, less optimization algorithms.
+		\item Does not directly model the probability $p(y|x)$.
+	\end{itemize}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Neural networks: Training}
+	\framesubtitle{Cost functions: Multinomial Classification (Cross entropy)}
+
+\begin{block}{Cross Entropy Loss}
+	\[J = - \sum\limits_{k=1}^{K} y_{k} \log(\hat{y}_{k}) \text{, où } K \text{ est le nnombre des classes} \]
+	
+	\[
+	\frac{\partial J}{\partial \hat{y}_k} = - \frac{y_{k}}{\hat{y}_{k}}
+	\]
+\end{block}
+
+%\begin{itemize}
+%	\item \optword{Avantages}
+%	\begin{itemize}
+%		\item 
+%	\end{itemize}
+%	\item \optword{Inconvénients}
+%	\begin{itemize}
+%		\item 
+%	\end{itemize}
+%\end{itemize}
+
+\end{frame}
+
+\subsection{Optimization functions}
+
+\begin{frame}
+	\frametitle{Neural networks: Training}
+	\framesubtitle{Optimization functions}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Neural networks: Training}
+	\framesubtitle{Optimization functions: Gradient descent}
+
+\begin{figure}
+	\vgraphpage[.7\textheight]{steepest.png}
+	\caption{Gradient descent illustration \cite{2020-calin}}
+\end{figure}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Neural networks: Training}
+	\framesubtitle{Optimization functions: Gradient descent}
+
+\begin{algorithm}[H]
+	\KwData{$ X, Y, \alpha, T $}
+	\KwResult{$ \theta $}
+	Initialize $ \theta $ ; $ t = 0 $\;
+	\While{$ t < T$ and no convergence}{
+		$ \theta = \theta - \alpha \Delta_\theta J(X, Y; \theta) $\;
+%		Mettre à jours les $\theta$\;
+		t = t + 1 \;
+	}
+	\caption{Gradient descent}
+\end{algorithm}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Neural networks: Training}
+	\framesubtitle{Optimization functions: Gradient descent}
+
+\begin{itemize}
+	\item \optword{Properties}: 
+	\begin{itemize}
+		\item Searches the optimal value in the direction of gradient descent.
+		\item Converges with a linear rate.
+	\end{itemize}
+	\item \optword{Advantages}: 
+	\begin{itemize}
+		\item When the objective function is convex, the solution is a global optimum.
+	\end{itemize}
+	\item \optword{Disadvantages}: 
+	\begin{itemize}
+		\item For each iteration, the gradients of each sample must be calculated. 
+		So, the computational cost is very high. 
+		\item Training dataset can be too large to be processed in memory.
+		\item Can converge to a local minimum when the objective function is not convex.
+	\end{itemize}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Neural networks: Training}
+	\framesubtitle{Optimization functions: Stochastic gradient descent}
+
+\begin{algorithm}[H]
+	\KwData{$ X, Y, \alpha, T$}
+	\KwResult{$ \theta $}
+	Initialize $ \theta $ ; $ t = 0 $\;
+	\While{$ t < T$ and no convergence}{
+		Randomly choose $ (X^{(i)}, Y^{(i)}) \in (X, Y)$\;
+		$ \theta = \theta - \alpha \Delta_\theta J(X^{(i)}, Y^{(i)}; \theta) $\;
+%		Mélanger les données aléatoirement\;
+%		\ForEach{$ (X^{(i)}, Y^{(i)}) \in (X, Y)$}{
+%			$ \theta = \theta - \alpha \Delta_\theta J(X^{(i)}, Y^{(i)}; \theta) $\;
+%%			Mettre à jours les $\theta$\;
+%		}
+		t = t + 1 \;
+	}
+	\caption{Stochastic gradient descent}
+\end{algorithm}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Neural networks: Training}
+	\framesubtitle{Optimization functions: Stochastic gradient descent}
+
+\begin{itemize}
+\item \optword{Properties}: 
+\begin{itemize}
+	\item Parameters are separately updated for each sample.
+\end{itemize}
+\item \optword{Advantages}: 
+\begin{itemize}
+	\item Can avoid local minima.
+\end{itemize}
+\item \optword{Disadvantages}: 
+\begin{itemize}
+	\item It is difficult for the model to converge to a minimum.
+\end{itemize}
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Neural networks: Training}
+	\framesubtitle{Optimization functions: Mini-Batch gradient descent}
+
+\begin{algorithm}[H]
+	\KwData{$ X, Y, \alpha, T, b $}
+	\KwResult{$ \theta $}
+	initialiser $ \theta $ ; $ t = 0 $\;
+	\While{$ t < T$ and no convergence}{
+		Randomly mix data\;
+		Divide data to $b$ batches\;
+		\ForEach{$ (X^b, Y^b) \in batches$}{
+			$ \theta = \theta - \alpha \Delta_\theta J(X^b, Y^b; \theta) $\;
+%			Mettre à jours les $\theta$\;
+		}
+		\tcp{Parameters can be updated using the average of the steps}
+		t = t + 1 \;
+	}
+	\caption{Mini-Batch gradient descent}
+\end{algorithm}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Neural networks: Training}
+	\framesubtitle{Optimization functions: Mini-Batch gradient descent}
+
+\begin{itemize}
+	\item \optword{Proprieties}: 
+	\begin{itemize}
+		\item Training is done on batches (subsets) of the dataset.
+		\item Using a hyper-parameter $b$ as the size of a batch.
+	\end{itemize}
+	\item \optword{Advantages}: 
+	\begin{itemize}
+		\item May avoid local minimum due to frequent updates.
+		\item Efficient with large training data.
+	\end{itemize}
+	\item \optword{Disadvantages}: 
+	\begin{itemize}
+		\item Hyper-parameter $b$ must be configured.
+	\end{itemize}
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Neural networks: Training}
+	\framesubtitle{Optimization functions: Adaptative gradient descent (AdaGrad)}
+
+\begin{algorithm}[H]
+	\KwData{$ X, Y, \alpha, T$}
+	\KwResult{$ \theta $}
+	Initialize $ \theta $ ; $ t = 0 $\;
+	Initialize $v$ ($|v| = |\theta|$) to zero\;
+	\While{$ t < T$ and no convergence}{
+		$ v = v + (\Delta_\theta J(X, Y; \theta))^2 $\;
+		$ \theta = \theta - \frac{\alpha}{\sqrt{v + \epsilon}} \Delta_\theta J(X, Y; \theta) $\;
+%		Mettre à jours les $\theta$\;
+		\tcp{epsilon is used to avoid division by 0, usually 1e-8}
+		t = t + 1 \;
+	}
+	\caption{AdaGrad \cite{2011-duchi-al}}
+\end{algorithm}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Neural networks: Training}
+	\framesubtitle{Optimization functions: Adaptative gradient descent (AdaGrad)}
+
+\begin{itemize}
+	\item \optword{Proprieties}: 
+	\begin{itemize}
+		\item Learning rate is adaptively adjusted based on squares' sum of all past gradients.
+	\end{itemize}
+	\item \optword{Advantages}: 
+	\begin{itemize}
+		\item Learning rate of each parameter is adaptively adjusted.
+	\end{itemize}
+	\item \optword{Disadvantages}: 
+	\begin{itemize}
+		\item Over time, the learning rate drops to zero; the algorithm is not desirable for non-convex functions.
+	\end{itemize}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Neural networks: Training}
+	\framesubtitle{Optimization functions: Root Mean Square Propagation (RMSProp)}
+
+\begin{algorithm}[H]
+	\KwData{$ X, Y, \alpha, T, \beta$}
+	\KwResult{$ \theta $}
+	Initialize $ \theta $ ; $ t = 0 $\;
+	Initialize $v$ ($|v| = |\theta|$) to zero\;
+	\While{$ t < T$ and no convergence}{
+		$ v = \beta v + (1-\beta)(\Delta_\theta J(X, Y; \theta))^2 $\;
+		$ \theta = \theta - \frac{\alpha}{\sqrt{v} + \epsilon} \Delta_\theta J(X, Y; \theta) $\;
+%		Mettre à jours les $\theta$\;
+		t = t + 1 \;
+	}
+	\caption{RMSProp}
+\end{algorithm}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Neural networks: Training}
+	\framesubtitle{Optimization functions: Root Mean Square Propagation (RMSProp)}
+
+\begin{itemize}
+	\item \optword{Proprieties}: 
+	\begin{itemize}
+		\item Using exponential moving average.
+		\item By default, $\beta = 0.9$ 
+	\end{itemize}
+	\item \optword{Advantages}: 
+	\begin{itemize}
+		\item Improves inefficient learning problem in the advanced stages of AdaGrad.
+		\item Suitable for optimization of non-stationary and non-convex problems.
+	\end{itemize}
+	\item \optword{Disadvantages}: 
+	\begin{itemize}
+		\item At the end of training, the updating process can be repeated around the local minimum.
+	\end{itemize}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Neural networks: Training}
+	\framesubtitle{Optimization functions: Adaptive Moment Estimation (Adam)}
+
+\begin{algorithm}[H]
+	\KwData{$ X, Y, \alpha, T, \beta_1, \beta_2$}
+	\KwResult{$ \theta $}
+	Initialize $ \theta $ ; $ t = 0 $\;
+	Initialize $v$ et $m$ ($|v| = |m| = |\theta|$) to zero\;
+	\While{$ t < T$ and no convergence}{
+		$ g = \Delta_\theta J(X, Y; \theta) $\;
+		$ m = \beta_1 m + (1-\beta_1) g $; $\hat{m} = \frac{m}{1-\beta_1^t}$\;
+		$ v = \beta_2 v + (1-\beta_2) g^2 $;
+		$\hat{v} = \frac{v}{1-\beta_2^t}$\;
+		$ \theta = \theta - \frac{\alpha \hat{m}}{\sqrt{\hat{v}} + \epsilon} $\;
+%		Mettre à jours les $\theta$\;
+		t = t + 1 \;
+	}
+	\caption{Adam \cite{2015-kingma-ba}}
+\end{algorithm}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Neural networks: Training}
+	\framesubtitle{Optimization functions: Adaptive Moment Estimation (Adam)}
+
+\begin{itemize}
+	\item \optword{Proprieties}: 
+	\begin{itemize}
+		\item Using the first and second order moments to dynamically adjust the learning rate of each parameter.
+		\item Adds bias correction.
+		\item By default, $\beta_1 = 0.9, \beta_2 = 0.999$ 
+	\end{itemize}
+	\item \optword{Advantages}: 
+	\begin{itemize}
+		\item Gradient descent process is relatively stable.
+		\item Suitable for most non-convex optimization problems with large datasets and high dimensional space.
+	\end{itemize}
+	\item \optword{Disadvantages}: 
+	\begin{itemize}
+		\item May not converge in some cases.
+	\end{itemize}
+\end{itemize}
+
+\end{frame}
+
+\subsection{Back-propagation}
+
+\begin{frame}
+	\frametitle{Neural networks: Training}
+	\framesubtitle{Back-propagation}
+	
+	\hgraphpage[\textwidth]{RNPA.pdf}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Neural networks: Training}
+	\framesubtitle{Back-propagation: Example}
+	
+	\hgraphpage[\textwidth]{RNPA-exp.pdf}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Neural networks: Training}
+	\framesubtitle{Back-propagation: Example (1)}
+	
+	%\begin{itemize}
+	%	\item On essaye de mettre à jour $w_{11}^{(3)}$
+	%\end{itemize}
+	Update $w_{11}^{(4)}$
+	
+	$ 
+	\frac{\partial J}{\partial w_{11}^{(4)}} = \overbrace{\frac{\partial J}{\partial f_{1}^{(4)}} \frac{\partial f_{1}^{(4)}}{\partial z_{1}^{(4)}}}^{\delta_{1}^{(4)}} \overbrace{\frac{\partial z_{1}^{(4)}}{\partial w_{11}^{(4)}}}^{a_{1}^{(3)}}
+	$
+	
+	$ 
+	\frac{\partial J}{\partial f_{1}^{(4)}} = \frac{(0.840, 0.843) - (0, 1)}{(0.840, 0.843) - (0.840, 0.843)^2} 
+	= (6.25, -1.186)
+	$
+	
+	$ 
+	\frac{\partial f_{1}^{(4)}}{\partial z_{1}^{(4)}} = (0.840, 0.843) (0.160, 0.157) = (0.134, 0.132)
+	$
+	
+	$
+	\delta_{1}^{(4)} = (6.25, -1.186) (0.134, 0.132) \approx (0.838, -0.157)
+	$
+	
+	$
+	\frac{\partial J}{\partial w_{11}^{(4)}} = moy((0.838, -0.157) (0.555, 0.612)) 
+	\approx moy(0.465, -0.096) = 0.184
+	$
+	
+	$
+	w_{11}^{(4)} = 0.7 - 1 * (0.184) = 0.516 \text{ , when } \alpha = 1
+	$
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Neural networks: Training}
+	\framesubtitle{Back-propagation: Example (2)}
+	
+	%\begin{itemize}
+	%	\item On essaye de mettre à jour $w_{11}^{(3)}$
+	%\end{itemize}
+	Update $w_{21}^{(4)}$
+	
+	$ 
+	\frac{\partial J}{\partial w_{21}^{(4)}} = \overbrace{\frac{\partial J}{\partial f_{1}^{(4)}} \frac{\partial f_{1}^{(4)}}{\partial z_{1}^{(4)}}}^{\delta_{1}^{(4)}} \overbrace{\frac{\partial z_{1}^{(4)}}{\partial w_{21}^{(4)}}}^{a_{2}^{(3)}}
+	$
+	
+	
+	$
+	\delta_{1}^{(4)} = (0.838, -0.157)
+	$
+	
+	$
+	\frac{\partial J}{\partial w_{21}^{(4)}} = moy((0.838, -0.157) (0.386, 0.360)) 
+	\approx moy(0.323, -0.056) = 0.134
+	$
+	
+	$
+	w_{21}^{(4)} = 0.7 - 1 * (0.134) = 0.566 \text{ , when } \alpha = 1
+	$
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Neural networks: Training}
+	\framesubtitle{Back-propagation: Example (3)}
+	
+	Update $w_{11}^{(3)}$
+	
+	$
+	\frac{\partial J}{\partial w_{11}^{(3)}} = 
+	\overbrace{
+		\overbrace{
+			\frac{\partial J}{\partial f_{1}^{(4)}} 
+			\frac{\partial f_{1}^{(4)}}{\partial z_{1}^{(4)}}
+		}^{\delta_{1}^{(4)}} 
+		\overbrace{
+			\frac{\partial z_{1}^{(4)}}{\partial f_{1}^{(3)}}
+		}^{w_{11}^{(4)}} 
+		\frac{\partial f_{1}^{(3)}}{\partial z_{1}^{(3)}} 
+	}^{\delta_{1}^{(3)}} 
+	\overbrace{
+		\frac{\partial z_{1}^{(3)}}{\partial w_{11}^{(3)}}
+	}^{a_{1}^{(2)}}
+	\text{ Ici, on utilise l'ancien } w_{11}^{(4)}
+	$
+	
+	$
+	\frac{\partial f_{1}^{(3)}}{\partial z_{1}^{(3)}} \approx 
+	(0.555, 0.612) (0.445, 0.388) = (0.247, 0.237)
+	$
+	
+	$
+	\delta_{1}^{(3)} = (0.838, -0.157) * 0.7 * (0.247, 0.237) \approx (0.145, -0.026)
+	$
+	
+	$
+	\frac{\partial J}{\partial w_{11}^{(2)}} = moy((0.145, -0.026) (0.622, 0.900)) 
+	= moy(0.090, -0.023) = 0.033
+	$
+	
+	$
+	w_{11}^{(2)} = 0.3 - 1 * (0.033) = 0.267 \text{ , when } \alpha = 1
+	$
+	
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Neural networks: Training}
+	\framesubtitle{Back-propagation: Example (4)}
+	
+	Update $w_{12}^{(3)}$
+	
+	$
+	\frac{\partial J}{\partial w_{12}^{(3)}} = 
+	\overbrace{
+		\overbrace{
+			\frac{\partial J}{\partial f_{1}^{(4)}} 
+			\frac{\partial f_{1}^{(4)}}{\partial z_{1}^{(4)}}
+		}^{\delta_{1}^{(4)}} 
+		\overbrace{
+			\frac{\partial z_{1}^{(4)}}{\partial f_{2}^{(3)}}
+		}^{w_{11}^{(4)}} 
+		\frac{\partial f_{2}^{(3)}}{\partial z_{2}^{(3)}} 
+	}^{\delta_{2}^{(3)}} 
+	\overbrace{
+		\frac{\partial z_{2}^{(3)}}{\partial w_{12}^{(3)}}
+	}^{a_{1}^{(2)}}
+	\text{ Ici, on utilise l'ancien } w_{12}^{(4)}
+	$
+	
+	$
+	\frac{\partial f_{2}^{(3)}}{\partial z_{2}^{(3)}} \approx 
+	(0.386, 0.360) (0.614, 0.64) = (0.237, 0.230)
+	$
+	
+	$
+	\delta_{2}^{(3)} = (0.838, -0.157) * 0.7 * (0.237, 0.230) \approx (0.139, -0.025)
+	$
+	
+	$
+	\frac{\partial J}{\partial w_{11}^{(2)}} = moy((0.139, -0.025) (0.622, 0.900)) 
+	= moy(0.086, -0.023) = 0.032
+	$
+	
+	$
+	w_{11}^{(2)} = - 0.1 - 1 * (0.032) = - 0.132 \text{ , when } \alpha = 1
+	$
+	
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Neural networks: Training}
+	\framesubtitle{Back-propagation: Example (5)}
+	
+	Update $w_{11}^{(2)}$
+	
+	$
+	\frac{\partial J}{\partial w_{11}^{(2)}} = 
+	\overbrace{ 
+		\left(
+		\delta_{1}^{(3)} 
+		\overbrace{
+			\frac{\partial z_{1}^{(3)}}{\partial f_{1}^{(2)}}
+		}^{w_{11}^{(3)}}
+		+
+		\delta_{2}^{(3)} 
+		\overbrace{
+			\frac{\partial z_{2}^{(3)}}{\partial f_{1}^{(2)}}
+		}^{w_{12}^{(3)}}
+		\right)
+		\frac{\partial f_{1}^{(2)}}{\partial z_{1}^{(2)}}
+	}^{\delta_{1}^{(2)}} 
+	\overbrace{
+		\frac{\partial z_{1}^{(2)}}{\partial w_{11}^{(2)}}
+	}^{a_{1}^{(1)}}
+	$
+	
+	$
+	\frac{\partial f_{1}^{(2)}}{\partial z_{1}^{(2)}} = (0.622, 0.900) (0.378, 0.100) = (0.235, 0.09)
+	$
+	
+	$
+	\delta_{1}^{(2)} = \left((0.145, -0.026) * (0.3) + (0.139, -0.025) * (-0.1)\right) * (0.235, 0.09) \approx (0.039, -0.01)
+	$
+	
+	
+	%$
+	%\frac{\partial J}{\partial w_{11}^{(2)}} = moy((0.039, -0.01) (2, 3)) 
+	%= moy(0.078, -0.03) = 0.024
+	%$
+	%
+	%$
+	%w_{11}^{(2)} = 0.5 - 1 * (0.024) = 0.476 \text{ , supossant } \alpha = 1
+	%$
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Neural networks: Training}
+	\framesubtitle{Back-propagation: General case}
+	
+	\begin{itemize}
+		\item Calculate $\delta^{(l)}$ where $l$ is the layer's number
+	\end{itemize}
+	
+	\[ 
+	\delta^{(sortie)} = 
+	\frac{\partial J}{\partial f^{(sortie)}} \frac{\partial f^{(sortie)}}{\partial z^{(sortie)}}
+	\,,\,
+	\delta^{(l)} = \frac{\partial f^{(l)}}{\partial z^{(l)}} w^{(l+1)} \delta^{(l+1)}
+	\]
+	
+	\begin{itemize}
+		\item Calculate gradients
+	\end{itemize}
+	
+	\[ 
+	\frac{\partial J}{\partial w^{(l)}} = a^{(l-1)} \delta^{(l)}
+	\,,\,
+	\frac{\partial J}{\partial b^{(l)}} = \delta^{(l)}
+	\]
+	
+	\begin{itemize}
+		\item Update parameters
+	\end{itemize}
+	
+	\[ 
+	w = w - \alpha \frac{\partial J}{\partial w^{(l)}}
+	\,,\,
+	b = b - \alpha \frac{\partial J}{\partial b^{(l)}}
+	\]
+	
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Neural networks: Training}
+	\framesubtitle{Back-propagation: A little fun}
+	
+	\hgraphpage[.58\textwidth]{humour-retro1.jpeg}
+	\hgraphpage[.4\textwidth]{humour-retro2.jpg}
+	
+	
+\end{frame}
+
+\subsection{Regularization}
+
+\begin{frame}
+	\frametitle{Neural networks}
+	\framesubtitle{Regularization}
+
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{Neural networks: Regularization}
+	\framesubtitle{Dropout layer}
+	
+	\begin{itemize}
+		\item Deactivate the connections temporarily and randomly.
+		\item Dropout layer has a hyper-parameter: drop rate.
+		\item Deactivates some outputs (considers them as 0) in training (not inference).
+	\end{itemize}
+	
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{Neural networks: Regularization}
+	\framesubtitle{Dropout layer: A little fun}
+	
+	\hgraphpage[.35\textwidth]{humour-overfiting2.jpeg}
+	\hgraphpage[.63\textwidth]{humour-overfiting1.png}
+	
+\end{frame}
+
+
+\insertbibliography{ANN01-NN}{*}
+
+
+
+
+\end{document}
