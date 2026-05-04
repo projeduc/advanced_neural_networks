@@ -5,32 +5,34 @@
 
 \documentclass[xcolor=table]{beamer}
 
-\input{options}
+\usepackage{../extra/beamer/karimml}
 
-\title[ANN: Auto-encoders] %
-{Advanced neural networks\\Auto-encoders} 
+\input{options2}
+
+\subtitle[Autoencoders]{Autoencoders} 
+
 
 \changegraphpath{../img/autoencoders/}
 
 \begin{document}
 
 \begin{frame}
-\frametitle{Auto-encoders}
+\frametitle{\inserttitle}
 \framesubtitle{Motivation}
 
 
 \end{frame}
 
 \begin{frame}
-	\frametitle{Auto-encoders}
+	\frametitle{\inserttitle}
 	\framesubtitle{A little fun}
 	
-	\hgraphpage[\textwidth]{humour-unsupervised.jpg}
+	\hgraphpage[\textwidth]{humor/humor-unsupervised.jpg}
 	
 \end{frame}
 
 \begin{frame}
-\frametitle{Auto-encoders}
+\frametitle{\inserttitle}
 \framesubtitle{Plan}
 
 \begin{multicols}{2}
@@ -40,11 +42,19 @@
 \end{frame}
 
 
-\section{Definition}
+\section{Vanilla autoencoder}
 
 \begin{frame}
-\frametitle{Auto-encoders}
-\framesubtitle{Definition}
+	\frametitle{\inserttitle}
+	\framesubtitle{Clustering autoencoder}
+	
+	\hgraphpage[\textwidth]{AE.pdf}
+	
+\end{frame}
+
+\begin{frame}
+\frametitle{\inserttitle}
+\framesubtitle{Clustering auto-encoder}
 
 \begin{itemize}
 	\item Multi-layers neural network.
@@ -60,18 +70,11 @@
 
 \end{frame}
 
-\begin{frame}
-	\frametitle{Auto-encoders}
-	\framesubtitle{Definition: Architecture}
-
-\hgraphpage[\textwidth]{AE.pdf}
-
-\end{frame}
 
 \section{Denoising auto-encoder}
 
 \begin{frame}
-\frametitle{Auto-encoders}
+\frametitle{\inserttitle}
 \framesubtitle{Denoising auto-encoder}
 
 \hgraphpage[\textwidth]{AE-noise.pdf}
@@ -79,7 +82,7 @@
 \end{frame}
 
 \begin{frame}
-\frametitle{Auto-encoders}
+\frametitle{\inserttitle}
 \framesubtitle{Denoising auto-encoder: Some applications}
 
 \begin{itemize}
@@ -94,7 +97,7 @@
 \section{Sparse auto-encoder}
 
 \begin{frame}
-\frametitle{Auto-encoders}
+\frametitle{\inserttitle}
 \framesubtitle{Sparse auto-encoder}
 
 \begin{itemize}
@@ -109,7 +112,7 @@
 \section{Variational auto-encoder}
 
 \begin{frame}
-	\frametitle{Auto-encoders}
+	\frametitle{\inserttitle}
 	\framesubtitle{Variational auto-encoder}
 
 \begin{itemize}
@@ -133,7 +136,7 @@
 \end{frame}
 
 \begin{frame}
-	\frametitle{Auto-encoders}
+	\frametitle{\inserttitle}
 	\framesubtitle{Variational auto-encoder}
 
 \begin{itemize}

@@ -11,7 +11,8 @@
 	author = {David S. Rosenberg},
 	title = {Loss Functions for Regression and Classification},
 	date = {2017},
-	howpublished = {Présentation (Bloomberg ML EDU)},
+	howpublished = {Lecture (Bloomberg ML EDU)},
+	note = {URL: \url{https://davidrosenberg.github.io/mlcourse/Archive/2017/Lectures/3b.loss-functions.pdf}}
 }
 
 @book{2020-calin,
@@ -40,16 +41,71 @@
 }
 
 @inproceedings{2015-kingma-ba,
-	author    = {Diederik P. Kingma and
-	Jimmy Ba},
-	editor    = {Yoshua Bengio and
-	Yann LeCun},
+	author    = {Diederik P. Kingma and Jimmy Ba},
+	editor    = {Yoshua Bengio and Yann LeCun},
 	title     = {Adam: {A} Method for Stochastic Optimization},
 	booktitle = {3rd International Conference on Learning Representations, {ICLR} 2015,
 	San Diego, CA, USA, May 7-9, 2015, Conference Track Proceedings},
 	year      = {2015},
+	note       = {URL: \url{http://arxiv.org/abs/1412.6980}},
 	url       = {http://arxiv.org/abs/1412.6980},
 	timestamp = {Thu, 25 Jul 2019 14:25:37 +0200},
 	biburl    = {https://dblp.org/rec/journals/corr/KingmaB14.bib},
 	bibsource = {dblp computer science bibliography, https://dblp.org}
 }
+
+@article{2014-srivastava,
+	author = {Srivastava, Nitish and Hinton, Geoffrey and Krizhevsky, Alex and Sutskever, Ilya and Salakhutdinov, Ruslan},
+	title = {Dropout: a simple way to prevent neural networks from overfitting},
+	year = {2014},
+	issue_date = {January 2014},
+	publisher = {JMLR.org},
+	volume = {15},
+	number = {1},
+	issn = {1532-4435},
+	abstract = {Deep neural nets with a large number of parameters are very powerful machine learning systems. However, overfitting is a serious problem in such networks. Large networks are also slow to use, making it difficult to deal with overfitting by combining the predictions of many different large neural nets at test time. Dropout is a technique for addressing this problem. The key idea is to randomly drop units (along with their connections) from the neural network during training. This prevents units from co-adapting too much. During training, dropout samples from an exponential number of different "thinned" networks. At test time, it is easy to approximate the effect of averaging the predictions of all these thinned networks by simply using a single unthinned network that has smaller weights. This significantly reduces overfitting and gives major improvements over other regularization methods. We show that dropout improves the performance of neural networks on supervised learning tasks in vision, speech recognition, document classification and computational biology, obtaining state-of-the-art results on many benchmark data sets.},
+	journal = {J. Mach. Learn. Res.},
+	month = jan,
+	pages = {1929–1958},
+	numpages = {30},
+	keywords = {deep learning, model combination, neural networks, regularization}
+}
+
+@Article{1986-rumelhart,
+	author={Rumelhart, David E.
+	and Hinton, Geoffrey E.
+	and Williams, Ronald J.},
+	title={Learning representations by back-propagating errors},
+	journal={Nature},
+	year={1986},
+	month={Oct},
+	day={01},
+	volume={323},
+	number={6088},
+	pages={533-536},
+	abstract={We describe a new learning procedure, back-propagation, for networks of neurone-like units. The procedure repeatedly adjusts the weights of the connections in the network so as to minimize a measure of the difference between the actual output vector of the net and the desired output vector. As a result of the weight adjustments, internal `hidden' units which are not part of the input or output come to represent important features of the task domain, and the regularities in the task are captured by the interactions of these units. The ability to create useful new features distinguishes back-propagation from earlier, simpler methods such as the perceptron-convergence procedure1.},
+	issn={1476-4687},
+	doi={10.1038/323533a0},
+	url={https://doi.org/10.1038/323533a0},
+	note={URL: \url{https://doi.org/10.1038/323533a0}}
+}
+
+
+@book{2016-goodfellow,
+	title={Deep Learning},
+	author={Goodfellow, Ian and Bengio, Yoshua and Courville, Aaron},
+	publisher={MIT Press},
+	year={2016},
+	url={https://www.deeplearningbook.org},
+	note={URL: \url{https://www.deeplearningbook.org}}
+}
+
+@book{d2l,
+	title = {Dive into Deep Learning},
+	author = {Zhang, Aston and Lipton, Zachary C. and Li, Mu and Smola, Alex J.},
+	year = {2023},
+	url = {https://d2l.ai},
+	note={URL: \url{https://d2l.ai}}
+}
+
+

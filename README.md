@@ -1,4 +1,4 @@
-# Cours "Traitement automatique du langage naturel"
+# Advanced Neural Networks
 
 [![Type](https://img.shields.io/badge/Type-Course-0014A8.svg?style=flat)](https://github.com/projeduc/advanced_neural_networks)
 [![License](https://img.shields.io/badge/Licence-CC--BY_4.0-0014A8.svg?style=flat)](https://creativecommons.org/licenses/by/4.0/)
