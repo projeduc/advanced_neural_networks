@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- early_stopping.svg -->
+
+<svg
+   width="450"
+   height="290"
+   version="1.1"
+   id="svg7"
+   sodipodi:docname="early_stopping.svg"
+   inkscape:version="1.4.3 (0d15f75042, 2025-12-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs7" />
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="1.5713482"
+     inkscape:cx="207.14696"
+     inkscape:cy="122.82446"
+     inkscape:window-width="1920"
+     inkscape:window-height="1008"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg7" />
+  <!-- Axes -->
+  <line
+     x1="26"
+     y1="260"
+     x2="436"
+     y2="260"
+     stroke="#000000"
+     stroke-width="2"
+     id="line1" />
+  <line
+     x1="26"
+     y1="260"
+     x2="26"
+     y2="40"
+     stroke="#000000"
+     stroke-width="2"
+     id="line2" />
+  <!-- Axis labels -->
+  <text
+     x="162"
+     y="280"
+     font-size="16px"
+     id="text2"
+     style="font-size:16px"><tspan
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:21.3333px;font-family:'Crimson Text';-inkscape-font-specification:'Crimson Text, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal"
+       id="tspan11">Training epochs</tspan></text>
+  <text
+     x="-167.60001"
+     y="16.400002"
+     font-size="16px"
+     transform="rotate(-90)"
+     id="text3"
+     style="font-size:16px"><tspan
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:21.3333px;font-family:'Crimson Text';-inkscape-font-specification:'Crimson Text, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal"
+       id="tspan12">Loss</tspan></text>
+  <!-- Training loss curve -->
+  <polyline
+     fill="none"
+     stroke="#000000"
+     stroke-width="3"
+     points="         70,80         110,110         150,135         190,155         230,175         270,190         310,205         350,218         390,228         430,236         "
+     id="polyline3"
+     style="fill:none;fill-opacity:1;stroke:#006400;stroke-opacity:1"
+     transform="translate(-34)" />
+  <!-- Validation loss curve -->
+  <polyline
+     fill="none"
+     stroke="black"
+     stroke-width="3"
+     stroke-dasharray="8, 6"
+     points="         70,90         110,120         150,145         190,165         230,175         270,170         310,175         350,190         390,215         430,245         "
+     id="polyline4"
+     style="stroke:#0000ff;stroke-opacity:1"
+     transform="translate(-34)" />
+  <!-- Early stopping vertical line -->
+  <line
+     x1="236"
+     y1="60"
+     x2="236"
+     y2="260"
+     stroke="black"
+     stroke-width="2"
+     stroke-dasharray="5, 5"
+     id="line4"
+     style="stroke:#ff0000;stroke-opacity:1" />
+  <!-- Labels -->
+  <text
+     x="265.79999"
+     y="249.8"
+     font-size="14px"
+     id="text4"
+     style="font-size:14px"><tspan
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:21.3333px;font-family:'Crimson Text';-inkscape-font-specification:'Crimson Text, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#006400;fill-opacity:1"
+       id="tspan10">Training loss</tspan></text>
+  <text
+     x="306"
+     y="175"
+     font-size="14px"
+     id="text5"
+     style="font-size:14px"><tspan
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:21.3333px;font-family:'Crimson Text';-inkscape-font-specification:'Crimson Text, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#0000ff;fill-opacity:1"
+       id="tspan9">Validation loss</tspan></text>
+  <text
+     x="244"
+     y="75"
+     font-size="14px"
+     id="text6"
+     style="font-size:14px"><tspan
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:21.3333px;font-family:'Crimson Text';-inkscape-font-specification:'Crimson Text, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#ff0000;fill-opacity:1"
+       id="tspan8">Early stopping</tspan></text>
+  <!-- Minimum point -->
+  <circle
+     cx="236"
+     cy="170"
+     r="5"
+     fill="black"
+     id="circle6"
+     style="fill:#ff0000;fill-opacity:1" />
+  <!-- Title -->
+  <text
+     x="69"
+     y="25"
+     font-size="20px"
+     id="text7"
+     style="font-size:20px"><tspan
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:32px;font-family:'Crimson Text';-inkscape-font-specification:'Crimson Text, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal"
+       id="tspan7">Early stopping intuition</tspan></text>
+</svg>

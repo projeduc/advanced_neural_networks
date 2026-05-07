@@ -16,14 +16,14 @@
 \begin{document}
 
 \begin{frame}
-\frametitle{\inserttitle}
-\framesubtitle{\insertshortsubtitle: Motivation}
-
-\begin{figure}
-	\centering
-	\hgraphpage[.8\textwidth]{neuron.png}
-	\caption{Biological neuron structure \cite{2017-cain}}
-\end{figure}
+	\frametitle{\inserttitle}
+	\framesubtitle{\insertshortsubtitle: Motivation}
+	
+	\begin{figure}
+		\centering
+		\hgraphpage[.8\textwidth]{neuron.png}
+		\caption{Biological neuron structure \cite{2017-cain}}
+	\end{figure}
 
 \end{frame}
 
@@ -45,7 +45,7 @@
 	\end{multicols}
 \end{frame}
 
-\section{Neuron}
+\section{Foundations}
 
 \begin{frame}
 	\frametitle{\insertshortsubtitle}
@@ -63,11 +63,9 @@
 
 \end{frame}
 
-\subsection{Structure}
+\subsection{Neuron structure}
 
 \begin{frame}
-\frametitle{\insertsubtitle: Neuron}
-\framesubtitle{Structure}
 	\frametitle{\insertshortsubtitle: \insertsection}
 	\framesubtitle{\insertsubsection}
 
@@ -243,27 +241,35 @@
 	
 \end{frame}
 
-\section{Feedforward Architecture}
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: A little fun}
+	
+	\begin{center}
+		\vgraphpage{humor/humor-activation.jpg}
+	\end{center}
+	
+\end{frame}
+
+\subsection{Network topology}
 
 \begin{frame}
-	\frametitle{\insertshortsubtitle}
-	\framesubtitle{\insertsection}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection}
 	
 	\begin{minipage}{0.59\textwidth}
-	\begin{itemize}
-		\item For complex tasks, one neuron is not enough.
-		\item For example, \expword{XOR function over two variables}.
-		\item If a logistic regression is applied (one neuron with logistic function as activation), the algorithm will try to separate the samples linearly.
-		\item Any decision boundary will miss at least one sample.
-	\end{itemize}
+		\begin{itemize}
+			\item For complex tasks, one neuron is not enough.
+			\item For example, \expword{XOR function over two variables}.
+			\item If a logistic regression is applied (one neuron with logistic function as activation), the algorithm will try to separate the samples linearly.
+			\item Any decision boundary will miss at least one sample.
+		\end{itemize}
 	\end{minipage}
 	\begin{minipage}{0.4\textwidth}
 		\hgraphpage[\textwidth]{xor.png}
 	\end{minipage}
-
+	
 \end{frame}
-
-\subsection{Architecture}
 
 \begin{frame}
 	\frametitle{\insertshortsubtitle: \insertsection}
@@ -283,11 +289,9 @@
 	
 \end{frame}
 
-\subsection{Input layer}
-
 \begin{frame}
 	\frametitle{\insertshortsubtitle: \insertsection}
-	\framesubtitle{\insertsubsection}
+	\framesubtitle{\insertsubsection: Input layer}
 	
 	\begin{itemize}
 		\item The input layer receives the feature vector:
@@ -305,11 +309,9 @@
 \end{frame}
 
 
-\subsection{Hidden layers}
-
 \begin{frame}
 	\frametitle{\insertshortsubtitle: \insertsection}
-	\framesubtitle{\insertsubsection}
+	\framesubtitle{\insertsubsection: Hidden layers}
 	
 	\begin{itemize}
 		\item Each neuron computes a weighted sum followed by a nonlinear activation:
@@ -329,12 +331,9 @@
 	
 \end{frame}
 
-
-\subsection{Output layer}
-
 \begin{frame}
 	\frametitle{\insertshortsubtitle: \insertsection}
-	\framesubtitle{\insertsubsection}
+	\framesubtitle{\insertsubsection: Output layer}
 	
 	\begin{itemize}
 		\item The output layer produces the final prediction:
@@ -354,26 +353,274 @@
 	
 \end{frame}
 
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: A little fun}
+	
+	\hgraphpage[0.4\textwidth]{humor/humor-mlp.jpg}
+	\hgraphpage[0.58\textwidth]{humor/humor-mlp2.jpg}
+	
+\end{frame}
 
-\section{Training}
+\section{Representation \& stability}
 
 \begin{frame}
 	\frametitle{\insertshortsubtitle}
 	\framesubtitle{\insertsection}
 	
 	\begin{itemize}
-		\item Training a neural network consists in learning the parameters (weights and biases)
+		\item Neural networks transform raw inputs into learned internal representations.
+		\item The quality of these representations depends on how information flows through layers.
+		\item Training stability is affected by signal variance and gradient propagation.
+		\item This section introduces key mechanisms that control representation and stability.
+	\end{itemize}
+	
+\end{frame}
+
+\subsection{Embedding layer}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection}
+	
+	\hgraphpage[\textwidth]{text_emb_exp.pdf}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Key ideas}
+	
+	\begin{itemize}
+		\item An embedding layer maps discrete tokens to dense vectors.
+		\item It is typically the first learnable layer in NLP models.
 		
-		\item Three main components are involved:
+		\item Equivalent views:
 		\begin{itemize}
-			\item \optword{Cost function}: measures the error between predictions and true targets
-			
-			\item \optword{Backpropagation}: computes the gradients of the cost function
-			
-			\item \optword{Optimization algorithm}: updates the parameters to minimize the cost
+			\item MLP view: one-hot vector multiplied by embedding matrix.
+			\item Lookup view: direct index-based retrieval.
 		\end{itemize}
 		
-		\item These steps are repeated iteratively until convergence
+		\item Only the selected embeddings are updated during backpropagation.
+		
+		\item Lookup implementation is computationally efficient and memory-friendly.
+	\end{itemize}
+	
+\end{frame}
+
+\subsection{Parameter initialization}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Motivation}
+	
+	\begin{itemize}
+		\item Controls signal variance at the start of training.
+		\item Poor initialization leads to vanishing or exploding activations.
+		\item Affects gradient flow through deep networks.
+		\item Random initialization breaks symmetry between neurons.
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Some random initializations}
+	
+	\begin{block}{Xavier (Glorot) \cite{2010-glorot-bengio}}
+		\begin{itemize}
+			\item Designed for sigmoid / tanh activations.
+			\item Maintains variance across layers (forward + backward).
+			\item Weights: $W \sim \mathcal{U}\left(-\sqrt{\frac{6}{n_{in}+n_{out}}}, \sqrt{\frac{6}{n_{in}+n_{out}}}\right)$
+			\item Balances input and output fan sizes.
+		\end{itemize}
+	\end{block}
+	
+	\begin{block}{He \cite{2015-he-al}}
+		\begin{itemize}
+			\item Designed for ReLU-based networks.
+			\item Compensates for ReLU zeroing half of activations.
+			\item Weights: $W \sim \mathcal{N}\left(0, \frac{2}{n_{in}}\right)$
+			\item Preserves variance through deep layers.
+		\end{itemize}
+	\end{block}
+	
+\end{frame}
+
+\subsection{Normalization layer}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection}
+	
+	\begin{itemize}
+		\item Activations change distribution across layers during training.
+		\item Leads to unstable gradients (vanishing / exploding).
+		\item Slows down convergence and makes training sensitive to initialization.
+		\item \textbf{Goal}: stabilize activations $\Rightarrow$ faster and more reliable training.
+		\item During the forward pass:
+		\begin{itemize}
+			\item Calculate the mean $\mu$ and the variance $\sigma^2$
+			\item Normalize each sample as follows:
+			\[\hat{X} = \gamma \odot \frac{x - \mu}{\sqrt{\sigma^2 + \epsilon}} + \beta\]
+			
+			\item Learnable parameters: $\gamma, \beta \in \mathbb{R}^N$ (scale and shift)
+		\end{itemize}
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Batch Normalization}
+	
+	\begin{itemize}
+		\item Normalize activations using mini-batch statistics.
+		\item Compare a feature across different samples.
+		\item Given $X \in \mathbb{R}^{M\times N}$:
+		\[ \mu_{j} = \frac{1}{M} \sum X_{ij} \quad\quad \sigma_j^2 = \frac{1}{M} \sum (X_{ij} - \mu_j)^2\] 
+		where $\mu, \sigma \in \mathbb{R}^N$
+		\item When to use?
+		\begin{itemize}
+			\item Large batches, CNNs, vision tasks.
+			\item Unstable with small batches / sequence models.
+		\end{itemize}
+	\end{itemize}
+	
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Layer Normalization}
+	
+	\begin{itemize}
+		\item Normalize across features (not across batch).
+		\item Compare features within the same sample.
+		\item Given $X \in \mathbb{R}^{M\times N}$:
+		\[ \mu_i = \frac{1}{N} \sum X_{ij} \quad\quad \sigma_i^2 = \frac{1}{N} \sum (X_{ij} - \mu_B)^2\]
+		where $\mu, \sigma \in \mathbb{R}^M$
+		\item When to use?
+		\begin{itemize}
+			\item NLP, Transformers, RNNs (batch-independent).
+			\item Consistent behavior (train = inference).
+		\end{itemize}
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Example}
+	
+	\[
+	X \in \mathbb{R}^{2\times 3} = \begin{bmatrix}
+		-2 & 0 & 2 \\
+		7 & 4 & 1 \\
+	\end{bmatrix}
+	\quad 
+	\gamma = [1, 0.5, 0.25]
+	\quad 
+	\beta = [0.2, 0.1, 0.3]
+	\]
+	
+	\begin{minipage}{0.49\textwidth}
+		\begin{exampleblock}{BatchNorm}
+			\tiny
+			\[\mu = [2.5, 2, 1.5] \quad\quad \sigma = [4.5, 2, 0.5]\]
+			\[\hat{X} = [1, 0.5, 0.25] \odot \frac{\begin{bmatrix}
+					-2 & 0 & 2 \\
+					7 & 4 & 1 \\
+				\end{bmatrix} - [2.5, 2, 1.5]}{[4.5, 2, 0.5]} + [0.2, 0.1, 0.3]\]
+			\[\hat{X} = [1, 0.5, 0.25] \odot \frac{\begin{bmatrix}
+					-4.5 & -2 & 0.5 \\
+					4.5 & 2 & -0.5 \\
+				\end{bmatrix}}{[4.5, 2, 0.5]} + [0.2, 0.1, 0.3]\]
+			\[\hat{X} = [1, 0.5, 0.25] \odot \begin{bmatrix}
+					-1 & -1 & 1 \\
+					1  & 1 & -1 \\
+			\end{bmatrix} + [0.2, 0.1, 0.3]\]
+			\[\hat{X} = \begin{bmatrix}
+				-1 & -0.5 & 0.25 \\
+				1  & 0.5 & -0.25 \\
+			\end{bmatrix} + [0.2, 0.1, 0.3]\]
+			\[\hat{X} = \begin{bmatrix}
+				-0.8 & -0.4 & 0.55 \\
+				1.2  & 0.6 & 0.05 \\
+			\end{bmatrix}\]
+		\end{exampleblock}
+	\end{minipage}
+	\begin{minipage}{0.49\textwidth}
+		\begin{exampleblock}{LayerNorm}
+			\tiny
+			\[\mu = \begin{bmatrix} 0\\4\\\end{bmatrix} \quad\quad \sigma = \begin{bmatrix} 2\\3\\\end{bmatrix}\]
+			\[\hat{X} = [1, 0.5, 0.25] \odot \frac{\begin{bmatrix}
+					-2 & 0 & 2 \\
+					7 & 4 & 1 \\
+				\end{bmatrix} - \begin{bmatrix} 0\\4\\\end{bmatrix}}{\begin{bmatrix} 2\\3\\\end{bmatrix}} + [0.2, 0.1, 0.3]\]
+			\[\hat{X} = [1, 0.5, 0.25] \odot \frac{\begin{bmatrix}
+					-2 & 0 & 2 \\
+					3 & 0 & -3 \\
+				\end{bmatrix}}{\begin{bmatrix} 2\\3\\\end{bmatrix}} + [0.2, 0.1, 0.3]\]
+			\[\hat{X} = [1, 0.5, 0.25] \odot \begin{bmatrix}
+				-1 & 0 & 1 \\
+				1  & 0 & -1 \\
+			\end{bmatrix} + [0.2, 0.1, 0.3]\]
+			\[\hat{X} = \begin{bmatrix}
+				-1 & 0 & 0.25 \\
+				1  & 0 & -0.25 \\
+			\end{bmatrix} + [0.2, 0.1, 0.3]\]
+			\[\hat{X} = \begin{bmatrix}
+				-0.8 & 0.1 & 0.55 \\
+				1.2  & 0.1 & 0.05 \\
+			\end{bmatrix}\]
+		\end{exampleblock}
+	\end{minipage}
+	
+\end{frame}
+
+
+\subsection{Residual connections}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection}
+	
+	\begin{itemize}
+		\item Introduce identity shortcuts: $y = x + F(x)$.
+		\item Improve gradient flow in deep networks.
+		\item Mitigate vanishing/degradation problems.
+		\item Enable training of very deep architectures.
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle}
+	\framesubtitle{\insertsection: A little fun}
+	
+	\hgraphpage[0.95\textwidth]{humor/humor-stability.jpg}
+	
+\end{frame}
+
+
+\section{Learning objective}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle}
+	\framesubtitle{\insertsection}
+	
+	\begin{itemize}
+		\item Training a neural network consists in learning parameters (weights and biases).
+		
+		\item The objective is to minimize a cost function:
+		\[
+		\min J(y, \hat{y})
+		\]
+		
+		\item The cost function measures the discrepancy between predictions and targets.
+		
+		\item Regularization may be added to improve generalization.
 	\end{itemize}
 	
 \end{frame}
@@ -434,13 +681,6 @@
 		\end{column}
 	\end{columns}
 
-
-\end{frame}
-
-\begin{frame}
-	\frametitle{\insertshortsubtitle: \insertsection}
-	\framesubtitle{\insertsubsection: Regression (MSE)}
-
 	\begin{itemize}
 		\item \optword{Advantages}
 		\begin{itemize}
@@ -484,13 +724,7 @@
 			%\end{minipage}
 		\end{column}
 	\end{columns}
-
-\end{frame}
-
-\begin{frame}
-	\frametitle{\insertshortsubtitle: \insertsection}
-	\framesubtitle{\insertsubsection: Regression (MAE)}
-
+	
 	\begin{itemize}
 		\item \optword{Advantages}
 		\begin{itemize}
@@ -510,6 +744,7 @@
 	\frametitle{\insertshortsubtitle: \insertsection}
 	\framesubtitle{\insertsubsection: Regression (Huber)}
 
+	\vskip-12pt
 	\begin{columns}
 	\begin{column}{.68\linewidth}
 	%\begin{minipage}{0.59\textwidth}
@@ -543,13 +778,7 @@
 	%\end{minipage}
 	\end{column}
 	\end{columns}
-
-\end{frame}
-
-\begin{frame}
-	\frametitle{\insertshortsubtitle: \insertsection}
-	\framesubtitle{\insertsubsection: Regression (Huber)}
-
+	
 	\begin{itemize}
 		\item \optword{Advantages}
 		\begin{itemize}
@@ -651,6 +880,645 @@
 		\end{itemize}
 	\end{itemize}
 
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: A little fun}
+	
+	\hgraphpage[0.48\textwidth]{humor/humor-loss.jpg}
+	\hgraphpage[0.30\textwidth]{humor/humor-loss2.jpg}
+	
+\end{frame}
+
+\subsection{Regularization}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Motivation}
+	
+	\begin{itemize}
+		\item Neural networks can easily \optword{overfit} the training data.
+		\item \textbf{Overfitting}: good performance on training data, poor on unseen data.
+		\item \optword{Regularization} aims to improve \keyword{generalization}.
+	\end{itemize}
+	
+	\begin{block}{Idea}
+		\begin{itemize}
+			\item Reduce model complexity or constrain learning to avoid fitting noise.
+			\item Prevent the model from relying too much on specific features.
+		\end{itemize}
+		
+	\end{block}
+	
+	\begin{itemize}
+		\item Trade-off: bias vs variance
+	\end{itemize}
+	
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Common techniques}
+	
+	\begin{itemize}
+		
+		\item \optword{Parameter norm penalties}: constrain model complexity by penalizing large weights.
+		
+		\[
+		J_{reg}(y, \hat{y})
+		=
+		J(y, \hat{y})
+		+
+		\lambda \Omega(\theta)
+		\]
+		
+		\begin{itemize}
+			\item L1 regularization encourages sparsity.
+			\item L2 regularization discourages large parameter values.
+		\end{itemize}
+		
+		\vspace{0.2cm}
+		
+		\item \optword{Dropout}: randomly deactivate neurons during training to reduce co-adaptation and overfitting.
+		
+		\vspace{0.2cm}
+		
+		\item \optword{Early stopping}: stop training when validation performance no longer improves.
+		
+		\vspace{0.2cm}
+		
+		\item \optword{Data augmentation}: artificially increase dataset diversity using transformed training samples.
+		
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Parameter norm penalties}
+	
+	\begin{columns}
+		\begin{column}{.48\linewidth}
+			\begin{block}{$L_2$ loss}
+				\[
+				J_{reg} = J + \lambda \sum w^2
+				\]
+			\end{block}
+		\end{column}
+		\begin{column}{.48\linewidth}
+			\begin{block}{$L_1$ loss}
+				\[
+				J_{reg} = J + \lambda \sum |w|
+				\]
+			\end{block}
+		\end{column}
+	\end{columns}
+	
+	\begin{columns}
+		\begin{column}{.60\linewidth}
+			\begin{itemize}
+				\item Penalizes large weights
+				\item Encourages smoother models
+				\item $\lambda$: regularization strength
+			\end{itemize}
+			
+			\begin{block}{Effect on update}
+				Weights are slightly pushed toward zero at each step
+			\end{block}
+		\end{column}
+		\begin{column}{.38\linewidth}
+			\hgraphpage{L1L2comp.pdf}
+		\end{column}
+	\end{columns}
+	
+	
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Dropout \cite{2014-srivastava}}
+	
+	\begin{itemize}
+		\item Randomly deactivate neurons during training.
+		\item Each neuron is kept with probability $p$ (keep rate).
+		\item Equivalent to sampling a different sub-network at each iteration.
+	\end{itemize}
+	
+	\begin{block}{Mechanism}
+		\[
+		a^{(l)} \leftarrow \frac{a^{(l)} \odot m}{p}, \quad m \sim \text{Bernoulli}(p)
+		\]
+	\end{block}
+	
+	\begin{itemize}
+		\item Applied only during training;
+		\item Ensures same expected activation at training and inference:
+		\[
+		\mathbb{E}[a_{\text{train}}] = \mathbb{E}[a_{\text{test}}]
+		\]
+		\item At inference: no scaling is applied.
+	\end{itemize}
+	
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Early stopping}
+
+	\begin{block}{Idea}
+		Stop training when validation performance stops improving.
+	\end{block}
+	
+	\begin{columns}
+		
+		\column{0.55\textwidth}
+		
+		\begin{itemize}
+			\item Training loss usually decreases continuously.
+			\item Validation loss often follows a U-shaped curve.
+			\item Continuing training too long may cause overfitting.
+			\item The best model is the one with the lowest validation error.
+		\end{itemize}
+		
+		\column{0.45\textwidth}
+		
+		\begin{center}
+			\hgraphpage{early_stopping.pdf}
+		\end{center}
+		
+		\end{columns}
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Data augmentation}
+	
+	\begin{block}{Idea}
+		Data augmentation improves generalization by creating synthetic training examples from existing data.
+		
+		$(x, y) \rightarrow (T(x), y)$ where $T$ is a label-preserving transformation.
+	\end{block}
+	
+	\begin{itemize}
+		\item \textbf{Why it works well for images}:
+		Image classification models should be invariant to many visual transformations.
+		\begin{itemize}
+			\item Translation
+			\item Rotation
+			\item Scaling
+			\item Cropping
+			\item Flipping
+			\item Noise injection
+		\end{itemize}
+	\end{itemize}
+	
+	
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Dropout - A little fun}
+	
+	\hgraphpage[.35\textwidth]{humor/humor-overfiting2.jpeg}
+	\hgraphpage[.63\textwidth]{humor/humor-overfiting1.png}
+	
+\end{frame}
+
+\subsection{Training vs inference}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection}
+	
+	\begin{exampleblock}{Two operating modes}
+		Neural networks behave differently during:
+		\begin{itemize}
+			\item \textbf{Training}: parameters are updated using data.
+			\item \textbf{Inference}: parameters are fixed and only predictions are produced.
+		\end{itemize}
+	\end{exampleblock}
+	
+	\vspace{0.3cm}
+	
+	\begin{table}[]
+		\centering
+		\begin{tabular}{p{4cm} p{4cm}}
+			\hline
+			\textbf{Training} & \textbf{Inference} \\
+			\hline
+			Gradient computation & No gradient computation \\
+			Weights updated & Weights frozen \\
+			Dropout enabled & Dropout disabled \\
+			Batch statistics used & Stored statistics used \\
+			Usually slower & Usually faster \\
+			\hline
+		\end{tabular}
+	\end{table}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Example}
+	
+	\begin{block}{Dropout behavior}
+		\begin{itemize}
+			\item During training, neurons are randomly deactivated.
+			\item During inference, the full network is used.
+		\end{itemize}
+	\end{block}
+	
+	\vspace{0.3cm}
+	
+	\begin{equation*}
+		y =
+		\begin{cases}
+			\text{Dropout}(x), & \text{training} \\
+			x, & \text{inference}
+		\end{cases}
+	\end{equation*}
+	
+	\vspace{0.3cm}
+	
+	\begin{alertblock}{Important}
+		Some layers explicitly depend on the current mode:
+		\begin{itemize}
+			\item Dropout
+			\item Batch normalization
+		\end{itemize}
+	\end{alertblock}
+	
+\end{frame}
+
+\section{Optimization}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle}
+	\framesubtitle{\insertsection}
+	
+	\begin{itemize}
+		\item Optimization updates parameters to minimize the cost function.
+		
+		\item Backpropagation computes gradients using the chain rule.
+		
+		\item Gradient descent updates parameters iteratively.
+		
+		\item Optimizers such as SGD and Adam improve convergence.
+	\end{itemize}
+	
+\end{frame}
+
+\subsection{Backpropagation} % \cite{1986-rumelhart}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Notation}
+	
+	\hgraphpage[\textwidth]{FFNN.pdf}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Example}
+	
+	\hgraphpage[\textwidth]{FFNN-exp.pdf}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Example - Output layer (chain rule)}
+	
+	\begin{exampleblock}{Sigmoid + BCE (separate functions)}
+		\centering
+		$\hat{y} = \sigma(z), \quad
+		J = - (y \log(\hat{y}) + (1-y)\log(1-\hat{y}))$
+		
+		$
+		\frac{\partial J}{\partial z} = \delta_{1}^{(4)} =
+		\underbrace{\frac{\partial J}{\partial \hat{y}}}_{\text{Loss}}
+		\cdot
+		\underbrace{\frac{\partial \hat{y}}{\partial z}}_{\text{Activation}}
+		= 
+		(\frac{\hat{y} - y}{\hat{y} - \hat{y}^2}) \cdot (\sigma(z) (1- \sigma(z)))
+		$
+	\end{exampleblock}
+	
+	\begin{itemize}
+		\item Chain rule is applied across all components of the model
+		\item This corresponds to the computational graph (e.g., PyTorch)
+	\end{itemize}
+	
+	
+	$ 
+	\frac{\partial J}{\partial f_{1}^{(4)}} = \frac{(0.840, 0.843) - (0, 1)}{(0.840, 0.843) - (0.840, 0.843)^2} 
+	= (6.25, -1.186)
+	$
+	
+	$ 
+	\frac{\partial f_{1}^{(4)}}{\partial z_{1}^{(4)}} = (0.840, 0.843) (0.160, 0.157) = (0.134, 0.132)
+	$
+	
+	$
+	\delta_{1}^{(4)} = (6.25, -1.186) \odot (0.134, 0.132) \approx (0.838, -0.157)
+	$
+	
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Example - Output layer (simplification)}
+	
+	\begin{exampleblock}{Result of the chain rule}
+		\centering
+		$\hat{y} = \sigma(z), \quad
+		J = - (y \log(\hat{y}) + (1-y)\log(1-\hat{y}))$
+		
+		$\frac{\partial J}{\partial z} = \delta_{1}^{(4)} = \hat{y} - y$
+	\end{exampleblock}
+	
+	\begin{itemize}
+		\item Much simpler expression for backpropagation
+		\item Interpreted as the \optword{prediction error}
+		\item Widely used in practice (e.g., BCE with logits)
+	\end{itemize}
+	
+	$
+	\delta_{1}^{(4)} = (0.840, 0.843) - (0, 1) = (0.840, -0.157)
+	$
+	
+	Both approaches give the same result (up to rounding)
+	
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Example - Output layer - Neuron 1 - parameter 1}
+	
+	Update $w_{11}^{(4)}$
+	
+	
+	\[
+	\frac{\partial J}{\partial w_{11}^{(4)}} = \overbrace{\frac{\partial J}{\partial f_{1}^{(4)}} \frac{\partial f_{1}^{(4)}}{\partial z_{1}^{(4)}}}^{\delta_{1}^{(4)}} \overbrace{\frac{\partial z_{1}^{(4)}}{\partial w_{11}^{(4)}}}^{a_{1}^{(3)}}
+	\]
+	
+	We have $\delta_{1}^{(4)} = (0.838, -0.157)$
+	
+	\begin{align*}
+		\frac{\partial J}{\partial w_{11}^{(4)}} & = \frac{1}{m=2} \sum ((0.838, -0.157) \odot (0.555, 0.612))  \\
+		& \approx \frac{1}{m=2} \sum (0.465, -0.096) = 0.184
+	\end{align*}
+	
+	
+	\[
+	w_{11}^{(4)} = 0.7 - 1 * (0.184) = 0.516 \text{ , when } \alpha = 1
+	\]
+	
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Example - Output layer - Neuron 1 - parameter 2}
+	
+	
+	Update $w_{21}^{(4)}$
+	
+	\[
+	\frac{\partial J}{\partial w_{21}^{(4)}} = \overbrace{\frac{\partial J}{\partial f_{1}^{(4)}} \frac{\partial f_{1}^{(4)}}{\partial z_{1}^{(4)}}}^{\delta_{1}^{(4)}} \overbrace{\frac{\partial z_{1}^{(4)}}{\partial w_{21}^{(4)}}}^{a_{2}^{(3)}}
+	\]
+	
+	
+	We have $\delta_{1}^{(4)} = (0.838, -0.157)$
+	
+	\begin{align*}
+		\frac{\partial J}{\partial w_{21}^{(4)}} & = \frac{1}{m=2} \sum ((0.838, -0.157) \odot (0.386, 0.360))   \\
+		& \approx \frac{1}{m=2} \sum (0.323, -0.056) = 0.134
+	\end{align*}
+	
+	\[
+	w_{21}^{(4)} = 0.7 - 1 * (0.134) = 0.566 \text{ , when } \alpha = 1
+	\]
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Example - Hidden Layer 2 - Neuron 1 - parameter 1}
+	
+	Update $w_{11}^{(3)}$
+	
+	\small
+	
+	\vskip-24pt
+	\[
+	\frac{\partial J}{\partial w_{11}^{(3)}} = 
+	\overbrace{
+		\overbrace{
+			\frac{\partial J}{\partial f_{1}^{(4)}} 
+			\frac{\partial f_{1}^{(4)}}{\partial z_{1}^{(4)}}
+		}^{\delta_{1}^{(4)}} 
+		\overbrace{
+			\frac{\partial z_{1}^{(4)}}{\partial f_{1}^{(3)}}
+		}^{w_{11}^{(4)}} 
+		\frac{\partial f_{1}^{(3)}}{\partial z_{1}^{(3)}} 
+	}^{\delta_{1}^{(3)}} 
+	\overbrace{
+		\frac{\partial z_{1}^{(3)}}{\partial w_{11}^{(3)}}
+	}^{a_{1}^{(2)}}
+	%	\text{ We must use the former (not updated) } w_{11}^{(4)}
+	\]
+	
+	\vskip-6pt
+	\[
+	\frac{\partial f_{1}^{(3)}}{\partial z_{1}^{(3)}} \approx 
+	(0.555, 0.612) \odot (0.445, 0.388) = (0.247, 0.237)
+	\]
+	
+	\vskip-6pt
+	\[
+	\delta_{1}^{(3)} = (0.838, -0.157) \odot (0.7, 0.7) \odot (0.247, 0.237) \approx (0.145, -0.026)
+	\]
+	
+	\vskip-12pt
+	\begin{align*}
+		\frac{\partial J}{\partial w_{11}^{(2)}} & = \frac{1}{m=2} \sum ((0.145, -0.026) \odot (0.622, 0.900))   \\
+		& \approx \frac{1}{m=2} \sum (0.090, -0.023) = 0.033
+	\end{align*}
+	
+	%	\[\frac{\partial J}{\partial w_{11}^{(2)}} = \frac{1}{m=2} \sum ((0.145, -0.026) \odot (0.622, 0.900)) \approx \frac{1}{m=2} \sum (0.090, -0.023) = 0.033\]
+	
+	\vskip-6pt
+	\[
+	w_{11}^{(2)} = 0.3 - 1 * (0.033) = 0.267 \text{ , when } \alpha = 1
+	\]
+	
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Example - Hidden Layer 2 - Neuron 2 - parameter 1}
+	
+	Update $w_{12}^{(3)}$
+	
+	\small
+	
+	\vskip-24pt
+	\[
+	\frac{\partial J}{\partial w_{12}^{(3)}} = 
+	\overbrace{
+		\overbrace{
+			\frac{\partial J}{\partial f_{1}^{(4)}} 
+			\frac{\partial f_{1}^{(4)}}{\partial z_{1}^{(4)}}
+		}^{\delta_{1}^{(4)}} 
+		\overbrace{
+			\frac{\partial z_{1}^{(4)}}{\partial f_{2}^{(3)}}
+		}^{w_{11}^{(4)}} 
+		\frac{\partial f_{2}^{(3)}}{\partial z_{2}^{(3)}} 
+	}^{\delta_{2}^{(3)}} 
+	\overbrace{
+		\frac{\partial z_{2}^{(3)}}{\partial w_{12}^{(3)}}
+	}^{a_{1}^{(2)}}
+	\]
+	
+	\vskip-6pt
+	\[
+	\frac{\partial f_{2}^{(3)}}{\partial z_{2}^{(3)}} \approx (0.386, 0.360) \odot (0.614, 0.64) = (0.237, 0.230)
+	\]
+	
+	\vskip-6pt
+	\[
+	\delta_{2}^{(3)} = (0.838, -0.157) \odot (0.7, 0.7) \odot (0.237, 0.230) \approx (0.139, -0.025)
+	\]
+	
+	\vskip-12pt
+	\begin{align*}
+		\frac{\partial J}{\partial w_{11}^{(2)}} & = \frac{1}{m=2} \sum ((0.139, -0.025) \odot (0.622, 0.900))    \\
+		& \approx \frac{1}{m=2} \sum (0.086, -0.023) = 0.032
+	\end{align*}
+	
+	%	$
+	%	\frac{\partial J}{\partial w_{11}^{(2)}} = moy((0.139, -0.025) (0.622, 0.900)) 
+	%	= moy(0.086, -0.023) = 0.032
+	%	$
+	
+	\vskip-6pt
+	\[
+	w_{11}^{(2)} = - 0.1 - 1 * (0.032) = - 0.132 \text{ , when } \alpha = 1
+	\]
+	
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Example - Hidden Layer 1 - Neuron 1 - parameter 1}
+	
+	Update $w_{11}^{(2)}$
+	
+	\footnotesize
+	
+	\vskip-24pt
+	\[
+	\frac{\partial J}{\partial w_{11}^{(2)}} = 
+	\overbrace{ 
+		\left(
+		\delta_{1}^{(3)} 
+		\overbrace{
+			\frac{\partial z_{1}^{(3)}}{\partial f_{1}^{(2)}}
+		}^{w_{11}^{(3)}}
+		+
+		\delta_{2}^{(3)} 
+		\overbrace{
+			\frac{\partial z_{2}^{(3)}}{\partial f_{1}^{(2)}}
+		}^{w_{12}^{(3)}}
+		\right)
+		\frac{\partial f_{1}^{(2)}}{\partial z_{1}^{(2)}}
+	}^{\delta_{1}^{(2)}} 
+	\overbrace{
+		\frac{\partial z_{1}^{(2)}}{\partial w_{11}^{(2)}}
+	}^{a_{1}^{(1)}}
+	\]
+	
+	\vskip-6pt
+	\[
+	\frac{\partial f_{1}^{(2)}}{\partial z_{1}^{(2)}} = (0.622, 0.900) \odot (0.378, 0.100) = (0.235, 0.09)
+	\]
+	
+	\vskip-6pt
+	\[
+	\delta_{1}^{(2)} = ((0.145, -0.026) \odot (0.3, 0.3) + (0.139, -0.025) \odot (-0.1, -0.1)) \odot (0.235, 0.09) \approx (0.039, -0.01)
+	\]
+	
+	\vskip-12pt
+	\begin{align*}
+		\frac{\partial J}{\partial w_{11}^{(2)}} & = \frac{1}{m=2} \sum ((0.039, -0.01) \odot (2, 3))    \\
+		& \approx \frac{1}{m=2} \sum (0.078, -0.03) = 0.024
+	\end{align*}
+	
+	\vskip-6pt
+	\[
+	w_{11}^{(2)} = 0.5 - 1 * (0.024) = 0.476 \text{ , when } \alpha = 1
+	\]
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: General case}
+	
+	\begin{itemize}
+		\item Calculate $\delta^{(l)}$ where $l$ is the layer's number
+	\end{itemize}
+	
+	\[ 
+	\delta^{(out)} = 
+	\frac{\partial J}{\partial f^{(out)}} \odot \frac{\partial f^{(out)}}{\partial z^{(out)}}
+	\,,\,
+	\delta^{(l)} = \left(W^{(l+1)}\right)^T \delta^{(l+1)} \odot \frac{\partial f^{(l)}}{\partial z^{(l)}}
+	\]
+	
+	\begin{itemize}
+		\item Calculate gradients
+	\end{itemize}
+	
+	\[ 
+	\frac{\partial J}{\partial W^{(l)}} = \frac{1}{m} a^{(l-1)} (\delta^{(l)})^T
+	\,,\,
+	\frac{\partial J}{\partial b^{(l)}} = \frac{1}{m} \sum \delta^{(l)}
+	\]
+	
+	\begin{itemize}
+		\item Update parameters
+	\end{itemize}
+	
+	\[ 
+	W^{(l)} = W^{(l)} - \alpha \frac{\partial J}{\partial W^{(l)}}
+	\,,\,
+	b^{(l)} = b^{(l)} - \alpha \frac{\partial J}{\partial b^{(l)}}
+	\]
+	
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: A little fun}
+	
+	\begin{center}
+		\hgraphpage[.42\textwidth]{humor/humor-backpropagation.jpg}
+		\hgraphpage[.5\textwidth]{humor/humor-backpropagation2.jpg}
+	\end{center}
+	
 \end{frame}
 
 \subsection{Optimization algorithms}
@@ -836,7 +1704,7 @@
 			$\hat{Y} \leftarrow f_\theta(X)$\;
 			$ g \leftarrow \nabla_\theta J(Y, \hat{Y}; \theta)$\;
 			$ v = v +\, g \odot g $\;
-			$ \theta = \theta - \frac{\alpha}{\sqrt{v} + \epsilon} \odot g $\;
+			$ \theta = \theta - \frac{\alpha}{\sqrt{v  + \epsilon}} \odot g $\;
 			\tcp{$\epsilon \approx 10^{-8}$ to avoid division by zero}
 			$t \leftarrow t + 1 $\;
 		}
@@ -885,7 +1753,7 @@
 			$\hat{Y} \leftarrow f_\theta(X)$\;
 			$ g \leftarrow \nabla_\theta J(Y, \hat{Y}; \theta)$\;
 			$ v \leftarrow \beta v + (1-\beta)\, g \odot g $\;
-			$ \theta \leftarrow \theta - \frac{\alpha}{\sqrt{v} + \epsilon} \odot g $\;
+			$ \theta \leftarrow \theta - \frac{\alpha}{\sqrt{v  + \epsilon}} \odot g $\;
 			$t \leftarrow t + 1 $\;
 		}
 		\caption{RMSProp}
@@ -971,476 +1839,133 @@
 	
 \end{frame}
 
-
-\subsection{Backpropagation} % \cite{1986-rumelhart}
-
-\begin{frame}
-	\frametitle{\insertshortsubtitle: \insertsection}
-	\framesubtitle{\insertsubsection: Notation}
-	
-	\hgraphpage[\textwidth]{FFNN.pdf}
-	
-\end{frame}
-
-\begin{frame}
-	\frametitle{\insertshortsubtitle: \insertsection}
-	\framesubtitle{\insertsubsection: Example}
-	
-	\hgraphpage[\textwidth]{FFNN-exp.pdf}
-	
-\end{frame}
-
-\begin{frame}
-	\frametitle{\insertshortsubtitle: \insertsection}
-	\framesubtitle{\insertsubsection: Example - Output layer (chain rule)}
-	
-	\begin{exampleblock}{Sigmoid + BCE (separate functions)}
-		\centering
-		$\hat{y} = \sigma(z), \quad
-		J = - (y \log(\hat{y}) + (1-y)\log(1-\hat{y}))$
-
-		$
-		\frac{\partial J}{\partial z} = \delta_{1}^{(4)} =
-		\underbrace{\frac{\partial J}{\partial \hat{y}}}_{\text{Loss}}
-		\cdot
-		\underbrace{\frac{\partial \hat{y}}{\partial z}}_{\text{Activation}}
-		= 
-		(\frac{\hat{y} - y}{\hat{y} - \hat{y}^2}) \cdot (\sigma(z) (1- \sigma(z)))
-		$
-	\end{exampleblock}
-	
-	\begin{itemize}
-		\item Chain rule is applied across all components of the model
-		\item This corresponds to the computational graph (e.g., PyTorch)
-	\end{itemize}
-	
-	
-	$ 
-	\frac{\partial J}{\partial f_{1}^{(4)}} = \frac{(0.840, 0.843) - (0, 1)}{(0.840, 0.843) - (0.840, 0.843)^2} 
-	= (6.25, -1.186)
-	$
-	
-	$ 
-	\frac{\partial f_{1}^{(4)}}{\partial z_{1}^{(4)}} = (0.840, 0.843) (0.160, 0.157) = (0.134, 0.132)
-	$
-	
-	$
-	\delta_{1}^{(4)} = (6.25, -1.186) \odot (0.134, 0.132) \approx (0.838, -0.157)
-	$
-	
-	
-\end{frame}
-
-\begin{frame}
-	\frametitle{\insertshortsubtitle: \insertsection}
-	\framesubtitle{\insertsubsection: Example - Output layer (simplification)}
-	
-	\begin{exampleblock}{Result of the chain rule}
-		\centering
-		$\hat{y} = \sigma(z), \quad
-		J = - (y \log(\hat{y}) + (1-y)\log(1-\hat{y}))$
-		
-		$\frac{\partial J}{\partial z} = \delta_{1}^{(4)} = \hat{y} - y$
-	\end{exampleblock}
-	
-	\begin{itemize}
-		\item Much simpler expression for backpropagation
-		\item Interpreted as the \optword{prediction error}
-		\item Widely used in practice (e.g., BCE with logits)
-	\end{itemize}
-	
-	$
-	\delta_{1}^{(4)} = (0.840, 0.843) - (0, 1) = (0.840, -0.157)
-	$
-	
-	Both approaches give the same result (up to rounding)
-	
-\end{frame}
-
-
-\begin{frame}
-	\frametitle{\insertshortsubtitle: \insertsection}
-	\framesubtitle{\insertsubsection: Example - Output layer - Neuron 1 - parameter 1}
-	
-	Update $w_{11}^{(4)}$
-	
-	
-	\[
-	\frac{\partial J}{\partial w_{11}^{(4)}} = \overbrace{\frac{\partial J}{\partial f_{1}^{(4)}} \frac{\partial f_{1}^{(4)}}{\partial z_{1}^{(4)}}}^{\delta_{1}^{(4)}} \overbrace{\frac{\partial z_{1}^{(4)}}{\partial w_{11}^{(4)}}}^{a_{1}^{(3)}}
-	\]
-	
-	We have $\delta_{1}^{(4)} = (0.838, -0.157)$
-	
-	\begin{align*}
-		\frac{\partial J}{\partial w_{11}^{(4)}} & = \frac{1}{m=2} \sum ((0.838, -0.157) \odot (0.555, 0.612))  \\
-		 & \approx \frac{1}{m=2} \sum (0.465, -0.096) = 0.184
-	\end{align*}
-	
-	
-	\[
-	w_{11}^{(4)} = 0.7 - 1 * (0.184) = 0.516 \text{ , when } \alpha = 1
-	\]
-	
-\end{frame}
-
-
-\begin{frame}
-	\frametitle{\insertshortsubtitle: \insertsection}
-	\framesubtitle{\insertsubsection: Example - Output layer - Neuron 1 - parameter 2}
-	
-
-	Update $w_{21}^{(4)}$
-	
-	\[
-	\frac{\partial J}{\partial w_{21}^{(4)}} = \overbrace{\frac{\partial J}{\partial f_{1}^{(4)}} \frac{\partial f_{1}^{(4)}}{\partial z_{1}^{(4)}}}^{\delta_{1}^{(4)}} \overbrace{\frac{\partial z_{1}^{(4)}}{\partial w_{21}^{(4)}}}^{a_{2}^{(3)}}
-	\]
-	
-	
-	We have $\delta_{1}^{(4)} = (0.838, -0.157)$
-	
-	\begin{align*}
-		\frac{\partial J}{\partial w_{21}^{(4)}} & = \frac{1}{m=2} \sum ((0.838, -0.157) \odot (0.386, 0.360))   \\
-		& \approx \frac{1}{m=2} \sum (0.323, -0.056) = 0.134
-	\end{align*}
-	
-	\[
-	w_{21}^{(4)} = 0.7 - 1 * (0.134) = 0.566 \text{ , when } \alpha = 1
-	\]
-	
-\end{frame}
-
-\begin{frame}
-	\frametitle{\insertshortsubtitle: \insertsection}
-	\framesubtitle{\insertsubsection: Example - Hidden Layer 2 - Neuron 1 - parameter 1}
-	
-	Update $w_{11}^{(3)}$
-	
-	\small
-	
-	\vskip-24pt
-	\[
-	\frac{\partial J}{\partial w_{11}^{(3)}} = 
-	\overbrace{
-		\overbrace{
-			\frac{\partial J}{\partial f_{1}^{(4)}} 
-			\frac{\partial f_{1}^{(4)}}{\partial z_{1}^{(4)}}
-		}^{\delta_{1}^{(4)}} 
-		\overbrace{
-			\frac{\partial z_{1}^{(4)}}{\partial f_{1}^{(3)}}
-		}^{w_{11}^{(4)}} 
-		\frac{\partial f_{1}^{(3)}}{\partial z_{1}^{(3)}} 
-	}^{\delta_{1}^{(3)}} 
-	\overbrace{
-		\frac{\partial z_{1}^{(3)}}{\partial w_{11}^{(3)}}
-	}^{a_{1}^{(2)}}
-%	\text{ We must use the former (not updated) } w_{11}^{(4)}
-	\]
-	
-	\vskip-6pt
-	\[
-	\frac{\partial f_{1}^{(3)}}{\partial z_{1}^{(3)}} \approx 
-	(0.555, 0.612) \odot (0.445, 0.388) = (0.247, 0.237)
-	\]
-	
-	\vskip-6pt
-	\[
-	\delta_{1}^{(3)} = (0.838, -0.157) \odot (0.7, 0.7) \odot (0.247, 0.237) \approx (0.145, -0.026)
-	\]
-	
-	\vskip-12pt
-	\begin{align*}
-		\frac{\partial J}{\partial w_{11}^{(2)}} & = \frac{1}{m=2} \sum ((0.145, -0.026) \odot (0.622, 0.900))   \\
-		& \approx \frac{1}{m=2} \sum (0.090, -0.023) = 0.033
-	\end{align*}
-
-%	\[\frac{\partial J}{\partial w_{11}^{(2)}} = \frac{1}{m=2} \sum ((0.145, -0.026) \odot (0.622, 0.900)) \approx \frac{1}{m=2} \sum (0.090, -0.023) = 0.033\]
-
-	\vskip-6pt
-	\[
-	w_{11}^{(2)} = 0.3 - 1 * (0.033) = 0.267 \text{ , when } \alpha = 1
-	\]
-	
-\end{frame}
-
-
-\begin{frame}
-	\frametitle{\insertshortsubtitle: \insertsection}
-	\framesubtitle{\insertsubsection: Example - Hidden Layer 2 - Neuron 2 - parameter 1}
-	
-	Update $w_{12}^{(3)}$
-	
-	\small
-	
-	\vskip-24pt
-	\[
-	\frac{\partial J}{\partial w_{12}^{(3)}} = 
-	\overbrace{
-		\overbrace{
-			\frac{\partial J}{\partial f_{1}^{(4)}} 
-			\frac{\partial f_{1}^{(4)}}{\partial z_{1}^{(4)}}
-		}^{\delta_{1}^{(4)}} 
-		\overbrace{
-			\frac{\partial z_{1}^{(4)}}{\partial f_{2}^{(3)}}
-		}^{w_{11}^{(4)}} 
-		\frac{\partial f_{2}^{(3)}}{\partial z_{2}^{(3)}} 
-	}^{\delta_{2}^{(3)}} 
-	\overbrace{
-		\frac{\partial z_{2}^{(3)}}{\partial w_{12}^{(3)}}
-	}^{a_{1}^{(2)}}
-	\]
-	
-	\vskip-6pt
-	\[
-	\frac{\partial f_{2}^{(3)}}{\partial z_{2}^{(3)}} \approx (0.386, 0.360) \odot (0.614, 0.64) = (0.237, 0.230)
-	\]
-	
-	\vskip-6pt
-	\[
-	\delta_{2}^{(3)} = (0.838, -0.157) \odot (0.7, 0.7) \odot (0.237, 0.230) \approx (0.139, -0.025)
-	\]
-	
-	\vskip-12pt
-	\begin{align*}
-		\frac{\partial J}{\partial w_{11}^{(2)}} & = \frac{1}{m=2} \sum ((0.139, -0.025) \odot (0.622, 0.900))    \\
-		& \approx \frac{1}{m=2} \sum (0.086, -0.023) = 0.032
-	\end{align*}
-	
-%	$
-%	\frac{\partial J}{\partial w_{11}^{(2)}} = moy((0.139, -0.025) (0.622, 0.900)) 
-%	= moy(0.086, -0.023) = 0.032
-%	$
-	
-	\vskip-6pt
-	\[
-	w_{11}^{(2)} = - 0.1 - 1 * (0.032) = - 0.132 \text{ , when } \alpha = 1
-	\]
-	
-\end{frame}
-
-
-\begin{frame}
-	\frametitle{\insertshortsubtitle: \insertsection}
-	\framesubtitle{\insertsubsection: Example - Hidden Layer 1 - Neuron 1 - parameter 1}
-	
-	Update $w_{11}^{(2)}$
-	
-	\footnotesize
-	
-	\vskip-24pt
-	\[
-	\frac{\partial J}{\partial w_{11}^{(2)}} = 
-	\overbrace{ 
-		\left(
-		\delta_{1}^{(3)} 
-		\overbrace{
-			\frac{\partial z_{1}^{(3)}}{\partial f_{1}^{(2)}}
-		}^{w_{11}^{(3)}}
-		+
-		\delta_{2}^{(3)} 
-		\overbrace{
-			\frac{\partial z_{2}^{(3)}}{\partial f_{1}^{(2)}}
-		}^{w_{12}^{(3)}}
-		\right)
-		\frac{\partial f_{1}^{(2)}}{\partial z_{1}^{(2)}}
-	}^{\delta_{1}^{(2)}} 
-	\overbrace{
-		\frac{\partial z_{1}^{(2)}}{\partial w_{11}^{(2)}}
-	}^{a_{1}^{(1)}}
-	\]
-	
-	\vskip-6pt
-	\[
-	\frac{\partial f_{1}^{(2)}}{\partial z_{1}^{(2)}} = (0.622, 0.900) \odot (0.378, 0.100) = (0.235, 0.09)
-	\]
-	
-	\vskip-6pt
-	\[
-	\delta_{1}^{(2)} = ((0.145, -0.026) \odot (0.3, 0.3) + (0.139, -0.025) \odot (-0.1, -0.1)) \odot (0.235, 0.09) \approx (0.039, -0.01)
-	\]
-	
-	\vskip-12pt
-	\begin{align*}
-		\frac{\partial J}{\partial w_{11}^{(2)}} & = \frac{1}{m=2} \sum ((0.039, -0.01) \odot (2, 3))    \\
-		& \approx \frac{1}{m=2} \sum (0.078, -0.03) = 0.024
-	\end{align*}
-	
-	\vskip-6pt
-	\[
-	w_{11}^{(2)} = 0.5 - 1 * (0.024) = 0.476 \text{ , when } \alpha = 1
-	\]
-	
-\end{frame}
-
-\begin{frame}
-	\frametitle{\insertshortsubtitle: \insertsection}
-	\framesubtitle{\insertsubsection: General case}
-	
-	\begin{itemize}
-		\item Calculate $\delta^{(l)}$ where $l$ is the layer's number
-	\end{itemize}
-	
-	\[ 
-	\delta^{(out)} = 
-	\frac{\partial J}{\partial f^{(out)}} \odot \frac{\partial f^{(out)}}{\partial z^{(out)}}
-	\,,\,
-	\delta^{(l)} = \left(W^{(l+1)}\right)^T \delta^{(l+1)} \odot \frac{\partial f^{(l)}}{\partial z^{(l)}}
-	\]
-	
-	\begin{itemize}
-		\item Calculate gradients
-	\end{itemize}
-	
-	\[ 
-	\frac{\partial J}{\partial W^{(l)}} = \frac{1}{m} a^{(l-1)} (\delta^{(l)})^T
-	\,,\,
-	\frac{\partial J}{\partial b^{(l)}} = \frac{1}{m} \sum \delta^{(l)}
-	\]
-	
-	\begin{itemize}
-		\item Update parameters
-	\end{itemize}
-	
-	\[ 
-	W^{(l)} = W^{(l)} - \alpha \frac{\partial J}{\partial W^{(l)}}
-	\,,\,
-	b^{(l)} = b^{(l)} - \alpha \frac{\partial J}{\partial b^{(l)}}
-	\]
-	
-	
-\end{frame}
-
 \begin{frame}
 	\frametitle{\insertshortsubtitle: \insertsection}
 	\framesubtitle{\insertsubsection: A little fun}
 	
-	\hgraphpage[.58\textwidth]{humor/humor-retro1.jpeg}
-	\hgraphpage[.4\textwidth]{humor/humor-retro2.jpg}
-	
+	\hgraphpage[.46\textwidth]{humor/humor-gd.jpg}
+	\hgraphpage[.52\textwidth]{humor/humor-gd2.jpg}
 	
 \end{frame}
 
-\subsection{Regularization}
+\subsection{Gradient instability}
 
 \begin{frame}
 	\frametitle{\insertshortsubtitle: \insertsection}
-	\framesubtitle{\insertsubsection: Motivation}
+	\framesubtitle{\insertsubsection}
 	
-	\begin{itemize}
-		\item Neural networks can easily \optword{overfit} the training data.
-		\item Overfitting: good performance on training data, poor on unseen data.
-		\item \optword{Regularization} aims to improve \keyword{generalization}.
-	\end{itemize}
-	
-	\begin{block}{Idea}
-		Reduce model complexity or constrain learning to avoid fitting noise.
+	\begin{block}{Gradient-based learning}
+		Neural networks are trained using gradients computed by backpropagation.
 	\end{block}
 	
+	\vspace{0.3cm}
+	
+	\begin{equation*}
+		\theta_{t+1}
+		=
+		\theta_t
+		-
+		\eta
+		\nabla J(\theta_t)
+	\end{equation*}
+	
+	\vspace{0.3cm}
+	
 	\begin{itemize}
-		\item Trade-off: \optword{bias vs variance}
+		\item Deep networks propagate gradients through many layers.
+		\item During propagation, gradients may become:
+		\begin{itemize}
+			\item extremely small (\textbf{vanishing gradients})
+			\item extremely large (\textbf{exploding gradients})
+		\end{itemize}
 	\end{itemize}
 	
 \end{frame}
 
-
 \begin{frame}
 	\frametitle{\insertshortsubtitle: \insertsection}
-	\framesubtitle{\insertsubsection: Common techniques}
+	\framesubtitle{\insertsubsection: Vanishing gradients}
 	
-	\begin{itemize}
-		\item \optword{Weight regularization}
+	\begin{columns}
+		
+		\column{0.55\textwidth}
+		
 		\begin{itemize}
-			\item L2 (Ridge): penalizes large weights
-			\item L1 (Lasso): promotes sparsity
+			\item Gradients shrink as they move backward through layers.
+			\item Early layers receive very small updates.
+			\item Learning becomes slow or stops completely.
 		\end{itemize}
 		
-		\item \optword{Dropout}
-		\item \optword{Early stopping}
-		\item \optword{Data augmentation}
-	\end{itemize}
-	
-	\begin{block}{Key idea}
-		Prevent the model from relying too much on specific features.
-	\end{block}
-	
-\end{frame}
-
-\begin{frame}
-	\frametitle{\insertshortsubtitle: \insertsection}
-	\framesubtitle{\insertsubsection: L2 regularization}
-	
-	\begin{block}{Regularized loss}
-		\[
-		J_{reg} = J + \lambda \sum w^2
-		\]
-	\end{block}
-	
-	\begin{itemize}
-		\item Penalizes large weights
-		\item Encourages smoother models
-		\item $\lambda$: regularization strength
-	\end{itemize}
-	
-	\begin{block}{Effect on update}
-		Weights are slightly pushed toward zero at each step
-	\end{block}
+		\vspace{0.3cm}
+		
+		\begin{block}{Common causes}
+			\begin{itemize}
+				\item Deep architectures
+				\item Sigmoid or tanh activations
+				\item Poor parameter initialization
+			\end{itemize}
+		\end{block}
+		
+		\column{0.45\textwidth}
+		
+		\begin{center}
+			\hgraphpage{vanishing_gradient.pdf}
+		\end{center}
+		
+	\end{columns}
 	
 \end{frame}
 
 \begin{frame}
 	\frametitle{\insertshortsubtitle: \insertsection}
-	\framesubtitle{\insertsubsection: Dropout \cite{2014-srivastava}}
+	\framesubtitle{\insertsubsection: Exploding gradients}
 	
-	\begin{itemize}
-		\item Randomly deactivate neurons during training.
-		\item Each neuron is kept with probability $p$ (keep rate).
-		\item Equivalent to sampling a different sub-network at each iteration.
-	\end{itemize}
-	
-	\begin{block}{Mechanism}
-		\[
-		a^{(l)} \leftarrow \frac{a^{(l)} \odot m}{p}, \quad m \sim \text{Bernoulli}(p)
-		\]
-	\end{block}
-	
-	\begin{itemize}
-		\item Applied only during training;
-		\item Ensures same expected activation at training and inference:
-		\[
-		\mathbb{E}[a_{\text{train}}] = \mathbb{E}[a_{\text{test}}]
-		\]
-		\item At inference: no scaling is applied.
-	\end{itemize}
-	
-\end{frame}
-
-
-\begin{frame}
-	\frametitle{\insertshortsubtitle: \insertsection}
-	\framesubtitle{\insertsubsection: Dropout effects}
-	
-	\begin{itemize}
-		\item \optword{Advantages}
+	\begin{columns}
+		
+		\column{0.55\textwidth}
+		
 		\begin{itemize}
-			\item Reduces overfitting
-			\item Acts like an ensemble of models
+			\item Gradients grow uncontrollably during backpropagation.
+			\item Parameter updates become unstable.
+			\item Training may diverge or produce NaN values.
 		\end{itemize}
 		
-		\item \optword{Disadvantages}
-		\begin{itemize}
-			\item Slower convergence
-			\item Requires tuning of dropout rate
-		\end{itemize}
-	\end{itemize}
+		\vspace{0.3cm}
+		
+		\begin{block}{Common causes}
+			\begin{itemize}
+				\item Very deep networks
+				\item Large weight values
+				\item Repeated matrix multiplications
+			\end{itemize}
+		\end{block}
+		
+		\column{0.45\textwidth}
+		
+		\begin{center}
+			\hgraphpage{exploding_gradient.pdf}
+		\end{center}
+		
+	\end{columns}
 	
 \end{frame}
 
+\begin{frame}
+	\frametitle{\insertshortsubtitle}
+	\framesubtitle{A little fun}
+	
+	\hgraphpage[0.58\textwidth]{humor/humor-vanishment.jpg}
+	\hgraphpage[0.4\textwidth]{humor/humor-vanishment2.jpg}
+	
+\end{frame}
 
 \begin{frame}
-	\frametitle{\insertshortsubtitle: \insertsection}
-	\framesubtitle{\insertsubsection: Dropout - A little fun}
+	\frametitle{\insertshortsubtitle}
+	\framesubtitle{A little fun}
 	
-	\hgraphpage[.35\textwidth]{humor/humor-overfiting2.jpeg}
-	\hgraphpage[.63\textwidth]{humor/humor-overfiting1.png}
+	\begin{center}
+		\vgraphpage{humor/humor-nn.jpg}
+	\end{center}
 	
 \end{frame}
 

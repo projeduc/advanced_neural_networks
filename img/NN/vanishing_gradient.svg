@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- vanishing_gradient.svg -->
+
+<svg
+   width="500"
+   height="300"
+   version="1.1"
+   id="svg4"
+   sodipodi:docname="vanishing_gradient.svg"
+   inkscape:version="1.4.3 (0d15f75042, 2025-12-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="namedview4"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="1.48163"
+     inkscape:cx="129.24954"
+     inkscape:cy="208.55409"
+     inkscape:window-width="1920"
+     inkscape:window-height="1008"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg4" />
+  <!-- Axes -->
+  <line
+     x1="50"
+     y1="250"
+     x2="450"
+     y2="250"
+     stroke="black"
+     stroke-width="2"
+     id="line1" />
+  <line
+     x1="50"
+     y1="250"
+     x2="50"
+     y2="40"
+     stroke="black"
+     stroke-width="2"
+     id="line2" />
+  <!-- Labels -->
+  <text
+     x="229.32507"
+     y="275.55093"
+     font-size="16px"
+     id="text2"
+     style="font-size:16px"><tspan
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:21.3333px;font-family:'Crimson Text';-inkscape-font-specification:'Crimson Text, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal"
+       id="tspan6">Layers</tspan></text>
+  <text
+     x="-226.98619"
+     y="32.055107"
+     font-size="16px"
+     transform="rotate(-90)"
+     id="text3"
+     style="font-size:16px"><tspan
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:21.3333px;font-family:'Crimson Text';-inkscape-font-specification:'Crimson Text, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal"
+       id="tspan4">Gradient magnitude</tspan></text>
+  <!-- Curve -->
+  <polyline
+     fill="none"
+     stroke="black"
+     stroke-width="3"
+     points="         50,60         85,90         120,120         155,145         190,165         225,182         260,196         295,208         330,218         365,226         400,233         435,238         "
+     id="polyline3" />
+  <!-- Title -->
+  <text
+     x="140"
+     y="25"
+     font-size="20px"
+     id="text4"
+     style="font-size:20px"><tspan
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:21.3333px;font-family:'Crimson Text';-inkscape-font-specification:'Crimson Text, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal"
+       id="tspan5">Vanishing gradients</tspan></text>
+</svg>

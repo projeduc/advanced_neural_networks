@@ -1,10 +1,10 @@
-# Advanced Neural Networks
+# Deep Learning
 
 [![Type](https://img.shields.io/badge/Type-Course-0014A8.svg?style=flat)](https://github.com/projeduc/advanced_neural_networks)
 [![License](https://img.shields.io/badge/Licence-CC--BY_4.0-0014A8.svg?style=flat)](https://creativecommons.org/licenses/by/4.0/)
-[![GitHub release](https://img.shields.io/github/release/projeduc/advanced_neural_networks.svg)](https://github.com/projeduc/advanced_neural_networks/releases)
-[![Github All Releases](https://img.shields.io/github/downloads/projeduc/advanced_neural_networks/total.svg)](https://github.com/projeduc/advanced_neural_networks/releases)
-[![Github Release](https://img.shields.io/github/downloads/projeduc/advanced_neural_networks/latest/total.svg)](https://github.com/projeduc/advanced_neural_networks/releases/latest)
+[![GitHub release](https://img.shields.io/github/release/projeduc/projeduc_DL.svg)](https://github.com/projeduc/advanced_neural_networks/releases)
+[![Github All Releases](https://img.shields.io/github/downloads/projeduc/projeduc_DL/total.svg)](https://github.com/projeduc/advanced_neural_networks/releases)
+[![Github Release](https://img.shields.io/github/downloads/projeduc/projeduc_DL/latest/total.svg)](https://github.com/projeduc/advanced_neural_networks/releases/latest)
 
 ## Content
 
