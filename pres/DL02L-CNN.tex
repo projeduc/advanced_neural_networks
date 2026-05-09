@@ -1,0 +1,1338 @@
+% !TEX TS-program = pdflatex
+% !TeX program = pdflatex
+% !TEX encoding = UTF-8
+% !TEX spellcheck = en
+
+\documentclass[xcolor=table]{beamer}
+
+\usepackage{../extra/beamer/karimml}
+
+\input{options2}
+
+\subtitle[CNNs]{Convolutional Neural Networks}  
+
+\changegraphpath{../img/CNN/}
+
+
+\begin{document}
+
+\begin{frame}
+	\frametitle{\inserttitle}
+	\framesubtitle{\insertshortsubtitle: Motivation}
+	
+	\begin{itemize}
+		\item Images contain \keyword{spatial structure}.
+		
+		\item Fully connected layers ignore local relationships between nearby pixels.
+		
+		\item Large images produce a huge number of parameters.
+		
+		\item Objects can appear at different positions, scales, and orientations.
+		
+		\item CNNs address these issues using:
+		\begin{itemize}
+			\item local receptive fields,
+			\item shared weights,
+			\item hierarchical feature extraction.
+		\end{itemize}
+	\end{itemize}
+	
+	\begin{center}
+		\hgraphpage[0.6\textwidth]{cnn-motivation.pdf}
+	\end{center}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\inserttitle}
+	\framesubtitle{\insertshortsubtitle: Plan}
+	
+	\begin{multicols}{2}
+		%	\small
+		\tableofcontents
+	\end{multicols}
+\end{frame}
+
+\begin{frame}
+	\frametitle{\inserttitle}
+	\framesubtitle{\insertshortsubtitle: A little fun}
+	
+	\hgraphpage[\textwidth]{humor/humor-convnet.jpg}
+	
+\end{frame}
+
+\section{Image processing}
+
+\begin{frame}
+	
+	\frametitle{\insertshortsubtitle}
+	\framesubtitle{\insertsection}
+	
+	{\Large\bfseries Classical vision pipeline}
+	\begin{itemize}
+		\item Image acquisition
+		\item Preprocessing
+		\item Feature extraction
+		\item Classification
+	\end{itemize}
+	
+	\vspace{0.5cm}
+	
+	\begin{itemize}
+		\item Each stage is designed and optimized separately.
+		\item The quality of the system depends heavily on handcrafted features.
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle}
+	\framesubtitle{\insertsection\ - Some humor}
+	
+%	\begin{center}
+		\hgraphpage{humor/humor-image-processing.jpg}
+%	\end{center}
+	
+\end{frame}
+
+\subsection{Preprocessing phase}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Goals}
+	
+	\begin{itemize}
+		\item Improve image quality before recognition.
+		
+		\item Reduce irrelevant information such as:
+		\begin{itemize}
+			\item noise,
+			\item illumination variations,
+			\item small distortions.
+		\end{itemize}
+		
+		\item Enhance useful structures:
+		\begin{itemize}
+			\item edges,
+			\item textures,
+			\item contours.
+		\end{itemize}
+		
+		\item Many preprocessing operations are based on \keyword{convolution kernels} (see \cite{2010-alginahi}).
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Convolution}
+	
+	\begin{itemize}
+		
+		\item Convolution computes a new pixel value using its neighboring pixels.
+		
+		\item A small matrix called a \optword{kernel} (or filter/mask) slides over the image.
+		
+		\item At each position:
+		\begin{itemize}
+			\item corresponding values are multiplied,
+			\item then summed to produce one output value.
+		\end{itemize}
+	\end{itemize}
+		
+	\begin{columns}
+		
+		\column{0.49\textwidth}
+		
+		Continuous convolution \cite{1973-rudin}:
+		\[
+		(f * g)(t)=\int_{-\infty}^{\infty} f(\tau)g(t-\tau)\,d\tau
+		\]
+		
+		\column{0.49\textwidth}
+		
+		For digital images, convolution becomes discrete:
+		\[
+		O(i,j)=\sum_m \sum_n I(i+m,j+n) K(m,n)
+		\]
+	\end{columns}
+			
+	
+	\begin{center}
+		\hgraphpage[0.6\textwidth]{conv.pdf}
+	\end{center}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Padding and Stride}
+	
+	\begin{columns}
+		
+		\column{0.80\textwidth}
+		
+		\begin{itemize}
+			
+			\item Two important parameters control the convolution output:
+			
+			\item \optword{Padding}
+			\begin{itemize}
+				\item Adds borders around the image (often zeros).
+				\item Preserves spatial dimensions.
+				\item Helps retain edge information.
+			\end{itemize}
+			
+			\item \optword{Stride}
+			\begin{itemize}
+				\item Defines how far the kernel moves at each step.
+				\item Stride = 1: full coverage.
+				\item Stride \textgreater\ 1: downsampling effect.
+			\end{itemize}
+			
+		\end{itemize}
+		
+		\column{0.18\textwidth}
+		
+		\begin{center}
+			\hgraphpage{conv-hparam.pdf}
+		\end{center}
+		
+	\end{columns}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Example kernels}
+	
+	Example from \href{https://fr.wikipedia.org/wiki/Noyau\_(traitement\_d\%27image)}{Wikipedia}
+	
+	\begin{tabular}{p{.3\textwidth}p{.1\textwidth}p{.2\textwidth}p{.2\textwidth}}
+		\hline\hline
+		Operation & original & Kernel & Transformed \\
+		\hline
+		Contour detection & 
+		\graphpage[valign=c]{Vd-Orig.png} & 
+		$\begin{bmatrix}
+			-1 & -1 & -1\\ 
+			-1 & 8 & -1\\ 
+			-1 & -1 & -1
+		\end{bmatrix}$ & 
+		\graphpage[valign=c]{Vd-Edge3.png} \\
+		
+		\hline
+		Sharpness improvement & 
+		\graphpage[valign=c]{Vd-Orig.png} & 
+		$\begin{bmatrix}
+			0 & -1 & 0\\ 
+			-1 & 5 & -1\\ 
+			0 & -1 & 0
+		\end{bmatrix}$ & 
+		\graphpage[valign=c]{Vd-Sharp.png} \\
+		
+		\hline
+		Box blur & 
+		\graphpage[valign=c]{Vd-Orig.png} & 
+		$\frac{1}{9}\begin{bmatrix}
+			1 & 1 & 1\\ 
+			1 & 1 & 1\\ 
+			1 & 1 & 1
+		\end{bmatrix}$ & 
+		\graphpage[valign=c]{Vd-Blur2.png} \\
+		\hline\hline
+		
+	\end{tabular}
+	
+\end{frame}
+
+\subsection{Feature extraction}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Motivation}
+	
+	\begin{itemize}
+		\item In classical computer vision, models do not learn features automatically.
+		
+		\item Instead, features are manually engineered.
+		
+		\item \textbf{Goal}: transform raw images into \keyword{informative representations}.
+		
+		\item These representations should:
+		\begin{itemize}
+			\item reduce irrelevant variation (noise, lighting),
+			\item highlight structure (edges, textures, shapes),
+			\item improve classification performance.
+		\end{itemize}
+		
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Classical descriptors}
+	
+	\begin{itemize}
+		\item Feature extraction relies on handcrafted descriptors:
+		
+		\item \optword{SIFT} (Scale-Invariant Feature Transform)
+		\begin{itemize}
+			\item Detects keypoints robust to scale and rotation.
+		\end{itemize}
+		
+		\item \optword{SURF} (Speeded-Up Robust Features)
+		\begin{itemize}
+			\item Faster approximation of SIFT.
+		\end{itemize}
+		
+		\item \optword{HOG} (Histogram of Oriented Gradients)
+		\begin{itemize}
+			\item Captures edge directions and shapes.
+		\end{itemize}
+		
+		\item \optword{LBP} (Local Binary Patterns)
+		\begin{itemize}
+			\item Encodes local texture patterns.
+		\end{itemize}
+		
+	\end{itemize}
+	
+\end{frame}
+
+\subsection{Recognition phase}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Classical ML algorithms}
+	
+	\begin{columns}
+		
+		\column{0.39\textwidth}
+	
+		\begin{itemize}
+			\item Extracted features are fed into a classifier.
+			\item Common classifiers:
+			\begin{itemize}
+				\item Support Vector Machines (SVM)
+				\item k-Nearest Neighbors (kNN)
+				\item Decision Trees
+				\item Random Forests
+			\end{itemize}
+		\end{itemize}
+		
+		\column{0.59\textwidth}
+		
+		\begin{itemize}
+			\item Images can be processed using a MLP.
+			
+			\item The image is flattened into a 1D vector.
+			
+			\item Problem:
+			\begin{itemize}
+				\item Loss of spatial structure (no notion of neighbors).
+				\item Very large number of parameters.
+			\end{itemize}
+			
+		\end{itemize}
+		
+		\begin{center}
+			\hgraphpage[0.8\textwidth]{img-learn.pdf}
+		\end{center}
+		
+	\end{columns}
+		
+	
+\end{frame}
+
+\subsection{Limitations}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection}
+	
+	According to LeCun and his colleagues \cite{1998-lecun}:
+	\begin{itemize}
+		\item When the size of the images is large, there will be a large number of parameters to train.
+		\item To achieve this, a large dataset must be provided.
+		\item The memory required to store the parameters will be very large.
+		\item To train the model on images, preprocessing such as translations and distortions must be applied.
+		\item Variations in images (such as the position of an object) can only be captured when multiple layers are used.
+	\end{itemize}
+
+\end{frame}
+
+
+\section{CNN layers}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle}
+	\framesubtitle{\insertsection}
+	
+	\begin{itemize}
+		
+		\item \textbf{Classical vision pipeline}
+		\begin{itemize}
+			\item Feature extraction is manually designed (SIFT, HOG, etc.).
+			\item A separate classifier is trained on extracted features.
+		\end{itemize}
+		
+		\item \textbf{Key limitations}
+		\begin{itemize}
+			\item No end-to-end optimization.
+			\item Feature design is independent from the final task.
+			\item Performance depends heavily on handcrafted representations.
+		\end{itemize}
+		
+		\item \textbf{Deep learning paradigm (CNNs)}
+		\begin{itemize}
+			\item Learn features and classifier jointly in a single model.
+			\item Optimized directly from raw pixel data.
+			\item Features are adapted to the task through training.
+		\end{itemize}
+		
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle}
+	\framesubtitle{\insertsection: Input dimensionality in CNNs}
+	
+	\begin{itemize}
+		
+%		\item \textbf{CNNs operate on batched tensors}
+%		\begin{itemize}
+%			\item Inputs are processed in mini-batches for efficiency.
+%			\item Batch dimension is always the first axis: $m$
+%		\end{itemize}
+		
+		\item \textbf{1D inputs (sequences)}
+		\begin{itemize}
+			\item Shape: $(m, l, c)$ (batch × length × channels)
+			\item Examples: text, time series, audio signals
+		\end{itemize}
+		
+		\item \textbf{2D inputs (images)}
+		\begin{itemize}
+			\item Shape: $(m, h, w, c)$ (batch × height × width × channels)
+			\item Example: RGB images
+		\end{itemize}
+		
+		\item \textbf{3D inputs (volumes)}
+		\begin{itemize}
+			\item Shape: $(m, d, h, w, c)$ (batch × depth × height × width × channels)
+			\item Examples: medical imaging (CT/MRI), video data
+		\end{itemize}
+		
+		\item \textbf{Channel ordering conventions}
+		\begin{itemize}
+			\item \optword{Channel-last}: $(m, \dots, c)$ (TensorFlow-style)
+			\item \optword{Channel-first}: $(m, c, \dots)$ (PyTorch-style)
+			\item Choice affects how convolution kernels are implemented, but not the underlying math
+		\end{itemize}
+		
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle}
+	\framesubtitle{\insertsection\ - Some humor}
+	
+	%	\begin{center}
+		\hgraphpage{humor/humor-convnet.jpg}
+		%	\end{center}
+	
+\end{frame}
+
+\subsection{Convolution layers}
+
+%- Conv1D
+%- Conv2D
+%- Conv3D
+%- Transposed convolution
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Convolution intuition}
+	
+	\begin{itemize}
+		
+		\item Can be viewed as a neuron applied repeatedly across the image.
+		
+		\item \textbf{Steps:}
+		\begin{itemize}
+			\item Add padding: $X_p = \mathrm{Pad}(X, p)$
+			
+			\item Extract local patches: $X_1,\dots,X_n = \mathrm{Split}(X_p, s)$
+			
+			\item Flatten each patch: $\vec{X}_i = \mathrm{Flatten}(X_i)$
+			
+			\item Apply a neuron: $y_i = f(W^\top \vec{X}_i + b)$
+			
+			\item Store the result in the output feature map: $Y = \text{Resize}(y_1 \cdot y_n, \textit{shape})$.
+		\end{itemize}
+		
+		\item The same weights are reused at every spatial position:
+		\begin{itemize}
+			\item this is called \keyword{weight sharing}.
+		\end{itemize}
+		
+	\end{itemize}
+	
+	\begin{center}
+		\hgraphpage[\textwidth]{conv2d-arch.pdf}
+	\end{center}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Conv2D layer}
+
+	\begin{minipage}{0.65\textwidth} 
+		\begin{itemize}
+			\item \textbf{Output dimension:}
+			\[w' = \frac{w - w_f + 2p}{s} + 1, h' = \frac{h - h_f + 2p}{s} + 1\]
+			\item A layer can have $k$ filters/kernels.
+			\item \textbf{Number of parameters:} 
+			
+			$w_f \cdot h_f \cdot c \cdot k$ plus $k$ biases.
+			
+			\item \textbf{Example:} 
+			
+			\expword{image: 32x32x3;} \expword{kernel: 5x5; s: 1; p: 0; k: 6.} \\ Number of trainable parameters: \expword{456}
+		\end{itemize}
+	\end{minipage}
+	%
+	\begin{minipage}{0.34\textwidth}
+		\hgraphpage[\textwidth]{conv2d.pdf}
+		
+		\hgraphpage[.7\textwidth]{conv2d-exp_.pdf}
+	\end{minipage}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Conv2D layer (Example)}
+	
+	
+	\begin{center}
+		\vskip-6pt\hgraphpage[0.8\textwidth]{conv2D_imlp.pdf}
+	\end{center}\vskip-16pt
+	
+	{\scriptsize 
+		\[O_{11} = ReLU(\Sigma = b + F_{11} I_{11} + \textcolor{blue}{F_{12} I_{12}} + F_{21} I_{21} + \textcolor{red}{F_{22} I_{22}})  \]
+		\[O_{12} = ReLU(\Sigma = b + \textcolor{blue}{F_{11} I_{12}} + F_{12} I_{13} + \textcolor{red}{F_{21} I_{22}} + F_{22} I_{23})  \]
+		\[O_{21} = ReLU(\Sigma = b + F_{11} I_{21} + \textcolor{red}{F_{12} I_{22}} + F_{21} I_{31} + F_{22} I_{32})  \]
+		\[O_{22} = ReLU(\Sigma = b + \textcolor{red}{F_{11} I_{22}} + F_{12} I_{23} + F_{21} I_{32} + F_{22} I_{33})  \]
+		
+		\[\textcolor{red}{\frac{\partial J}{\partial I_{22}}} 
+		= \underbrace{\frac{\partial J}{\partial O_{11}}}_{G_{11} = 1} 
+		\underbrace{\frac{\partial ReLU}{\partial \sum}}_{1} 
+		\underbrace{\frac{\partial \sum}{\partial I_{22}}}_{F_{22} = 3}
+		+ \underbrace{\frac{\partial J}{\partial O_{12}}}_{G_{12} = 2} 
+		\underbrace{\frac{\partial ReLU}{\partial \sum}}_{1} 
+		\underbrace{\frac{\partial \sum}{\partial I_{22}}}_{F_{21} = -2}
+		+ \underbrace{\frac{\partial J}{\partial O_{21}}}_{G_{21} = 3} 
+		\underbrace{\frac{\partial ReLU}{\partial \sum}}_{1} 
+		\underbrace{\frac{\partial \sum}{\partial I_{22}}}_{F_{12} = -1}
+		+ \underbrace{\frac{\partial J}{\partial O_{22}}}_{G_{22} = 4} 
+		\underbrace{\frac{\partial ReLU}{\partial \sum}}_{0} 
+		\underbrace{\frac{\partial \sum}{\partial I_{22}}}_{F_{11} = 1}\]
+		
+		\[\textcolor{blue}{\frac{\partial J}{\partial I_{12}}} 
+		= \underbrace{\frac{\partial J}{\partial O_{11}}}_{G_{11} = 1} 
+		\underbrace{\frac{\partial ReLU}{\partial \sum}}_{1} 
+		\underbrace{\frac{\partial \sum}{\partial I_{12}}}_{F_{12} = -1}
+		+ \underbrace{\frac{\partial J}{\partial O_{12}}}_{G_{12} = 2} 
+		\underbrace{\frac{\partial ReLU}{\partial \sum}}_{1} 
+		\underbrace{\frac{\partial \sum}{\partial I_{12}}}_{F_{11} = 1}\]
+	}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Conv2D layer - Some humor}
+	
+	\begin{center}
+		\vgraphpage{humor/humor-conv2d.jpg}
+	\end{center}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Conv1D layer}
+	
+	\begin{minipage}{0.69\textwidth} 
+		\begin{itemize}
+			
+			\item Conv1D operates on 1D sequential data (e.g., text, signals, time series).
+			
+			\item It preserves temporal/spatial order along one axis.
+			
+			\item \textbf{Output length:}
+			\[
+			l' = \frac{l - l_f + 2p}{s} + 1
+			\]
+			
+			\item A layer can contain $k$ filters (kernels).
+			$c$ is the number of input channels.
+			
+			\item \textbf{Number of parameters:}
+			\[
+			l_f \cdot c \cdot k + k
+			\]
+			
+			\item \textbf{Key idea:}
+			\begin{itemize}
+				\item Each filter slides along a single dimension.
+			\end{itemize}
+			
+		\end{itemize}
+	\end{minipage}
+	%
+	\begin{minipage}{0.30\textwidth}
+		\hgraphpage[\textwidth]{conv1d.pdf}
+	\end{minipage}
+	
+\end{frame}
+
+\subsection{Pooling layers}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Pooling intuition}
+	
+	\begin{itemize}
+		
+		\item Pooling applies a fixed aggregation function over local regions.
+		
+		\item \textbf{Goal:} reduce spatial dimensions, retain important information, improve translation invariance.
+		
+		\item \textbf{Steps:}
+		\begin{itemize}
+			\item Add padding: $X_p = \mathrm{Pad}(X, p)$
+			
+			\item Extract local patches: $X_1,\dots,X_n = \mathrm{Split}(X_p, s)$
+			
+			\item Flatten each patch: $\vec{X}_i = \mathrm{Flatten}(X_i)$
+			
+			\item Apply a pooling function: $y_i = f(\vec{X}_i)$
+			
+			\item Store results in the output feature map $Y = \text{Resize}(y_1 \cdot y_n, \textit{shape})$.
+		\end{itemize}
+		
+		\item Pooling layers have \textbf{no trainable parameters}.
+		
+	\end{itemize}
+	
+	\begin{center}
+		\hgraphpage[0.9\textwidth]{maxpool2d-arch.pdf}
+	\end{center}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Pool2D layer}
+
+\begin{minipage}{0.69\textwidth} 
+	\begin{itemize}
+		\item \textbf{Output dimension:}
+		
+		$w' = \frac{w - w_f + 2P}{S} + 1, h' = \frac{h - h_f + 2P}{S} + 1$
+		\item Output channels remain unchanged.
+		\item \textbf{Number of parameters:} 0.
+		
+		\item \textbf{Some functions:}
+		\begin{itemize}
+			\item \optword{Max Pool}: $y_i = \max(\vec{X}_i)$.
+			
+			gradient is propagated only to the maximum-value cell.
+			
+			\item \optword{Average Pool}: $y_i = \text{avg}(\vec{X}_i)$.
+			
+			gradient is distributed equally across participating cells.
+			
+			\item \optword{LP Pooling}: $y_i = \sqrt[p]{\sum_{j} \vec{X}_{ij}^p}$.
+			
+			generalized pooling between average and max pooling.
+			
+		\end{itemize}
+	\end{itemize}
+\end{minipage}
+%
+\begin{minipage}{0.30\textwidth}
+	\hgraphpage[\textwidth]{maxpool.pdf}
+	
+	\hgraphpage[.8\textwidth]{pool-exp_.pdf}
+\end{minipage}
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: MaxPool2D layer (Example)}
+	
+	
+	\begin{center}
+		\vskip-6pt\hgraphpage[0.7\textwidth]{pool2D_imlp.pdf}
+	\end{center}\vskip-16pt
+	
+	{\scriptsize 
+		\[O_{11} = Max(I_{11}, \textcolor{blue}{I_{12}}, I_{21}, \textcolor{red}{I_{22}}) = \textcolor{red}{I_{22}}  \]
+		\[O_{12} = Max(\textcolor{blue}{I_{12}}, I_{13}, \textcolor{red}{I_{22}}, I_{23}) = I_{23}  \]
+		\[O_{21} = Max(I_{21}, \textcolor{red}{I_{22}}, I_{31}, I_{32}) = \textcolor{red}{I_{22}} \]
+		\[O_{22} = Max(\textcolor{red}{I_{22}}, I_{23}, I_{32}, I_{33}) = \textcolor{red}{I_{22}}  \]
+		
+		\[\textcolor{red}{\frac{\partial J}{\partial I_{22}}} 
+		= \underbrace{\frac{\partial J}{\partial O_{11}}}_{G_{11} = 1} 
+		\underbrace{\frac{\partial Max}{\partial I_{22}}}_{1}
+		+ \underbrace{\frac{\partial J}{\partial O_{12}}}_{G_{12} = 2} 
+		\underbrace{\frac{\partial Max}{\partial I_{22}}}_{0}
+		+ \underbrace{\frac{\partial J}{\partial O_{21}}}_{G_{21} = 3} 
+		\underbrace{\frac{\partial Max}{\partial I_{22}}}_{1}
+		+ \underbrace{\frac{\partial J}{\partial O_{22}}}_{G_{22} = 4} 
+		\underbrace{\frac{\partial Max}{\partial I_{22}}}_{1}\]
+		
+		\[\textcolor{blue}{\frac{\partial J}{\partial I_{12}}} 
+		= \underbrace{\frac{\partial J}{\partial O_{11}}}_{G_{11} = 1} 
+		\underbrace{\frac{\partial Max}{\partial I_{12}}}_{0}
+		+ \underbrace{\frac{\partial J}{\partial O_{12}}}_{G_{12} = 2} 
+		\underbrace{\frac{\partial Max}{\partial I_{12}}}_{0}\]
+	}
+	
+\end{frame}
+
+
+\subsection{Reshaping layers}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection}
+	
+	\begin{itemize}
+		
+		\item Reshaping layers modify the \textbf{organization} of tensor dimensions.
+		
+		\item They do \textbf{not}:
+		\begin{itemize}
+			\item learn parameters,
+			\item change tensor values,
+			\item add or remove information.
+		\end{itemize}
+		
+		\item \textbf{Typical reshaping operations:}
+		\begin{itemize}
+			\item Flatten
+			\item Reshape
+			\item Permute / Transpose
+		\end{itemize}
+		
+		\item \textbf{During backpropagation:}
+		\begin{itemize}
+			\item gradients are reshaped using the inverse mapping,
+			\item no gradient information is lost.
+		\end{itemize}
+		
+		\item \textbf{Key idea:} same data \textleftarrow\ different tensor organization
+%		\[
+%		\text{same data} \;\; \leftrightarrow \;\; \text{different tensor organization}
+%		\]
+		
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Flatten}
+	
+	\begin{itemize}
+		
+		\item The \optword{Flatten} layer converts multi-dimensional tensors into a 1D vector.
+		
+		\item Example:
+		\[
+		(c \times h \times w) \rightarrow (c \cdot h \cdot w)
+		\]
+		
+		\item It is typically used before fully connected layers (MLPs).
+		
+		\item It does \textbf{not change values}, only reshapes structure.
+		
+		\item \textbf{Limitation:} Spatial structure is lost (no notion of neighbors).
+		
+	\end{itemize}
+	
+	\hgraphpage[\textwidth]{flatten.pdf}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Reshape}
+	
+	\begin{itemize}
+		
+		\item Reorganizes tensor dimensions without modifying values.
+		
+		\item \textbf{General transformation:}
+		\[
+		\mathbb{R}^{d_1 \times d_2 \times \dots \times d_n}
+		\rightarrow
+		\mathbb{R}^{d'_1 \times d'_2 \times \dots \times d'_m}
+		\quad \text{with } \prod_{i=1}^{n} d_i = \prod_{j=1}^{m} d'_j
+		\]
+		
+		\item \textbf{Used to:} adapt data to network architecture, connect different layer types.
+%		\begin{itemize}
+%			\item adapt data to network architecture,
+%			\item connect different layer types.
+%		\end{itemize}
+		
+		\item \textbf{Important:} No learning; No information added or removed.
+%		\begin{itemize}
+%			\item No learning
+%			\item No information added or removed
+%		\end{itemize}
+		
+	\end{itemize}
+	
+	\begin{center}
+		\hgraphpage[0.8\textwidth]{reshape.pdf}
+	\end{center}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Permute}
+	
+	\begin{itemize}
+		
+		\item Reorders tensor dimensions.
+		\[
+		(h, w, c) \rightarrow (c, h, w)
+		\]
+		
+		\item \textbf{Unlike reshape:} dimensions are reordered, not regrouped linearly.
+		
+		\item \textbf{Used when:}
+		\begin{itemize}
+			\item switching between frameworks (channels-first vs channels-last),
+			\item matching required tensor layout of a layer or framework.
+		\end{itemize}
+		
+		\item \textbf{Key idea:} It is a \keyword{re-indexing of axes}, not a compression or expansion.
+		
+	\end{itemize}
+	
+	\begin{center}
+		\hgraphpage[0.75\textwidth]{permute-vs-reshape.pdf}
+	\end{center}
+	
+\end{frame}
+
+
+\subsection{Upsampling layers}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection}
+	
+	\begin{itemize}
+		
+		\item Upsampling layers increase the spatial resolution of feature maps.
+		
+		\item \textbf{General transformation:}
+		\[
+		(c, h, w) \rightarrow (c, h', w')
+		\quad \text{with } h' > h,\; w' > w
+		\]
+		
+		\item \textbf{Used in:}
+		\begin{itemize}
+			\item image generation,
+			\item semantic segmentation,
+			\item super-resolution,
+			\item decoder architectures (e.g., autoencoders, U-Net).
+		\end{itemize}
+		
+		\item \textbf{Two main approaches:}
+		\begin{itemize}
+			\item \optword{interpolation-based} (nearest-neighbor, bilinear, bicubic),
+			\item \optword{learnable upsampling} (transposed convolution).
+		\end{itemize}
+		
+		\item \textbf{Key idea:}
+		\begin{itemize}
+			\item recover larger spatial representations from compact feature maps.
+		\end{itemize}
+		
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Nearest-neighbor upsampling}
+	
+	\begin{itemize}
+		
+		\item Nearest-neighbor upsampling increases image size by copying pixel values.
+		
+		\item Each new pixel takes the value of the closest original pixel.
+		
+		\item \textbf{Example:}	$(2 \times 2) \rightarrow (4 \times 4)$
+		
+		\item \textbf{Properties:} Very fast, No learning, Produces blocky / pixelated results.
+		
+		\item \textbf{Intuition:} Pixel replication.
+		
+	\end{itemize}
+	
+	\begin{center}
+		\hgraphpage[0.5\textwidth]{upsample-nearest.pdf}
+	\end{center}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Nearest-neighbor upsampling (backpropagation)}
+	
+	\begin{itemize}
+		\item Gradients from replicated outputs are summed back to the original pixel.
+		
+		\item Example (scale factor $=2$):
+		\[
+		X =
+		\begin{bmatrix}
+			1 & 2 \\
+			3 & 4
+		\end{bmatrix}
+		\rightarrow
+		Y =
+		\begin{bmatrix}
+			1 & 1 & 2 & 2 \\
+			1 & 1 & 2 & 2 \\
+			3 & 3 & 4 & 4 \\
+			3 & 3 & 4 & 4
+		\end{bmatrix}
+		\quad\quad
+		\frac{\partial J}{\partial Y} =
+		\begin{bmatrix}
+			a & b & c & d \\
+			e & f & g & h \\
+			i & j & k & l \\
+			m & n & o & p
+		\end{bmatrix}
+		\]
+		\[
+		\frac{\partial J}{\partial X} =
+		\begin{bmatrix}
+			a+b+e+f & c+d+g+h \\
+			i+j+m+n & k+l+o+p
+		\end{bmatrix}
+		\]
+		
+		\item Key idea:
+		\begin{itemize}
+			\item Forward pass: pixel replication
+			\item Backward pass: gradient accumulation
+		\end{itemize}
+		
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Bilinear upsampling}
+	
+	\begin{itemize}
+		
+		\item Computes new pixels using a weighted average of neighbors.
+		
+		\item Each output pixel is interpolated from the 4 closest input pixels.
+		
+		\item \textbf{General idea:}
+		\[
+		y = \sum_{i=1}^{4} w_i x_i
+		\quad \text{with} \quad \sum w_i = 1
+		\]
+		
+		\item Interpolation weights depend on spatial distance: closer pixels receive larger weights.
+		
+		\item \textbf{Properties:} Smoother than nearest-neighbor, No learning, Slight blur introduced.
+		\item \textbf{Intuition:} Smooth interpolation between pixels.
+		
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Bilinear upsampling (Example)}
+	
+	\begin{center}
+		\hgraphpage[0.5\textwidth]{upsample-bilin1.pdf}
+		
+		
+		\hgraphpage[0.6\textwidth]{upsample-bilin2.pdf}
+	\end{center}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Bilinear upsampling (backpropagation)}
+	
+	\begin{itemize}
+		
+		\item Gradients are redistributed to neighboring input pixels using the same interpolation weights.
+		
+		\item Example:
+		\[
+		y = 0.75x_1 + 0.25x_2 \quad\quad \frac{\partial L}{\partial y} = g
+		\]
+		
+		\item Then gradients are distributed proportionally:
+		\[
+		\frac{\partial L}{\partial x_1} += 0.75g
+		\quad,\quad
+		\frac{\partial L}{\partial x_2} += 0.25g
+		\]
+		
+		\item Since each input pixel contributes to many interpolated outputs:
+		\begin{itemize}
+			\item gradients from all affected outputs accumulate,
+			\item closer outputs contribute larger gradients.
+		\end{itemize}
+		
+		\item Key idea:
+		\begin{itemize}
+			\item Forward pass: weighted interpolation
+			\item Backward pass: weighted gradient accumulation
+		\end{itemize}
+		
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Transposed convolution}
+	
+	\begin{itemize}
+		
+		\item Transposed convolution is a learnable upsampling operation.
+		
+		\item Unlike interpolation, it:
+		\begin{itemize}
+			\item learns how to generate high-resolution features,
+			\item is trained using backpropagation.
+		\end{itemize}
+		
+		\item \textbf{Intuition:} Reverse effect of convolution (spatial expansion)
+		
+		\item \textbf{Key idea:} Inserts zeros between pixels, then applies a convolution.
+		
+		\item \textbf{Advantage:} Produces task-adaptive upsampling
+		
+		\item \textbf{Limitation:} This can create visible grid-like patterns (checkerboard artifacts).
+		
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Transposed convolution (Example)}
+	
+	\hgraphpage[\textwidth]{inv-conv2d-arch.pdf}
+	
+	\begin{itemize}
+
+		\item Input:
+		\scriptsize
+		\[
+		X =
+		\begin{bmatrix}
+			1 & 2 \\
+			3 & 4
+		\end{bmatrix}
+		,
+		\quad
+		w = 
+		\begin{bmatrix}
+			1 & -1 \\
+			-2 & 3\\
+		\end{bmatrix}
+		\quad\quad
+		b = -1
+		\]
+		
+		\item Output (stride = 1, padding = 0):
+		\scriptsize
+		\[
+		Y =
+		\begin{bmatrix}
+			1 & -1 & \color{red}0 \\
+			-2 & 3 & \color{red}0 \\
+			\color{red}0 & \color{red}0 & \color{red}0 \\
+		\end{bmatrix}
+		+
+		\begin{bmatrix}
+			\color{red}0 & -2 & 2 \\
+			\color{red}0 & -4 & 6 \\
+			\color{red}0 & \color{red}0 & \color{red}0 \\
+		\end{bmatrix}
+		+
+		\begin{bmatrix}
+			\color{red}0 & \color{red}0 & \color{red}0 \\
+			3 & -3 & \color{red}0 \\
+			-6 & 9 & \color{red}0 \\
+		\end{bmatrix}
+		+
+		\begin{bmatrix}
+			\color{red}0 & \color{red}0 & \color{red}0 \\
+			\color{red}0 & 4 & -4 \\
+			\color{red}0 & -8 & 12 \\
+		\end{bmatrix}
+		+ (-1)
+		\]
+		\[
+		Y =
+		\begin{bmatrix}
+			0 & 0 & -3 \\
+			0 & -1 & 1 \\
+			-7 & 0 & 11 \\
+		\end{bmatrix}
+		\]
+	\end{itemize}
+	
+\end{frame}
+
+\section{Advanced CNNs}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle}
+	\framesubtitle{\insertsection}
+	
+	\begin{itemize}
+		
+		\item Modern CNN architectures evolved to improve:
+		\begin{itemize}
+			\item feature extraction capability,
+			\item training stability,
+			\item computational efficiency,
+			\item accuracy on large-scale datasets.
+		\end{itemize}
+		
+		\item Key design trends:
+		\begin{itemize}
+			\item deeper networks,
+			\item smaller convolution kernels,
+			\item better regularization,
+			\item improved gradient propagation.
+		\end{itemize}
+		
+		\item Important milestones:
+		\begin{itemize}
+			\item LeNet-5
+			\item AlexNet
+			\item VGGNet
+			\item ResNet
+		\end{itemize}
+		
+	\end{itemize}
+	
+\end{frame}
+
+\subsection{LeNet-5}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection\ \cite{1998-lecun}}
+	
+	\begin{itemize}
+		
+		\item One of the first successful convolutional neural networks.
+		
+		\item Designed for handwritten digit recognition (MNIST).
+		
+		\item Main ideas:
+		\begin{itemize}
+			\item convolution layers,
+			\item subsampling (pooling),
+			\item fully connected classifier.
+		\end{itemize}
+		
+		\item Limitation:
+		\begin{itemize}
+			\item relatively shallow network,
+			\item limited computational resources at the time.
+		\end{itemize}
+		
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Architecture}
+	
+	\begin{columns}
+		
+		\column{0.2\textwidth}
+		\hgraphpage[\textwidth]{lenet-vert.pdf}
+		
+		\column{0.79\textwidth}
+		\hgraphpage[\textwidth]{lenet.pdf}
+	\end{columns}
+	
+	\begin{center}
+		Images from \cite{d2l}
+	\end{center}
+	
+\end{frame}
+
+\subsection{AlexNet}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection\ \cite{2012-krizhevsky-al}}
+	
+	\begin{itemize}
+		
+		\item Winner of the ImageNet 2012 competition.
+		
+		\item Demonstrated the effectiveness of deep CNNs on large datasets.
+		
+		\item Main innovations:
+		\begin{itemize}
+			\item deeper architecture,
+			\item GPU training,
+			\item ReLU activation,
+			\item dropout regularization,
+			\item data augmentation.
+		\end{itemize}
+		
+		\item Marked the beginning of modern deep learning in computer vision.
+		
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Architecture}
+	
+	\begin{center}
+		\hgraphpage[0.3\textwidth]{alexnet.pdf}
+		
+		From LeNet (left) to AlexNet (right). Image from \cite{d2l}
+	\end{center}
+	
+\end{frame}
+
+\subsection{VGGNet}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection\ \cite{2015-simonyan-zisserman}}
+	
+	\begin{itemize}
+		
+		\item Proposed by the Visual Geometry Group (Oxford, 2014).
+		
+		\item Key idea:
+		\begin{itemize}
+			\item use many small $3 \times 3$ convolutions instead of large kernels.
+		\end{itemize}
+		
+		\item Advantages:
+		\begin{itemize}
+			\item deeper feature extraction,
+			\item fewer parameters than large kernels,
+			\item simple and uniform architecture.
+		\end{itemize}
+		
+		\item Limitation:
+		\begin{itemize}
+			\item very computationally expensive,
+			\item large number of parameters.
+		\end{itemize}
+		
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Architecture}
+	
+	\begin{center}
+		\hgraphpage[0.55\textwidth]{vgg.pdf}
+		
+		From AlexNet to VGG. Image from \cite{d2l}
+	\end{center}
+	
+\end{frame}
+
+\subsection{ResNet}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection\ \cite{2016-he-al}}
+	
+	\begin{itemize}
+		
+		\item Introduced \keyword{residual connections} (skip connections).
+		
+		\item Key idea:
+		\begin{itemize}
+			\item learn residual mappings instead of direct mappings.
+		\end{itemize}
+		
+		\item Advantages:
+		\begin{itemize}
+			\item easier gradient propagation,
+			\item enables very deep networks,
+			\item reduces vanishing gradient problems.
+		\end{itemize}
+		
+		\item Residual block:
+		\[
+		y = F(x) + x
+		\]
+		
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Architecture}
+	
+	\begin{center}
+		\hgraphpage[\textwidth]{resnet18-90.pdf}
+		
+		The ResNet-18 architecture. Image from \cite{d2l}
+	\end{center}
+	
+\end{frame}
+
+\insertbibliography{DL02L-CNN}{*}
+
+
+
+\end{document}
