@@ -1,0 +1,1094 @@
+% !TEX TS-program = pdflatex
+% !TeX program = pdflatex
+% !TEX encoding = UTF-8
+% !TeX spellcheck = en_US
+
+\documentclass[xcolor=table]{beamer}
+
+\usepackage{../extra/beamer/karimml}
+
+\input{options2}
+
+\subtitle[RNNs]{Recurrent Neural Networks}  
+
+\changegraphpath{../img/RNN/}
+
+\begin{document}
+
+\begin{frame}
+	\frametitle{\inserttitle}
+	\framesubtitle{\insertshortsubtitle: Motivation}
+	
+	\begin{exampleblock}{Many AI tasks involve sequences}
+		\small\vskip-8pt
+		\begin{columns}
+			\column{0.4\textwidth}
+			\begin{itemize}
+				\item Natural language:
+				\begin{itemize}\footnotesize
+					\item Machine translation
+					\item Speech recognition
+					\item Sentiment analysis
+				\end{itemize}
+			\end{itemize}
+			
+			\column{0.3\textwidth}
+			\begin{itemize}
+				\item Time series:
+				\begin{itemize}\footnotesize
+					\item Stock prices
+					\item Weather forecasting
+					\item Sensor signals
+				\end{itemize}
+			\end{itemize}
+			
+			\column{0.28\textwidth}
+			\begin{itemize}
+				\item Biological sequences:
+				\begin{itemize}\footnotesize
+					\item DNA
+					\item Protein sequences
+				\end{itemize}
+			\end{itemize}
+		\end{columns}
+	\end{exampleblock}
+	
+	\vskip-6pt
+	
+	\begin{alertblock}{Problem}
+		Traditional feed-forward neural networks process each input independently and cannot naturally model temporal dependencies or context.
+	\end{alertblock}
+	
+	\vskip-6pt
+	
+	\begin{block}{Idea behind RNNs}
+		Recurrent Neural Networks introduce a \textbf{memory mechanism} allowing information from previous time steps to influence current predictions.
+	\end{block}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\inserttitle}
+	\framesubtitle{\insertshortsubtitle: Definitions}
+	
+	\begin{block}{Definition}
+		\vspace{6pt}
+		A ``\textit{Recurrent Neural Network}'' is an architecture of Neural Networks. 
+		In this one, there is a ``\textit{feed}'' back from the outputs of the neurons to the inputs throughout the network. \cite{2006-sazli}
+		
+		\vspace{6pt}
+		In other word, there is a temporal phenomena treated in the problem in question; current output depends on the past one.
+		\vspace{6pt}
+	\end{block}
+	
+	\begin{exampleblock}{Example}
+		\begin{itemize}
+			\item Predicting future weather based on some features, plus the current one
+		\end{itemize}
+	\end{exampleblock}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\inserttitle}
+	\framesubtitle{\insertshortsubtitle: Plan}
+	
+	\begin{multicols}{2}
+		%	\small
+		\tableofcontents
+	\end{multicols}
+\end{frame}
+
+\section{Traditional sequence processing}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle}
+	\framesubtitle{\insertsection}
+	
+	\begin{center}
+		\hgraphpage[0.7\textwidth]{temporal_dependencies.pdf}
+	\end{center}
+	
+%	\vspace{0.2cm}
+	
+	\begin{alertblock}{Key idea}
+		The interpretation of the current element depends on previous observations.
+	\end{alertblock}
+	
+\end{frame}
+
+\subsection{Sequential and temporal data}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection}
+	
+	\begin{block}{Sequential data}
+		Data where order matters. Observations are not independent.
+	\end{block}
+	
+	\begin{itemize}
+		
+		\item \textbf{Sequence representation}
+		\begin{itemize}
+			\item Input shape: $(m, t, d)$ (batch × time steps × feature dimension)
+			
+			\item Output shape depends on the task:
+			\begin{itemize}
+				
+				\item Sequence labeling: $(m, t, l)$ (batch × time steps × number of classes)
+				
+				\item Sequence classification: $(m, l)$ (batch × number of classes)
+				
+				\item Sequence generation: $(m, t', l)$ (batch × generated time steps × vocabulary/classes)
+				
+			\end{itemize}
+		\end{itemize}
+		
+		\item \textbf{Variable-length sequences}
+		\begin{itemize}
+			\item Different samples may contain different numbers of time steps.
+			\item Padding or masking is often used in mini-batch training.
+		\end{itemize}
+		
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Contextual dependencies}
+	
+	\begin{exampleblock}{Example}
+		``The animal did not cross the street because \textbf{it} was too tired.''
+	\end{exampleblock}
+	
+	\vspace{0.3cm}
+	
+	The interpretation of ``it'' depends on previous words.
+	
+	\vspace{0.3cm}
+	
+	\begin{center}
+		Current prediction $\leftarrow$ previous context
+	\end{center}
+	
+	\vspace{0.3cm}
+	
+	\begin{alertblock}{Problem}
+		The relevant information may appear far in the past.
+	\end{alertblock}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Some fun}
+	
+	\begin{center}
+		\vgraphpage{humor/humor-words-order.jpg}
+	\end{center}
+	
+\end{frame}
+
+\subsection{Markov assumption}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection}
+	
+	\begin{block}{Sequence prediction}
+		Given an input sequence:
+		\[
+		x = (x_1, x_2, \dots, x_n)
+		\]
+		predict:
+		\[
+		y = (y_1, y_2, \dots, y_n)
+		\]
+	\end{block}
+	
+	\vspace{0.3cm}
+	
+	Traditional approaches approximate:
+	
+	\[
+	p(y|x)
+	=
+	\prod_i
+	p(y_i \mid y_{i-l}, \dots, y_{i-1}, x_i)
+	\]
+	
+	\vspace{0.3cm}
+	
+	\begin{alertblock}{Markov assumption}
+		The current prediction depends only on a limited history window.
+	\end{alertblock}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Fixed-context window}
+	
+	\begin{center}
+		
+		\[
+		\dots \quad y_{t-5} \quad y_{t-4} \quad y_{t-3}
+		\quad
+		\fbox{$y_{t-2}$}
+		\quad
+		\fbox{$y_{t-1}$}
+		\quad
+		y_t
+		\]
+		
+	\end{center}
+	
+	\begin{exampleblock}{Example of a fixed-context window (size 3)}
+		\textbf{Task}: Part-of-speech tagging
+		
+		\textbf{Input}: The animal did not cross the street because \textbf{it} was too tired.
+		
+		\textbf{Output}: DET NOUN VERB PREP VERB 
+		\fbox{DET} \fbox{NOUN} \fbox{PREP} \textbf{??}
+	\end{exampleblock}
+	
+	Only a limited portion of the past is accessible.
+	
+	\begin{block}{Consequence}
+		Dependencies outside the context window cannot be modeled directly.
+	\end{block}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Some fun}
+	
+	\begin{center}
+		\vgraphpage{humor/humor-markov.jpg}
+	\end{center}
+	
+\end{frame}
+
+\subsection{Limitations}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Loss of long-term context}
+	
+	\begin{exampleblock}{Long dependency example}
+		``I grew up in \textbf{Algeria} \dots I know what \textbf{Sahhit} means.''
+	\end{exampleblock}
+	
+%	\vspace{0.3cm}
+	
+	The relation between: Algeria $\rightarrow$ Sahhit may span many intermediate words.
+	
+%	\vspace{0.3cm}
+	
+	\begin{alertblock}{Problem}
+		A fixed-size context window may miss relevant information.
+	\end{alertblock}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Need for memory}
+	
+	\begin{block}{Desired properties}
+		A sequence model should:
+		\begin{itemize}
+			\item Process variable-length sequences
+			\item Preserve past information
+			\item Learn contextual dependencies
+			\item Share parameters across time
+		\end{itemize}
+	\end{block}
+
+	\begin{block}{Idea}
+		\centering
+		Introduce a hidden state acting as a dynamic memory.
+		
+		$\Longrightarrow$ 
+		
+		Recurrent Neural Networks
+	\end{block}
+	
+\end{frame}
+
+
+
+\section{Recurrent neural networks}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle}
+	\framesubtitle{\insertsection}
+	
+	\begin{block}{From feedforward to sequential modeling}
+		Standard neural networks assume independent inputs:
+		\[
+		y = f(x)
+		\]
+		
+		They cannot naturally model temporal structure.
+	\end{block}
+	
+	\begin{block}{Key idea}
+		Introduce a state that evolves over time:
+		\[
+		h_t = \text{memory of past inputs}
+		\]
+		
+		\[
+		\Rightarrow \text{Recurrent Neural Networks}
+		\]
+	\end{block}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle}
+	\framesubtitle{\insertsection}
+	
+	\begin{center}
+		\vgraphpage{humor/humor-rnn-memory.jpg}
+	\end{center}
+	
+\end{frame}
+
+
+
+\subsection{Architecture}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection}
+	
+	\begin{minipage}{0.49\textwidth} 
+		\begin{itemize}
+			\item \optword{Elman network}
+			\begin{align*}
+				h_t = f(x_t W_x + \textcolor{red}{h_{t-1}} W_h + b_h) \\
+				\hat{y}_t = g(h_t W_y + b_y)
+			\end{align*}
+			
+			\item \optword{Jordan network}
+			\begin{align*}
+				h_t = f(x_t W_x + \textcolor{red}{\hat{y}_{t-1}} W_h + b_h) \\
+				\hat{y}_t = g(h_t W_y + b_y)
+			\end{align*}
+			
+			\item The same parameters are reused at all time steps.
+		\end{itemize}
+	\end{minipage}
+	%
+	\begin{minipage}{0.5\textwidth}
+		\hgraphpage[\textwidth]{RNN.pdf}
+	\end{minipage}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Implementation}
+	
+%	\begin{center}
+%		\hgraphpage[0.65\textwidth]{RNN_impl.pdf}
+%	\end{center}
+	
+	\begin{minipage}{0.65\textwidth}
+		\hgraphpage[\textwidth]{RNN_impl.pdf}
+	\end{minipage}
+	\begin{minipage}{0.3\textwidth}
+%		\scriptsize	
+		\tiny
+		$X \in \mathbb{R}^{m \times t \times 2} $
+		
+		\vskip5pt
+		$ Y \in \mathbb{R}^{m \times t \times 4}$
+		
+		\vskip5pt
+		$ H \in \mathbb{R}^{m \times t \times 3}$
+		
+		\vskip5pt
+		$W_x \in \mathbb{R}^{2 \times 3} = 
+		\begin{bmatrix}
+			0.5 & -0.5 & -2. \\
+			1. & -2.5 & 0.\\
+		\end{bmatrix}$
+		
+		\vskip5pt
+		$W_h \in \mathbb{R}^{3 \times 3}  = 
+		\begin{bmatrix}
+			-0.5 & 0. & -0.5\\
+			0. & 0.5 & 0.5 \\
+			1. & 0. & -0.5 \\
+		\end{bmatrix}$
+		
+		\vskip5pt
+		$b_h \in \mathbb{R}^{3} = [0., 2., 2.5]$
+		
+		\vskip5pt
+		$W_y \in \mathbb{R}^{3 \times 4} = $
+		
+		$\begin{bmatrix}
+			-1. & -1.5 & -1.5 & 1. \\
+			2.  & -1.5 & -2.5 & 0. \\
+			0.  & -1.5 & 1.5  & -1.5\\ 
+		\end{bmatrix}$
+		
+		\vskip5pt
+		$b_y \in \mathbb{R}^{4} = [-3., 4., -2.5, -4.]$
+	\end{minipage}
+	
+\end{frame}
+
+\subsection{Forward propagation and applications}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Forward propagation}
+	
+	Unfolding through time:
+	\begin{itemize}
+		\item The recurrent connection creates temporal dependencies.
+		\item The same cell is reused at every time step.
+		\item Unfolding converts the recurrent graph into a deep feed-forward graph.
+	\end{itemize}
+	
+	\hgraphpage[\textwidth]{RNN-exp.pdf}
+	
+\end{frame}
+
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Applications}
+	
+	\begin{tabular}{p{.32\textwidth}p{.15\textwidth}p{.4\textwidth}}
+		%					\hline\hline
+		\textbf{Type} & \textbf{Illustration} & \textbf{Example} \\
+		%					\hline
+		Many to many & 
+		\vgraphpage[1.4cm, valign=c]{RNN_m2m1.pdf} & 
+		Named entity detection \\
+		
+		%					\hline
+		Many to many (Seq2seq) & 
+		\vgraphpage[1.4cm, valign=c]{RNN_m2m2.pdf} & 
+		Machine translation \\
+		
+		%					\hline
+		Many to one & 
+		\vgraphpage[1.4cm, valign=c]{RNN_m2o.pdf} & 
+		Sentiment classification \\
+		
+		%					\hline
+		One to many & 
+		\vgraphpage[1.4cm, valign=c]{RNN_o2m.pdf} & 
+		Image caption generation \\
+		
+		%					\hline\hline
+		
+	\end{tabular}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Applications (Synchronous many-to-many)}
+	
+	\begin{minipage}{0.53\textwidth}
+		\begin{itemize}
+			\item Bias terms are omitted for simplicity.
+			\item $h_0$ is a predefined victor (zeroes mostly).
+		\end{itemize}
+		
+		\[ h_t = f(x_t, h_{t-1}, W_x, W_h)\]
+		
+		\[ \hat{y}_t = g(h_t, W_y)\]
+		
+		\[ J(\hat{y}, y) = \frac{1}{T} \sum_{t=1}^{T} j(\hat{y}_t, y_t)\]
+	\end{minipage}
+	\begin{minipage}{0.45\textwidth}
+		\hgraphpage[\textwidth]{RNN_m2m1_exp.pdf}
+	\end{minipage}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Applications (Seq2seq)}
+	
+	\begin{minipage}{0.45\textwidth}
+		\centering\vskip8pt
+		\textbf{Encoder}
+		
+		$h_0$ is a predefined victor
+		
+		\[ h^e_t = f^e(x_t, h^e_{t-1}, W^e_x, W^e_h) \]
+		
+		\[ J(\hat{y}, y) = \frac{1}{T'} \sum_{t=1}^{T'} j(\hat{y}_{t}, y_t)\]
+		
+	\end{minipage}
+	\begin{minipage}{0.45\textwidth}
+		\centering
+		\textbf{Decoder}
+		
+		$h^d_{0} = h^e_{T}$, $y_0$ is a predefined victor
+		
+		\[h^d_{t} = f^d(\hat{y}_{t-1}, h^d_{t-1}, W^d_x, W^d_h)\]
+		
+		\[ \hat{y}_{t} = g^d(h^d_{t-1}, W^d_y)\]
+	\end{minipage}
+	
+	\vspace{-12pt}
+	\begin{center}
+		\hgraphpage[0.8\textwidth]{RNN_m2m2_exp.pdf}
+	\end{center}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Applications (Many-to-one)}
+	
+	\begin{minipage}{0.4\textwidth}
+		\begin{center}
+			$h_0$ is a predefined victor
+		\end{center}
+		
+		\[ h_t = f(x_t, h_{t-1}, W_x, W_h)\]
+		
+		\[ \hat{y} = g(h_T, W_y)\]
+		
+		\[ J(\hat{y}, y) = j(\hat{y}, y)\]	
+	\end{minipage}
+	\begin{minipage}{0.58\textwidth}
+		\hgraphpage{RNN_m2o_exp.pdf}
+	\end{minipage}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Applications (One-to-many)}
+	
+	\begin{minipage}{0.4\textwidth}
+		
+		\[h_1  = f(y_{0}, x, W_x, W_h)\]
+		
+		\[h_{t} = f(\hat{y}_{t-1}, h_{t-1}, W_y, W_h)\]
+		
+		\[\hat{y}_{t} = g(h_{t}, W_y)\]
+		
+		\[ J(\hat{y}, y) = \frac{1}{T} \sum_{t=1}^{T} j(\hat{y}_{t}, y_t)\]
+	\end{minipage}
+	\begin{minipage}{0.58\textwidth}
+		\hgraphpage{RNN_o2m_exp.pdf}
+	\end{minipage}
+	
+\end{frame}
+
+\subsection{Backpropagation through time}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection}
+	
+	\begin{itemize}
+		
+		\item Define a cost function for each output.
+		
+		\item Use backpropagation through time (BPTT) \cite{1990-werbos}
+		\begin{itemize}
+			
+			\item Unroll the recurrent network over time.
+			
+			\item The resulting architecture becomes similar to a feed-forward network.
+			
+			\item Compute gradients backward starting from the last time step.
+			
+			\item Accumulate gradients across all time steps.
+			
+			\item Update the parameters after processing the whole sequence.
+			
+		\end{itemize}
+		
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Synchronous many-to-many}
+	
+	\begin{align*}
+		\frac{\partial J}{\partial W_y} & =
+		\frac{1}{T} \sum_{t=1}^{T} \frac{\partial j(\hat{y}_t, y_t)}{\partial W_y}
+		= \frac{1}{T} \sum_{t=1}^{T} \frac{\partial j(\hat{y}_t, y_t)}{\partial \hat{y}_t} 
+		\frac{\partial g(h_t, W_y)}{\partial W_y} \\
+		%		
+		\frac{\partial J}{\partial W_h} & = \frac{1}{T} \sum_{t=1}^{T} \frac{\partial j(\hat{y}_t, y_t)}{\partial W_h}
+		= \frac{1}{T} \sum_{t=1}^{T} \frac{\partial j(\hat{y}_t, y_t)}{\partial \hat{y}_t} 
+		\frac{\partial g(h_t, W_y)}{\partial h_t} 
+		\frac{\partial h_t}{\partial W_h} \\
+		\frac{\partial h_t}{\partial W_h} & = 
+		\frac{\partial f(x_t, h_{t-1}, W_x, W_h)}{\partial W_h} + 
+		\frac{\partial f(x_t, h_{t-1}, W_x, W_h)}{\partial h_{t-1}} \frac{\partial h_{t-1}}{\partial W_h} \\
+		%		
+		\frac{\partial J}{\partial W_x} & = 
+		\frac{1}{T} \sum_{t=1}^{T} \frac{\partial j(\hat{y}_t, y_t)}{\partial W_x}
+		= \frac{1}{T} \sum_{t=1}^{T} \frac{\partial j(\hat{y}_t, y_t)}{\partial \hat{y}_t} 
+		\frac{\partial g(h_t, W_y)}{\partial h_t} 
+		\frac{\partial h_t}{\partial W_x} \\
+		\frac{\partial h_t}{\partial W_x} & = 
+		\frac{\partial f(x_t, h_{t-1}, W_x, W_h)}{\partial W_x} + 
+		\frac{\partial f(x_t, h_{t-1}, W_x, W_h)}{\partial h_{t-1}} \frac{\partial h_{t-1}}{\partial W_x} \\
+	\end{align*}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Seq2seq}
+	
+	\begin{itemize}
+		\item Decoder cell is updated as synchronous many-to-many, replacing $x_t$ by $\hat{y}_{t-1}$
+		\item Encoder cell is updated as synchronous many-to-many, but without direct output
+	\end{itemize}
+	
+	\[\frac{\partial J}{\partial W^e_h} = \frac{\partial J}{\partial h^e_T} \frac{\partial h^e_T}{\partial W^e_h} 
+	\ \ \ \
+	\frac{\partial J}{\partial W^e_x}  = \frac{\partial J}{\partial h^e_T} \frac{\partial h^e_T}{\partial W^e_x} 
+	\]
+	\begin{align*}
+		%		\frac{\partial J}{\partial W^e_h} & = \frac{\partial J}{\partial h^e_t} \frac{\partial h^e_t}{\partial W^e_h} 
+		%		= \frac{\partial J}{\partial h^e_T} \prod_{t=1}^{T} \frac{\partial h^e_t}{\partial W^e_h}  \\
+		%%
+		%		\frac{\partial J}{\partial W^e_x} & = \frac{\partial J}{\partial h^e_t} \frac{\partial h^e_t}{\partial W^e_x} 
+		%		= \frac{\partial J}{\partial h^e_T} \prod_{t=1}^{T} \frac{\partial h^e_t}{\partial W^e_x}  \\
+		%		
+		\frac{\partial J}{\partial h^e_T} & = \frac{\partial J}{\partial h^d_0}
+		= \frac{1}{T'} \sum_{t=1}^{T'} \frac{\partial j(\hat{y}_t, y_t)}{\partial h^d_0} 
+		= \frac{1}{T'} \sum_{t=1}^{T'} 
+		\frac{\partial j(\hat{y}_t, y_t)}{\partial \hat{y}_t} 
+		\frac{\partial g(h^d_t, W^d_y)}{\partial h^d_t} 
+		\frac{\partial h^d_t}{\partial h^d_0}\\
+		%		 
+		\frac{\partial h^d_t}{\partial h^d_0} & = 
+		\frac{\partial f^d(\hat{y}_{t-1}, h^d_{t-1}, W^d_x, W^d_h)}{\partial h^d_{t-1}} \frac{\partial h^d_{t-1}}{\partial h^d_{0}} 
+		= \prod_{i=1}^{t} \frac{\partial f^d(\hat{y}_{i-1}, h^d_{i-1}, W^d_x, W^d_h)}{\partial h^d_{i-1}}\\
+	\end{align*}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Many-to-one}
+	
+	\begin{align*}
+		\frac{\partial J}{\partial W_y} & = \frac{\partial j(\hat{y}, y)}{\partial W_y}
+		= \frac{\partial j(\hat{y}, y)}{\partial \hat{y}} \frac{\partial g(h_T, W_y)}{\partial W_y} \\
+		%		
+		\frac{\partial J}{\partial W_h} & = \frac{\partial j(\hat{y}, y)}{\partial W_h}
+		= \frac{\partial j(\hat{y}, y)}{\partial \hat{y}} 
+		\frac{\partial g(h_T, W_y)}{\partial h_T} 
+		\frac{\partial h_T}{\partial W_h} \\
+		\frac{\partial h_t}{\partial W_h} & = 
+		\frac{\partial f(x_t, h_{t-1}, W_x, W_h)}{\partial W_h} + 
+		\frac{\partial f(x_t, h_{t-1}, W_x, W_h)}{\partial h_{t-1}} \frac{\partial h_{t-1}}{\partial W_h} \\
+		%		
+		\frac{\partial J}{\partial W_x} & = \frac{\partial j(\hat{y}, y)}{\partial W_x}
+		= \frac{\partial j(\hat{y}, y)}{\partial \hat{y}} 
+		\frac{\partial g(h_T, W_y)}{\partial h_T} 
+		\frac{\partial h_T}{\partial W_x} \\
+		\frac{\partial h_t}{\partial W_x} & = 
+		\frac{\partial f(x_t, h_{t-1}, W_x, W_h)}{\partial W_x} + 
+		\frac{\partial f(x_t, h_{t-1}, W_x, W_h)}{\partial h_{t-1}} \frac{\partial h_{t-1}}{\partial W_x} \\
+	\end{align*}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: One-to-many}
+	
+	\begin{itemize}
+		
+		\item The model generates a sequence from a single input.
+		
+		\item The initial hidden state is obtained from the input representation $h_0 = \phi(x)$;
+		where $\phi$ is an encoder (e.g., CNN for images).
+		
+		\item The decoder receives sequential inputs:
+		\begin{itemize}
+			\item a special start token at $t=1$,
+			\item previous target tokens during training,
+			\item previous predictions during inference.
+		\end{itemize}
+		
+		\item The recurrent decoder is trained similarly to synchronous many-to-many.
+		
+		\item Gradients are accumulated through time using BPTT.
+		
+	\end{itemize}
+	
+\end{frame}
+
+\section{Limitations}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle}
+	\framesubtitle{\insertsection}
+	
+	\begin{alertblock}{Main limitations of standard RNNs}
+		\begin{itemize}
+			\item Difficulty learning long-term dependencies
+			\item Vanishing gradients
+			\item Exploding gradients
+			\item Sequential computation
+		\end{itemize}
+	\end{alertblock}
+	
+	\vspace{0.4cm}
+	
+	\begin{center}
+		These limitations motivated gated architectures such as LSTM and GRU.
+	\end{center}
+	
+\end{frame}
+
+\subsection{Vanishing and exploding gradients}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Gradient flow}
+	
+	\begin{itemize}
+		\item During BPTT, gradients propagate through all previous states.
+		\item This introduces repeated multiplications:
+	\end{itemize}
+	
+	\vspace{0.2cm}
+	
+	\[
+	\frac{\partial h_t}{\partial h_{t-1}}
+	\frac{\partial h_{t-1}}{\partial h_{t-2}}
+	\cdots
+	\frac{\partial h_1}{\partial h_0}
+	\]
+	
+	\vspace{0.3cm}
+	
+	\begin{block}{Problem}
+		Repeated multiplication may:
+		\begin{itemize}
+			\item shrink gradients toward zero,
+			\item or make them grow uncontrollably.
+		\end{itemize}
+	\end{block}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Formulas}
+	
+	$\frac{\partial h_t}{\partial W_h}$ can be simplified:
+	\begin{align*}
+		\frac{\partial h_t}{\partial W_h}  = &
+		\frac{\partial f(x_t, h_{t-1}, W_x, W_h)}{\partial W_h} \\
+		& + 
+		\sum_{i=1}^{t-1} \left( {\color{red} \prod_{j=i+1}^{t} \frac{\partial f(x_j, h_{j-1}, W_x, W_h)}{\partial h_{j-1}}} \right)
+		\frac{\partial f(x_i, h_{i-1}, W_x, W_h)}{\partial W_h}\\
+	\end{align*}
+	
+	\begin{itemize}
+		\item Can result in \keyword{vanishing gradients} (e.g. \expword{$f=\sigma(\sum)$})
+		\item Also, \keyword{exploding gradients} (e.g. \expword{$f=ReLU(\sum)$})
+		\item Possible solution: Truncating time steps \cite{2002-jaeger}
+	\end{itemize}
+	
+\end{frame}
+
+\subsection{Long-term dependency problem}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection}
+	
+	\begin{exampleblock}{Example}
+		``I grew up in \textbf{Algeria} \dots I know what \textbf{Sahhit} means.''
+	\end{exampleblock}
+	
+	The model must retain relevant information across many time steps.
+	
+	\begin{alertblock}{Core limitation}
+		The hidden state $h_t \in \mathbb{R}^H$ is a fixed-size summary of all past inputs.
+	\end{alertblock}
+	
+	\begin{itemize}
+		\item Information must be continuously compressed at every step
+		\item Old information can be overwritten by new inputs
+		\item Long-range dependencies become harder to retrieve
+	\end{itemize}
+	
+	\begin{center}
+		This is a representational bottleneck, independent of gradient issues.
+	\end{center}
+	
+\end{frame}
+
+\subsection{Computational challenges}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection}
+	
+	\begin{block}{Sequential dependency}
+		Each hidden state depends on the previous one:
+		\[
+		h_t = f(x_t, h_{t-1})
+		\]
+	\end{block}
+	
+	\begin{itemize}
+		\item Computation across time steps is inherently sequential.
+		\item Parallelism is possible across the batch dimension.
+		\item Long sequences reduce hardware utilization efficiency.
+		\item Memory usage grows with sequence length due to stored activations.
+	\end{itemize}
+	
+	\begin{alertblock}{Consequence}
+		RNNs are difficult to scale efficiently to very long sequences.
+	\end{alertblock}
+	
+\end{frame}
+
+
+\section{Advanced RNNs}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle}
+	\framesubtitle{\insertsection}
+	
+	\begin{alertblock}{Why advanced recurrent architectures?}
+		Standard RNNs suffer from:
+		\begin{itemize}
+			\item Vanishing gradients
+			\item Difficulty modeling long-term dependencies
+			\item Unstable training
+		\end{itemize}
+	\end{alertblock}
+	
+	\vspace{0.4cm}
+	
+	\begin{block}{Main idea}
+		Introduce gating mechanisms to control information flow and memory updates.
+	\end{block}
+	
+\end{frame}
+
+\subsection{Long Short-Term Memory (LSTM)}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Architecture}
+	
+	\begin{minipage}{0.50\textwidth} 
+		\begin{itemize}
+			
+			\item $i$: \optword{Input gate}: 
+			Controls how much new information is added to the cell state.
+			
+			\item $f$: \optword{Forget gate}: 
+			Controls how much information from the previous cell state is retained.
+			
+		\end{itemize}
+	\end{minipage}
+	%
+	\begin{minipage}{0.49\textwidth}
+		\hgraphpage[\textwidth]{LSTM.pdf}
+	\end{minipage}
+	
+%	\vspace{0.2cm}
+	
+	\begin{itemize}
+		\item $o$: \optword{Output gate}: 
+		Controls how much information from the cell state is exposed to the hidden state.
+		\item $g$: \optword{Candidate state}: 
+		Represents new candidate information that may be added to the cell state.
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Equations}
+	\huge\vskip-24pt
+	\begin{align*}
+		f_t &= \sigma(W_f X_t + U_f h_{t-1} + b_f) \\
+		i_t &= \sigma(W_i X_t + U_i h_{t-1} + b_i) \\
+		g_t &= \tanh(W_g X_t + U_g h_{t-1} + b_g) \\
+		o_t &= \sigma(W_o X_t + U_o h_{t-1} + b_o) \\
+		c_t &= f_t \circ c_{t-1} \oplus i_t \circ g_t \\
+		h_t &= o_t \circ \tanh(c_t)
+	\end{align*}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Gradient propagation}
+	
+	The cell state evolves as: $c_t = f_t \circ c_{t-1} + i_t \circ g_t$
+	
+	Therefore: \[\frac{\partial c_t}{\partial c_{t-1}} = f_t\]
+	
+	Over multiple time steps: \[\frac{\partial c_t}{\partial c_k} = \prod_{i=k+1}^{t} f_i\]
+	
+	\begin{itemize}
+		\item Forget gates can preserve information: $f_t \approx 1$
+		
+		\item Gradients can flow through the cell state over long sequences.
+		
+		\item LSTMs mitigate the vanishing gradient problem.
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Some humor}
+	
+	\begin{center}
+		\hgraphpage[.5\textwidth]{humor/humor-lstm.jpg}
+	\end{center}
+	
+\end{frame}
+
+\subsection{Gated Recurrent Unit (GRU)}
+
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Architecture}
+	
+	\begin{minipage}{0.50\textwidth} 
+		\begin{itemize}
+			\item $z$: \optword{Update gate};
+			Merges LSTM's input and forget gates. 
+			\item $r$: \optword{Reset gate}; 
+			How much update from the past state?
+			\item $h'$: \optword{Candidate hidden state};
+			Current state.	
+		\end{itemize}
+	\end{minipage}
+	%
+	\begin{minipage}{0.49\textwidth}
+		\hgraphpage[\textwidth]{GRU.pdf}
+	\end{minipage}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Equations}
+	
+	{\huge\vskip-24pt
+		\begin{align*}
+			z_t &= \sigma(W_z X_t + U_z h_{t-1} + b_z) \\
+			r_t &= \sigma(W_r X_t + U_r h_{t-1} + b_r) \\
+			h'_t &= \tanh(W X_t + U (h_{t-1} \circ r_t) + b) \\
+			h_t &= z_t \circ h_{t-1} \oplus (1-z_t) \circ h'_t
+		\end{align*}
+	}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Gradient propagation}
+	
+	The hidden state evolves as:
+	
+	\[
+	h_t = z_t \circ h_{t-1} + (1-z_t) \circ h'_t
+	\]
+	
+	\vspace{0.3cm}
+	
+	Therefore:
+	
+	\[
+	\frac{\partial h_t}{\partial h_{t-1}}
+	=
+	z_t
+	+
+	(1-z_t)
+	\frac{\partial h'_t}{\partial h_{t-1}}
+	\]
+	
+	\vspace{0.3cm}
+	
+	\begin{itemize}
+		\item The update gate can preserve past information:
+		\[
+		z_t \approx 1
+		\]
+		
+		\item A direct path is maintained between successive hidden states.
+		
+		\item GRUs facilitate gradient propagation across long sequences.
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Some humor}
+	
+	\begin{center}
+		\vgraphpage{humor/humor-gru.png}
+	\end{center}
+	
+\end{frame}
+
+\subsection{Bidirectional and deep RNNs}
+
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Bidirectional RNN}
+	
+	\begin{center}
+		\hgraphpage[0.8\textwidth]{bi-rnn_exp.pdf}
+	\end{center}
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection: Deep RNN}
+	
+	\begin{center}
+		\hgraphpage[0.8\textwidth]{deep-rnn_exp.pdf}
+	\end{center}
+	
+\end{frame}
+
+%\subsection{Applications in NLP and time series}
+%
+%\begin{frame}
+%	\frametitle{\insertshortsubtitle: \insertsection}
+%	\framesubtitle{\insertsubsection}
+%	
+%\end{frame}
+
+\insertbibliography{DL03L-RNN}{*}
+
+\end{document}
