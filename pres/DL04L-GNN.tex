@@ -1,0 +1,164 @@
+% !TEX TS-program = pdflatex
+% !TeX program = pdflatex
+% !TEX encoding = UTF-8
+% !TeX spellcheck = en_US
+
+\documentclass[xcolor=table]{beamer}
+
+\usepackage{../extra/beamer/karimml}
+
+\input{options2}
+
+\subtitle[GNNs]{Graph Neural Networks}  
+
+\changegraphpath{../img/GNN/}
+
+\begin{document}
+
+\begin{frame}
+	\frametitle{\inserttitle}
+	\framesubtitle{\insertshortsubtitle: Motivation}
+	
+	https://distill.pub/2021/gnn-intro/
+	
+\end{frame}
+
+\begin{frame}
+	\frametitle{\inserttitle}
+	\framesubtitle{\insertshortsubtitle: Plan}
+	
+	\begin{multicols}{2}
+		%	\small
+		\tableofcontents
+	\end{multicols}
+\end{frame}
+
+\section{Graph structured data}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle}
+	\framesubtitle{\insertsection}
+	
+	\begin{itemize}
+		\item Graph definition
+		\item Nodes, edges, attributes
+		\item Directed vs. undirected graphs
+		\item Weighted graphs
+		\item Adjacency matrix
+	\end{itemize}
+	
+\end{frame}
+
+\subsection{Graph-level tasks}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection}
+	
+	
+\end{frame}
+
+\subsection{Node-level tasks}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection}
+	
+	
+\end{frame}
+
+\subsection{Edge-level tasks}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection}
+	
+	
+\end{frame}
+
+\section{Iterative GNNs}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle}
+	\framesubtitle{\insertsection}
+	
+	Formalism
+	
+\end{frame}
+
+\subsection{Message Passing Formalism}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection}
+	
+	
+\end{frame}
+
+\subsection{Aggregation methods}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection}
+	
+	
+\end{frame}
+
+\subsection{Limitations}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection}
+	
+	convergence issues,
+	iterative computation cost,
+	difficult backpropagation,
+	limited scalability.
+	
+\end{frame}
+
+\section{Deep GNNs}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle}
+	\framesubtitle{\insertsection}
+	
+	Formalism
+	
+\end{frame}
+
+\subsection{Layer-Based Architecture}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection}
+	
+	 
+	
+\end{frame}
+
+\subsection{Graph Convolutional Networks (GCN)}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection}
+	
+	neighborhood aggregation,
+	shared transformation matrix,
+	one-hop propagation,
+	stacking layers.
+	
+\end{frame}
+
+\subsection{Graph Attention Networks (GAT)}
+
+\begin{frame}
+	\frametitle{\insertshortsubtitle: \insertsection}
+	\framesubtitle{\insertsubsection}
+	
+	
+\end{frame}
+
+\insertbibliography{DL04L-GNN}{*}
+
+\end{document}

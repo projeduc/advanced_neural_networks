@@ -1,0 +1,581 @@
+% !TEX TS-program = pdflatex
+% !TeX program = pdflatex
+% !TEX encoding = UTF-8
+% !TeX spellcheck = en_US
+
+\documentclass[xcolor=table]{beamer}
+
+\usepackage{../extra/beamer/karimml}
+
+\input{options2}
+
+\subtitle[AE \& GANs]{Unsupervised deep learning}  
+
+\changegraphpath{../img/unsupervised/}
+
+
+
+\begin{document}
+	
+	\begin{frame}
+		\frametitle{\inserttitle}
+		\framesubtitle{\insertshortsubtitle: Motivation}
+		
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\inserttitle}
+		\framesubtitle{\insertshortsubtitle: Some humor}
+		
+		\begin{center}
+			\hgraphpage[0.9\textwidth]{humor/humor-unsupervised.jpg}
+		\end{center}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\inserttitle}
+		\framesubtitle{\insertshortsubtitle: Plan}
+		
+		\begin{multicols}{2}
+			%	\small
+			\tableofcontents
+		\end{multicols}
+	\end{frame}
+	
+	\section{Autoencoders}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle}
+		\framesubtitle{\insertsection}
+		
+		\begin{itemize}
+			\item It is a multi-layer neural network.
+			\item It learns a compressed latent representation of the data.
+			\item It is characterized by \cite{2016-keras}:
+			\begin{itemize}
+				\item Data-driven: unlike compression algorithms like JPEG.
+				\item Lossy reconstruction: the reconstructed output is not exactly identical to the input.
+				\item Unsupervised learning.
+			\end{itemize}
+			\item Unlike specialized codecs (e.g., JPEG), autoencoders are generally not optimized for practical data compression.
+		\end{itemize}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle}
+		\framesubtitle{\insertsection: Architecture}
+		
+		\hgraphpage[\textwidth]{AE.pdf}
+		
+	\end{frame}
+	
+	\subsection{Denoising autoencoder}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection}
+		
+		\hgraphpage[\textwidth]{AE-noise.pdf}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: Some application}
+		
+		\begin{itemize}
+			\item Improving the quality of speech (audio) \cite{2013-lu}.
+			\item Cleaning dirty documents (refer to this competition: \url{https://www.kaggle.com/c/denoising-dirty-documents}).
+			\item Retrieving historical documents \cite{2019-neji}.
+			\item Completing hidden parts of the face \cite{2017-li-al}.
+		\end{itemize}
+		
+	\end{frame}
+	
+	\subsection{Sparse autoencoder}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: Architecture}
+		
+		\hgraphpage[\textwidth]{AE-sparse.pdf}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: Description}
+		
+		\begin{itemize}
+			\item Often use hidden layers equal to or larger than the input size.
+			
+			\item They automatically learn useful latent features for downstream tasks such as classification.
+			
+			\item Without constraints, the network may learn a trivial identity mapping:
+			\[
+			x_i \rightarrow h_i \rightarrow x_i
+			\]
+			
+			\item Given an encoder $f$ and a decoder $g$, a sparsity penalty $\Omega$ is added to the hidden representation:
+			\[
+			\min \; J(x, g(f(x))) + \Omega(f(x))
+			\]
+			
+			\item $\Omega$ is commonly based on: L1 sparsity, and Kullback--Leibler divergence.
+			
+			\item Classical sparse autoencoders usually use a single hidden layer.
+			
+			\item Deep sparse autoencoders can use multiple hidden layers to learn hierarchical features.
+			
+		\end{itemize}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: KL sparsity regularization}
+		
+		\begin{itemize}
+			\item Sparse autoencoders encourage hidden neurons to activate rarely.
+			
+			\item Let:
+			\[
+			\hat{\rho}_j
+			=
+			\frac{1}{m}\sum_{i=1}^{m} h_j(x^{(i)})
+			\]
+			
+			be the average activation of hidden neuron $j$.
+			
+			\item A small target activation $\rho$ is imposed:
+			\[
+			\rho \ll 1
+			\]
+			
+			\item KL divergence penalizes deviations from the target sparsity:
+			
+			\[
+			KL(\rho \,||\, \hat{\rho}_j)
+			=
+			\rho \log \frac{\rho}{\hat{\rho}_j}
+			+
+			(1-\rho)\log\frac{1-\rho}{1-\hat{\rho}_j}
+			\]
+			
+			\item The final objective becomes:
+			
+			\[
+			J_{sparse}
+			=
+			J_{reconstruction}
+			+
+			\beta \sum_j KL(\rho \,||\, \hat{\rho}_j)
+			\]
+			
+		\end{itemize}
+		
+	\end{frame}
+	
+	\subsection{Variational autoencoder}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: Motivation}
+		
+		\begin{itemize}
+			\item Standard autoencoders learn deterministic latent representations.
+			
+			\item Similar inputs are often separated into isolated latent clusters.
+			
+			\item Random points sampled between clusters may not correspond to valid data.
+			
+			\item This makes content generation difficult.
+			
+			\item \textbf{Idea of VAE:}
+			\begin{itemize}
+				\item learn a smooth probabilistic latent space,
+				\item allow sampling and interpolation,
+				\item generate new realistic data.
+			\end{itemize}
+		\end{itemize}
+		
+	\end{frame}
+	
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: Vanilla AE vs. VAE}
+		
+		\begin{itemize}
+			\item {\scriptsize\url{https://github.com/projeduc/ESI_ML/blob/main/demos/NN/TF_Autoencoder.ipynb}}
+		\end{itemize}
+		
+		\begin{minipage}{0.47\textwidth} 
+			\begin{center}
+				Standard Autoencoder
+			\end{center}\vskip-6pt
+			\hgraphpage[\textwidth]{auto-enc.png}
+		\end{minipage}
+		%
+		\begin{minipage}{0.47\textwidth}
+			\begin{center}
+				Variational Autoencoder
+			\end{center}\vskip-6pt
+			\hgraphpage[\textwidth]{auto-enc-var.png}
+		\end{minipage}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: Architecture}
+		
+		\hgraphpage[\textwidth]{AE-var.pdf}
+		
+	\end{frame}
+	
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: Latent distribution}
+		
+		\begin{itemize}
+			\item Instead of learning a single latent vector, the encoder learns:
+			
+			\[
+			\mu(x), \sigma(x)
+			\]
+			
+			\item The latent vector is sampled from:
+			
+			\[
+			z \sim \mathcal{N}(\mu, \sigma^2)
+			\]
+			
+			\item Reparameterization trick:
+			
+			\[
+			z = \mu + \sigma \odot \epsilon
+			\]
+			
+			\[
+			\epsilon \sim \mathcal{N}(0, I)
+			\]
+			
+			\item This allows gradient backpropagation through stochastic sampling.
+			
+		\end{itemize}
+		
+	\end{frame}
+	
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: Loss function}
+		
+		\begin{itemize}
+			\item The objective contains:
+			
+			\begin{itemize}
+				\item reconstruction loss,
+				\item distribution regularization.
+			\end{itemize}
+			
+			\item Final objective:
+			
+%			\[
+%			J_{VAE}
+%			=
+%			J(x, \hat{x})
+%			+
+%			KL\left(
+%			\mathcal{N}(\mu, \sigma^2)
+%			\;||\;
+%			\mathcal{N}(0, I)
+%			\right)
+%			\]
+			
+			\item KL divergence encourages the latent space to remain close to a standard normal distribution.
+			
+			\item This produces smoother latent representations and improves sampling.
+			
+		\end{itemize}
+		
+	\end{frame}
+	
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: Practical remarks}
+		
+		\begin{itemize}
+			\item Without regularization, the learned distributions may become too broad.
+			
+			\item KL divergence constrains the latent distributions.
+			
+			\item The variance must remain positive:
+			
+			\[
+			\sigma > 0
+			\]
+			
+			\item In practice, the network learns:
+			
+			\[
+			\log \sigma^2
+			\]
+			
+			instead of directly learning $\sigma$.
+			
+		\end{itemize}
+		
+	\end{frame}
+	
+	\section{Deep generative models}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle}
+		\framesubtitle{\insertsection}
+		
+	\end{frame}
+	
+	\section{Generative Adversarial Networks (GANs)}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle}
+		\framesubtitle{\insertsection: Motivation}
+		
+		\begin{itemize}
+			\item Generative models learn the underlying distribution of the data.
+			\item Their goal is to generate new realistic samples.
+			\item Applications:
+			\begin{itemize}
+				\item Image generation
+				\item Face synthesis
+				\item Super-resolution
+				\item Style transfer
+				\item Data augmentation
+			\end{itemize}
+			\item GANs were introduced by \cite{2014-goodfellow-al}.
+		\end{itemize}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle}
+		\framesubtitle{\insertsection: Main idea}
+		
+		\begin{block}{Adversarial learning}
+			Two neural networks compete against each other:
+		\end{block}
+		
+		\begin{itemize}
+			\item \textbf{Generator (G)}
+			\begin{itemize}
+				\item Generates fake samples from random noise.
+				\item Tries to fool the discriminator.
+			\end{itemize}
+			
+			\item \textbf{Discriminator (D)}
+			\begin{itemize}
+				\item Receives real and generated samples.
+				\item Predicts whether a sample is real or fake.
+			\end{itemize}
+		\end{itemize}
+		
+		\begin{center}
+			\textbf{Generator vs Discriminator}
+		\end{center}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle}
+		\framesubtitle{\insertsection: Architecture}
+		
+		\hgraphpage[0.95\textwidth]{GAN.pdf}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle}
+		\framesubtitle{\insertsection: Generator}
+		
+		\begin{itemize}
+			\item Input:
+			\begin{itemize}
+				\item Random vector \(z\)
+				\item Usually sampled from a normal or uniform distribution
+			\end{itemize}
+			
+			\item Output:
+			\begin{itemize}
+				\item Synthetic sample \(\hat{x}\)
+			\end{itemize}
+			
+			\item Goal:
+			\begin{itemize}
+				\item Produce realistic data
+				\item Fool the discriminator
+			\end{itemize}
+		\end{itemize}
+		
+		\begin{align*}
+			z \sim \mathcal{N}(0,1)
+		\end{align*}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle}
+		\framesubtitle{\insertsection: Discriminator}
+		
+		\begin{itemize}
+			\item Binary classifier:
+			\begin{itemize}
+				\item Real sample \(\rightarrow 1\)
+				\item Fake sample \(\rightarrow 0\)
+			\end{itemize}
+			
+			\item Input:
+			\begin{itemize}
+				\item Real data \(x\)
+				\item Generated data \(G(z)\)
+			\end{itemize}
+			
+			\item Output:
+			\begin{itemize}
+				\item Probability that the sample is real
+			\end{itemize}
+		\end{itemize}
+		
+		\begin{align*}
+			D(x) \in [0,1]
+		\end{align*}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle}
+		\framesubtitle{\insertsection: Objective function}
+		
+		\begin{itemize}
+			\item The discriminator tries to maximize the classification accuracy.
+			\item The generator tries to minimize the discriminator's success.
+			\item Training is formulated as a minimax game.
+		\end{itemize}
+		
+		\begin{align*}
+			\min_G \max_D V(D,G) =
+			& \mathbb{E}_{x \sim p_{data}(x)}[\log D(x)] \\
+			+ &
+			\mathbb{E}_{z \sim p_z(z)}[\log(1 - D(G(z)))]
+		\end{align*}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle}
+		\framesubtitle{\insertsection: Training process}
+		
+		\begin{enumerate}
+			\item Sample real data from the dataset.
+			
+			\item Generate fake samples using the generator.
+			
+			\item Train the discriminator:
+			\begin{itemize}
+				\item Real samples labeled as 1
+				\item Fake samples labeled as 0
+			\end{itemize}
+			
+			\item Train the generator:
+			\begin{itemize}
+				\item Update \(G\) to fool \(D\)
+			\end{itemize}
+			
+			\item Repeat until convergence.
+		\end{enumerate}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle}
+		\framesubtitle{\insertsection: Challenges}
+		
+		\begin{itemize}
+			\item Training instability
+			\item Difficult convergence
+			\item Sensitive hyperparameters
+			\item Vanishing gradients
+			\item \textbf{Mode collapse}
+			\begin{itemize}
+				\item The generator produces limited varieties of samples.
+			\end{itemize}
+		\end{itemize}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle}
+		\framesubtitle{\insertsection: Variants}
+		
+		\begin{itemize}
+			\item \textbf{DCGAN}
+			\begin{itemize}
+				\item Uses convolutional neural networks.
+			\end{itemize}
+			
+			\item \textbf{Conditional GAN (CGAN)}
+			\begin{itemize}
+				\item Generation conditioned on labels or text.
+			\end{itemize}
+			
+			\item \textbf{CycleGAN}
+			\begin{itemize}
+				\item Image-to-image translation.
+			\end{itemize}
+			
+			\item \textbf{StyleGAN}
+			\begin{itemize}
+				\item High-quality face generation.
+			\end{itemize}
+		\end{itemize}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle}
+		\framesubtitle{\insertsection: Applications}
+		
+		\begin{itemize}
+			\item Face generation
+			\item Deepfake synthesis
+			\item Image super-resolution
+			\item Art generation
+			\item Medical image synthesis
+			\item Data augmentation
+			\item Image restoration
+		\end{itemize}
+		
+	\end{frame}
+	
+%	\begin{frame}
+%		\frametitle{\insertshortsubtitle}
+%		\framesubtitle{\insertsection: Example}
+%		
+%		\begin{center}
+%			\hgraphpage[0.9\textwidth]{GAN-example.jpg}
+%		\end{center}
+%		
+%	\end{frame}
+	
+	
+	
+	
+	\insertbibliography{DL05L-Unsupervised}{*}
+	
+\end{document}

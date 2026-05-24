@@ -246,3 +246,46 @@
 	\belowdisplayskip=0pt
 	\belowdisplayshortskip=0pt
 }
+
+%\AtBeginSubsection[]{
+%	\begin{frame}
+%		\begingroup
+%		\setbeamertemplate{headline}{}
+%		\centering
+%		%	{\usebeamerfont{section name}\usebeamercolor[fg]{section name}\sectionname~\insertsectionnumber: \subsectionname~\insertsubsectionnumber}
+%		{\Large \insertsection}
+%		\usebeamercolor{section title}\vskip1em\par
+%		\begin{tcolorbox}[
+%			colback=white,
+%			colframe=violet,  
+%			boxrule=2pt,
+%			arc=10pt,
+%			valign=center, 
+%			halign=center,
+%			height=2cm,
+%			width=\textwidth]
+%			\color{violet}\usebeamerfont{section title}\insertsubsection
+%		\end{tcolorbox}
+%		\endgroup
+%	\end{frame}
+%}
+
+\newenvironment{subsectionframe}
+{
+	\begin{frame}[t]
+		\begin{tcolorbox}[
+			colback=white,
+			colframe=violet,  
+			boxrule=2pt,
+			arc=10pt,
+			valign=center, 
+			halign=center,
+			height=1cm,
+			width=\textwidth]
+			\color{violet}\usebeamerfont{section title}\insertsubsection
+		\end{tcolorbox}
+	
+}{
+\vfill
+\end{frame}
+}

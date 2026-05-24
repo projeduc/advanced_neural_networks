@@ -1,0 +1,1006 @@
+% !TEX TS-program = pdflatex
+% !TeX program = pdflatex
+% !TEX encoding = UTF-8
+% !TeX spellcheck = en_US
+
+\documentclass[xcolor=table]{beamer}
+
+\usepackage{../extra/beamer/karimml}
+
+\input{options2}
+
+\subtitle[Attention]{Attention}  
+
+\changegraphpath{../img/attention/}
+
+\begin{document}
+	
+	\begin{frame}
+		\frametitle{\inserttitle}
+		\framesubtitle{\insertshortsubtitle: Motivation}
+		
+		
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\inserttitle}
+		\framesubtitle{\insertshortsubtitle: Plan}
+		
+		\begin{multicols}{2}
+			%	\small
+			\tableofcontents
+		\end{multicols}
+	\end{frame}
+	
+	\section{Sequence models}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle}
+		\framesubtitle{\insertsection}
+		
+		\begin{itemize}
+			\item Sequence models aim to process variable-length structured data.
+			\item Goal: learn dependencies across time or token positions.
+			\item Challenge: modeling long-range interactions efficiently.
+		\end{itemize}
+		
+	\end{frame}
+	
+	\subsection{Sequential data}
+	
+	\begin{subsectionframe}
+		\begin{itemize}
+			\item \textbf{Definition}:
+			\begin{itemize}
+				\item Ordered data where each element depends on position in time or sequence.
+			\end{itemize}
+			
+			\item \textbf{Examples}:
+			\begin{itemize}
+				\item Text: words in a sentence or document.
+				\item Speech: audio frames over time.
+				\item Time series: financial or sensor data.
+			\end{itemize}
+			
+			\item \textbf{Key property}:
+			\begin{itemize}
+				\item Order matters; permutation changes meaning.
+			\end{itemize}
+			
+		\end{itemize}
+	\end{subsectionframe}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection}
+		
+		\begin{block}{Sequential data}
+			Data where order matters. Observations are not independent.
+		\end{block}
+		
+		\begin{itemize}
+			
+			\item \textbf{Sequence representation}
+			\begin{itemize}
+				\item Input shape: $(m, t, d)$ (batch × time steps × feature dimension)
+				
+				\item Output shape depends on the task:
+				\begin{itemize}
+					
+					\item Sequence labeling: $(m, t, l)$ (batch × time steps × number of classes)
+					
+					\item Sequence classification: $(m, l)$ (batch × number of classes)
+					
+					\item Sequence generation: $(m, t', l)$ (batch × generated time steps × vocabulary/classes)
+					
+				\end{itemize}
+			\end{itemize}
+			
+			\item \textbf{Variable-length sequences}
+			\begin{itemize}
+				\item Different samples may contain different numbers of time steps.
+				\item Padding or masking is often used in mini-batch training.
+			\end{itemize}
+			
+		\end{itemize}
+		
+	\end{frame}
+	
+	\subsection{Sequence to sequence model}
+	
+	\begin{subsectionframe}
+		\begin{itemize}
+			
+			\item \textbf{Architecture}:
+			\begin{itemize}
+				\item Encoder maps input sequence to a fixed representation.
+				\item Decoder generates output sequence step-by-step.
+			\end{itemize}
+			
+			\item \textbf{Training objective}:
+			\begin{itemize}
+				\item Maximize probability of target sequence given source sequence.
+			\end{itemize}
+			
+		\end{itemize}
+	\end{subsectionframe}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection}
+		
+		\begin{center}
+			\hgraphpage[0.8\textwidth]{seq2seq_exp.pdf}
+		\end{center}
+		
+		\begin{itemize}
+			\item Encoder--Decoder architecture for sequence transduction.
+			\item Suffers from information bottleneck in long sequences.
+			\item Decoder relies on fixed-size context vector.
+		\end{itemize}
+		
+		
+	\end{frame}
+	
+	\subsection{Limitations}
+	
+	\begin{subsectionframe}
+		\begin{itemize}
+			
+			\item \textbf{Long-range dependency problem}:
+			\begin{itemize}
+				\item Difficulty capturing relationships between distant tokens.
+			\end{itemize}
+			
+			\item \textbf{Information bottleneck}:
+			\begin{itemize}
+				\item Entire sequence compressed into a fixed-size vector.
+			\end{itemize}
+			
+			\item \textbf{Sequential computation}:
+			\begin{itemize}
+				\item RNN-based models cannot be fully parallelized.
+			\end{itemize}
+			
+		\end{itemize}
+	\end{subsectionframe}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection}
+		
+		\begin{itemize}
+			\item \textbf{Key idea}:
+			\begin{itemize}
+				\item Instead of compressing all information into one vector, we compute dynamic relevance between tokens.
+			\end{itemize}
+			
+			\item \textbf{Solution}:
+			\begin{itemize}
+				\item Attention mechanisms allow direct access to all input states.
+			\end{itemize}
+			
+			\item \textbf{Result}:
+			\begin{itemize}
+				\item Better handling of long-range dependencies and improved interpretability.
+			\end{itemize}
+		\end{itemize}
+		
+	\end{frame}
+	
+	\section{Attention mechanism}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle}
+		\framesubtitle{\insertsection}
+		
+		\begin{center}
+			\hgraphpage[0.8\textwidth]{seq2seq_att_exp.pdf}
+		\end{center}
+		
+		\vskip-6pt
+		\begin{itemize}
+			\item Keep $T$ hidden states from the encoder: $h_i$
+			\item For each $s_{t-1}$, calculate its alignment with the hidden states.
+			$ e_{t, i} = a(s_{t-1}, h_i) $
+			\item Normalize alignment scores into attention weights: $\alpha_{t, i} = \text{softmax}(e_{t, i})$
+			\item Calculate the state vector $c_t = \sum_{i=1}^{T} \alpha_{t, i} h_i$
+		\end{itemize}
+		
+	\end{frame}
+	
+	\subsection{Formalism}
+	
+	\begin{subsectionframe}
+		\begin{itemize}
+			\item Learn:
+			\begin{itemize}
+				\item Keys ($k_i$): representations used to compute attention scores.
+				\item Values ($v_i$): representations combined to form the output/context vector.
+				\item Queries ($q_j$): representations seeking relevant information.
+			\end{itemize}
+			\item Calculate the similarity between $q_j$ and $k_i$.
+			\item Construct a new representation from this similarity and $v_i$.
+			\item Seq2seq attention is a special case of the general attention mechanism.
+		\end{itemize}
+	\end{subsectionframe}
+	
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: General attention}
+		
+		\hgraphpage[\textwidth]{attention.pdf}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: Description (One sample)}
+		
+		\begin{itemize}
+		\item Let $ w_1 \cdots w_{T_s} $ be a source sequence, $x_i = Embedding_{src}(w_i)$
+		\[k_i =  x_i W^K \in \mathbb{R}^{d_k} \hskip2cm v_i =  x_i W^V \in \mathbb{R}^{d_v}\]
+		
+		\item Let $ w'_j $ be the current target word, $y_j = Embedding_{dst}(w'_j)$
+		\[q_j =  y_j W^Q \in \mathbb{R}^{d_k}\]
+
+		\item Calculate a similarity between $q_j$ and each key $ k_i $
+		\[e_i = a(q_j, k_i)\]
+		
+		\item Calculate the attention probabilities (softmax can be masked)
+		\[\alpha_i = Softmax(e_i) = \frac{exp(e_i)}{\sum_k exp(e_k)}\] 
+		
+		\item The output is computed as a weighted sum of value vectors:
+		\[Attention(q_j, K, V) = \sum_{i=1}^{T_s} \alpha_i v_i\]
+		\end{itemize}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: Description (Batch)}
+		
+		\begin{itemize}
+			\item $X \in \mathbb{R}^{m \times T_s \times d_x}$ is a source sequence with $m$ samples and $T_s$ time steps
+			\[W^K \in \mathbb{R}^{d_x \times d_k} \hskip2cm W^V \in \mathbb{R}^{d_x \times d_v}\]
+			\[K =  X W^K \in \mathbb{R}^{m \times T_s \times d_k} \hskip2cm V =  X W^V \in \mathbb{R}^{m \times T_s \times d_v}\]
+			
+			\item $Y \in \mathbb{R}^{m \times T_t \times d_y}$ is a target sequence with $m$ samples and $T_d$ time steps
+			\[W^Q \in \mathbb{R}^{d_y \times d_k} \hskip2cm Q =  Y W^Q \in \mathbb{R}^{m \times T_t \times d_k}\]
+			
+			\item Calculate similarities between $Q$ and each key $K$
+			\[E = a(Q, K) \in \mathbb{R}^{m \times T_t \times T_s} \]
+			
+			\item Calculate the attention probabilities (softmax can be masked):
+			\[A = Softmax(E) \in \mathbb{R}^{m \times T_t \times T_s} \] 
+			
+			\item The output is computed as a weighted sum of value vectors:
+			\[Attention(Q, K, V) = A V \in \mathbb{R}^{m \times T_t \times d_v}\]
+		\end{itemize}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: Numerical example}
+		
+		\begin{center}
+			\vgraphpage{attention_exp.pdf}
+		\end{center}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: Gradients}
+		
+		\begin{itemize}
+			
+			\item Forward relations:
+			$
+			O = AV, \quad
+			A = \text{Softmax}(E), \quad
+			E = a(Q,K)$
+			
+			
+			\item Let upstream gradient:
+			$
+			G = \frac{\partial \mathcal{L}}{\partial O}$
+			
+			
+			\item Gradient w.r.t. values:
+			$
+			\frac{\partial \mathcal{L}}{\partial V}
+			= A^\top G$
+			
+			
+			\item Gradient w.r.t. attention weights:
+			$
+			\frac{\partial \mathcal{L}}{\partial A}
+			= G V^\top$
+			
+			
+			\item Softmax backprop:
+			\[
+			\frac{\partial \mathcal{L}}{\partial E_i}
+			=
+			A_i \left(
+			H_i - \sum_{k} H_k A_k
+			\right)
+			\quad \text{where } H = \frac{\partial \mathcal{L}}{\partial A}
+			\]
+			
+			\item Final propagation:
+			\[
+			\frac{\partial \mathcal{L}}{\partial Q}, \quad
+			\frac{\partial \mathcal{L}}{\partial K} \quad
+			\text{via chain rule through} \quad
+			E = a(Q,K)
+			\]
+			
+		\end{itemize}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: Some humor}
+		
+		\begin{center}
+			\vgraphpage{humor/humor-attention.jpeg}
+		\end{center}
+		
+	\end{frame}
+	
+	\subsection{Attention functions}
+	
+	\begin{subsectionframe}
+		\begin{itemize}
+			\item \textbf{Objective}:
+			\begin{itemize}
+				\item Calculate the similarity between a query and keys
+			\end{itemize}
+			\item \textbf{Types}:
+			\begin{itemize}
+				\item \optword{Non parametric}: hard-coded functions.
+				\item \optword{Parametric}: learn parameters for the similarity.
+			\end{itemize}
+			\item For simplicity, we omit the batch dimension.
+			\[Q \in \mathbb{R}^{T_t \times d_k}, \, K \in \mathbb{R}^{T_s \times d_k}, \, a(Q, K) \in \mathbb{R}^{T_t \times T_s}, V \in \mathbb{R}^{T_s \times d_v} \]
+		\end{itemize}
+	\end{subsectionframe}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: Non parametric (Dot product)}
+		
+		\begin{itemize}
+			\item \textbf{Objective}:
+			\begin{itemize}
+				\item Measure compatibility between queries and keys.
+			\end{itemize}
+			
+			\item \textbf{Mostly used}:
+			\begin{itemize}
+				\item Simple attention mechanisms.
+				\item Early neural attention models.
+				\item When query and key representations share the same vector space.
+			\end{itemize}
+			
+			\item \textbf{Forward pass}:
+			\[E = a(Q, K) = Q K^\top\]
+			
+			\item \textbf{Backward pass (Gradients)}:
+			\[
+			\frac{\partial \mathcal{L}}{\partial Q}
+			=
+			\frac{\partial \mathcal{L}}{\partial E} K
+			\hskip1cm
+			\frac{\partial \mathcal{L}}{\partial K}
+			=
+			\left(
+			\frac{\partial \mathcal{L}}{\partial E}
+			\right)^\top Q
+			\]
+			
+		\end{itemize}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: Non parametric (Scaled dot product)}
+		
+		\begin{itemize}
+			\item \textbf{Objective}:
+			\begin{itemize}
+				\item Prevent excessively large dot products when $d_k$ increases.
+				\item Stabilize gradients for high-dimensional representations.
+			\end{itemize}
+			
+			\item \textbf{Mostly used}:
+			\begin{itemize}
+				\item Transformers.
+				\item Multi-head attention.
+				\item Modern large language models (LLMs).
+			\end{itemize}
+			
+			\item \textbf{Forward pass}:
+			\[E = a(Q, K) = \frac{Q K^\top}{\sqrt{d_k}}\]
+			
+			\item \textbf{Backward pass (Gradients)}:
+			\[
+			\frac{\partial \mathcal{L}}{\partial Q}
+			=
+			\frac{1}{\sqrt{d_k}}
+			\frac{\partial \mathcal{L}}{\partial E} K
+			\hskip1cm
+			\frac{\partial \mathcal{L}}{\partial K}
+			=
+			\frac{1}{\sqrt{d_k}}
+			\left(
+			\frac{\partial \mathcal{L}}{\partial E}
+			\right)^\top Q
+			\]
+			
+		\end{itemize}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: Non parametric (Cosine similarity)}
+		
+		\begin{itemize}
+			\item \textbf{Objective}:
+			\begin{itemize}
+				\item Measure angular similarity between vectors.
+				\item Reduce sensitivity to vector magnitude.
+			\end{itemize}
+			
+			\item \textbf{Mostly used}:
+			\begin{itemize}
+				\item Information retrieval.
+				\item Semantic search.
+				\item Sentence/document embeddings.
+			\end{itemize}
+			
+			\item \textbf{Forward pass}:
+			\[
+			e_{ij} = a(q_i, k_j) = \frac{q_i k_j^\top}{||q_i|| \, ||k_j||}
+			\]
+			
+			\item \textbf{Backward pass (Gradients)}:
+			\[
+			\frac{\partial \mathcal{L}}{\partial q_i}
+			=
+			\sum_j \delta_{ij} \left( \frac{k_j}{||q_i|| ||k_j||} - \frac{e_{ij}}{||q_i||^2} q_i \right)
+			\hskip1cm
+			\frac{\partial \mathcal{L}}{\partial k_j}
+			=
+			\sum_i \delta_{ij} \left( \frac{q_i}{||q_i|| ||k_j||} - \frac{e_{ij}}{||k_j||^2} k_j \right)
+			\]
+			
+		\end{itemize}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: Parametric (Additive attention)}
+		
+		\begin{itemize}
+			\item Additive attention (Bahdanau Attention)
+			
+			\item \textbf{Objective}:
+			\begin{itemize}
+				\item Learn a nonlinear similarity function.
+			\end{itemize}
+			
+			\item \textbf{Used for}:
+			\begin{itemize}
+				\item Sequence-to-sequence alignment (e.g., machine translation)
+				\item Soft alignment between query and key vectors
+				\item Capturing non-linear similarity between representations
+			\end{itemize}
+			
+			\item \textbf{Forward pass}:
+			\[e_{ij} = a(q_i, k_j) = v^\top \tanh(W_q q_i + W_k k_j)\]
+			
+			\item \textbf{Backward pass (Gradients)}:
+			\small
+			\[
+			\frac{\partial \mathcal{L}}{\partial q_i}
+			=
+			\sum_j \delta_{ij}\, W_q^\top \left( \left(1 - \tanh^2(z_{ij})\right) \odot v \right)
+			\hskip.5cm
+			\frac{\partial \mathcal{L}}{\partial k_j}
+			=
+			\sum_i \delta_{ij}\,
+			W_k^\top \left( (1 - \tanh^2(z_{ij})) \odot v \right)
+			\]
+			
+			\normalsize where: $z_{ij} = W_q q_i + W_k k_j$ and $ \delta_{ij} =  \frac{\partial \mathcal{L}}{\partial e_{ij}}$
+			
+		\end{itemize}
+	\end{frame}
+	
+	\subsection{Multi-Head Attention}
+	
+	\begin{subsectionframe}
+		\begin{itemize}
+			\item \textbf{Objective}:
+			\begin{itemize}
+				\item Learn different representations similar to multiple filters in CNNs.
+			\end{itemize}
+			
+			\item \textbf{Used for}:
+			\begin{itemize}
+				\item Capturing multiple types of relationships simultaneously (syntax, semantics, position)
+				\item Improving representation capacity in Transformer models
+				\item Machine translation, language modeling, and sequence understanding tasks
+			\end{itemize}
+			
+			\item \textbf{Advantages}:
+			\begin{itemize}
+				\item Learn different semantic relationships in parallel.
+				\item Attend to information from different representation subspaces.
+			\end{itemize}
+		\end{itemize}
+	\end{subsectionframe}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: Architecture}
+		
+		\begin{figure}
+			\centering
+			\hgraphpage[0.9\textwidth]{multi_head_att_.pdf}
+			
+			%		\vskip-12pt
+			\caption{Multi-Head Attention \cite{2017-vaswani-al}}
+		\end{figure}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: Formulas}
+		
+		\[Q \in \mathbb{R}^{T_t \times d_m}, \, K \in \mathbb{R}^{T_s \times d_m}, \, MultiHead(Q, K, V) \in \mathbb{R}^{T_t \times d_m}, V \in \mathbb{R}^{T_s \times d_m} \]
+		
+		\[W^Q_i \in \mathbb{R}^{d_m \times d_k}, \,  W^K_i \in \mathbb{R}^{d_m\times d_k}, \, W^V_i \in \mathbb{R}^{d_m \times d_v}, \, W^O \in \mathbb{R}^{h d_v \times d_m}\]
+		
+		\[head_i = Attention(Q W^Q_i, K W^K_i, V W^V_i)\]
+		
+		\[MultiHead(Q, K, V) = Concat(head_1, \ldots, head_h) \cdot W^O\]
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: Some humor}
+		
+		\begin{center}
+			\vgraphpage{humor/humor-multihead.jpg}
+		\end{center}
+		
+	\end{frame}
+	
+	\subsection{Self-attention}
+	
+	\begin{subsectionframe}
+		\begin{itemize}
+			\item \textbf{Objective}:
+			\begin{itemize}
+				\item Learn to represent a token based on its context (neighbors)
+			\end{itemize}
+			
+			\item \textbf{Used for}:
+			\begin{itemize}
+				\item Contextual token representation in language models
+				\item Sequence modeling (NLP, speech, time series)
+				\item Capturing long-range dependencies in sequences
+			\end{itemize}
+			
+			\item \textbf{Characteristics}:
+			\begin{itemize}
+				\item Queries, keys, and values come from the same sequence.
+				\item Enables contextual encoding of tokens.
+				\item Forms the basis of transformers.
+			\end{itemize}
+		\end{itemize}
+	\end{subsectionframe}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: Description}
+		
+		\begin{itemize}
+%			\item \textbf{GOAL}: Encode an element of a sequence with respect to the entire sequence.
+			\item \textbf{Example}: \expword{Encode a word with respect to the sentence to capture its semantics}.
+			\item \textbf{Method}:
+			\begin{itemize}
+				\item Use linear projections to compute queries, keys, and values.
+				\item Set the maximum number of elements in a sequence.
+				\item Truncate sequences that exceed this number.
+				\item Pad those that do not reach this number with a predefined code.
+				\item Optionally use multi-head attention to learn multiple representations.
+				\item Add positional embeddings to retain positional information in the sequence.
+			\end{itemize}
+		\end{itemize}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: Example}
+		
+		\begin{center}
+			\vgraphpage{self-attention_exp.pdf}
+		\end{center}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: Some humor}
+		
+		\hgraphpage{humor/humor-self-attention.jpg}
+		
+	\end{frame}
+	
+	\section{Transformers}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle}
+		\framesubtitle{\insertsection}
+		
+		\begin{itemize}
+			\item \textbf{Introduced in}:
+			\begin{itemize}
+				\item \textit{Attention Is All You Need} \cite{2017-vaswani-al}
+			\end{itemize}
+			
+			\item \textbf{Main idea}:
+			\begin{itemize}
+				\item Replace recurrent computation with attention mechanisms.
+			\end{itemize}
+			
+			\item \textbf{Advantages}:
+			\begin{itemize}
+				\item Parallel computation.
+				\item Better modeling of long-range dependencies.
+				\item Scalable training on large corpora.
+			\end{itemize}
+		\end{itemize}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle}
+		\framesubtitle{\insertsection: Some humor}
+		
+		\begin{center}
+			\vgraphpage{humor/humor-transformer.png}
+		\end{center}
+		
+	\end{frame}
+	
+	\subsection{Architecture}
+	
+	\begin{subsectionframe}
+		\begin{itemize}
+			
+			\item \textbf{Core components}:
+			\begin{itemize}
+				\item Encoder stack and decoder stack.
+				\item Multi-head attention and feed-forward layers.
+			\end{itemize}
+			
+			\item \textbf{Key idea}:
+			\begin{itemize}
+				\item Model relationships between all tokens using self-attention.
+			\end{itemize}
+			
+			\item \textbf{Advantages}:
+			\begin{itemize}
+				\item Parallelizable training.
+				\item Efficient long-range dependency modeling.
+			\end{itemize}
+			
+		\end{itemize}
+	\end{subsectionframe}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection}
+		
+		\begin{minipage}{0.49\textwidth}
+			\begin{figure}
+				\centering
+				\hgraphpage[0.68\textwidth]{transformers_.pdf}
+				%			\vskip-8pt
+				\caption{Transformers' architecture \cite{2017-vaswani-al}}
+			\end{figure}
+		\end{minipage}
+		\begin{minipage}{0.1\textwidth}
+			=
+		\end{minipage}
+		\begin{minipage}{0.39\textwidth}
+			\hgraphpage[\textwidth]{transformers.pdf}
+		\end{minipage}
+		
+	\end{frame}
+	
+	\subsection{Encoder}
+	
+	\begin{subsectionframe}
+		\begin{itemize}
+			
+			\item \textbf{Objective}:
+			\begin{itemize}
+				\item Learn contextual representations of input tokens.
+			\end{itemize}
+			
+			\item \textbf{Components}:
+			\begin{itemize}
+				\item Multi-head self-attention.
+				\item Feed-forward neural networks.
+				\item Residual connections and normalization.
+			\end{itemize}
+			
+			\item \textbf{Characteristics}:
+			\begin{itemize}
+				\item Bidirectional context modeling.
+				\item Parallel processing of tokens.
+			\end{itemize}
+			
+		\end{itemize}
+	\end{subsectionframe}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection}
+		
+		\begin{itemize}
+			\item Encodes each input element based on its context (the entire input).
+			\item Uses multi-head self-attention
+			\item Completely bi-directional
+			\begin{itemize}
+				\item In BiRNN architecture, the encoder represents long-term relation indirectly (using a context).
+				\item In Encoders it is directly represented, but the notion of element's position is lost.
+			\end{itemize} 
+			\item We can introduce position's embedding into the word's initial representation (before being transformed into keys, values and queries).
+		\end{itemize}
+		
+	\end{frame}
+	
+	\subsection{Decoder}
+	
+	\begin{subsectionframe}
+		\begin{itemize}
+			
+			\item \textbf{Objective}:
+			\begin{itemize}
+				\item Generate output tokens sequentially.
+			\end{itemize}
+			
+			\item \textbf{Components}:
+			\begin{itemize}
+				\item Masked self-attention.
+				\item Encoder-decoder attention.
+				\item Feed-forward neural networks.
+			\end{itemize}
+			
+			\item \textbf{Characteristics}:
+			\begin{itemize}
+				\item Autoregressive generation.
+				\item Access to encoder representations.
+				\item Future tokens are masked during training.
+			\end{itemize}
+			
+		\end{itemize}
+	\end{subsectionframe}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection}
+		
+		\begin{itemize}
+			\item \keyword{Autoregressive}: Each token is generated conditioned on previously generated tokens.
+			\[p(Y|X) = \prod_{t=1}^{T} p(y_t \mid y_{<t}, X)\]
+			
+			\item Unlike RNNs:
+			\begin{itemize}
+				\item Dependencies are modeled directly using masked self-attention.
+				\item No recurrent hidden-state propagation is required.
+			\end{itemize}
+			
+			\item Each time an element is generated, it will be added into the input to generate the next element.
+			\item To stop generating, a maximum size is used. Also, a special token is used to mark the end of generation.
+		\end{itemize}
+		
+	\end{frame}
+	
+	\section{Pre-trained models}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle}
+		\framesubtitle{\insertsection}
+		
+		\begin{itemize}
+			
+			\item Modern transformers are commonly trained in two stages:
+			\begin{itemize}
+				\item \textbf{Pre-training}: learn general representations from large unlabeled corpora.
+				\item \textbf{Fine-tuning}: adapt the model to downstream tasks.
+			\end{itemize}
+			
+			\item This paradigm is known as:
+			\begin{itemize}
+				\item Self-supervised learning and transfer learning.
+			\end{itemize}
+			
+			\item Different architectures specialize in different objectives:
+			\begin{itemize}
+				\item Encoder-only.
+				\item Decoder-only.
+				\item Encoder-decoder (full transformer).
+			\end{itemize}
+			
+		\end{itemize}
+		
+	\end{frame}
+	
+	\subsection{Full-transformer}
+	
+	\begin{subsectionframe}
+		\begin{itemize}
+			
+			\item \textbf{Architecture}:
+			\begin{itemize}
+				\item Uses both encoder and decoder stacks.
+			\end{itemize}
+			
+			\item \textbf{Objective}:
+			\begin{itemize}
+				\item Learn sequence-to-sequence transformations.
+			\end{itemize}
+			
+			\item \textbf{Applications}:
+			\begin{itemize}
+				\item Machine translation.
+				\item Summarization.
+				\item Text generation and question answering.
+			\end{itemize}
+			
+		\end{itemize}
+	\end{subsectionframe}
+	
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: T5 \cite{T5}}
+		
+		\begin{figure}[htbp]
+			\hgraphpage[\textwidth]{t5-arch_.pdf}
+			\caption{T5 (Text-to-Text Transfer Transformer) training \cite{T5}}
+		\end{figure}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: BART \cite{bart}}
+		
+		\begin{figure}[htbp]
+			\centering
+			\hgraphpage[0.58\textwidth]{bart-arch1_.pdf}
+			\hgraphpage[0.4\textwidth]{bart-arch2_.pdf}
+			\caption{BART training \cite{bart}}
+		\end{figure}
+		
+	\end{frame}
+	
+	\subsection{Encoder based}
+	
+	\begin{subsectionframe}
+		\begin{itemize}
+			
+			\item \textbf{Architecture}:
+			\begin{itemize}
+				\item Uses only transformer encoders.
+			\end{itemize}
+			
+			\item \textbf{Objective}:
+			\begin{itemize}
+				\item Learn bidirectional contextual representations.
+			\end{itemize}
+			
+			\item \textbf{Applications}:
+			\begin{itemize}
+				\item Text classification.
+				\item Information retrieval.
+				\item Feature extraction and embedding generation.
+			\end{itemize}
+			
+		\end{itemize}
+	\end{subsectionframe}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: BERT \cite{devlin-etal-2019-bert}}
+		
+		\begin{center}
+			\hgraphpage[0.95\textwidth]{bert-arch.pdf}
+		\end{center}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: ViT \cite{dosovitskiy2021an}}
+		
+		\vspace{-6pt}
+		\begin{figure}[htp!]
+			\centering
+			\hgraphpage[0.62\textwidth]{vit.pdf}
+			%		\vskip-8pt
+			\caption{Example of images encoder [modified from \cite{zhang2021dive}]}
+		\end{figure}
+		
+	\end{frame}
+	
+	\subsection{Decoder based}
+	
+	\begin{subsectionframe}
+		\begin{itemize}
+			
+			\item \textbf{Architecture}:
+			\begin{itemize}
+				\item Uses masked transformer decoders only.
+			\end{itemize}
+			
+			\item \textbf{Objective}:
+			\begin{itemize}
+				\item Predict the next token autoregressively.
+			\end{itemize}
+			
+			\item \textbf{Applications}:
+			\begin{itemize}
+				\item Text generation.
+				\item Dialogue systems.
+				\item Large language models (LLMs).
+			\end{itemize}
+			
+		\end{itemize}
+	\end{subsectionframe}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: GPT \cite{radford2018improving}}
+		
+		\begin{figure}[htbp]
+			\hgraphpage[\textwidth]{gpt-arch_.pdf}
+			\caption{GPT's architecture and different tasks \cite{radford2018improving}}
+		\end{figure}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: ImageGPT \cite{chen2020generative}}
+		
+		\begin{figure}[htbp]
+			\hgraphpage[\textwidth]{imagegpt-arch_.pdf}
+			\caption{ImageGPT's architecture \cite{chen2020generative}}
+		\end{figure}
+		
+	\end{frame}
+	
+	\insertbibliography{DL06L-attention}{*}
+	
+\end{document}

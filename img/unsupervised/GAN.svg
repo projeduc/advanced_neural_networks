@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="1200"
+   height="600"
+   viewBox="0 0 1200 600"
+   version="1.1"
+   id="svg20"
+   sodipodi:docname="GAN.svg"
+   inkscape:version="1.4.3 (0d15f75042, 2025-12-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview20"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="0.57576855"
+     inkscape:cx="494.12216"
+     inkscape:cy="521.0427"
+     inkscape:window-width="1920"
+     inkscape:window-height="1008"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg20" />
+  <defs
+     id="defs4">
+    <marker
+       id="arrow"
+       markerWidth="10"
+       markerHeight="10"
+       refX="9"
+       refY="3"
+       orient="auto"
+       markerUnits="strokeWidth">
+      <path
+         d="M0,0 L0,6 L9,3 z"
+         fill="#333"
+         id="path1" />
+    </marker>
+    <linearGradient
+       id="genGrad"
+       x1="0%"
+       y1="0%"
+       x2="100%"
+       y2="100%">
+      <stop
+         offset="0%"
+         stop-color="#4F8EF7"
+         id="stop1" />
+      <stop
+         offset="100%"
+         stop-color="#2D5FBF"
+         id="stop2" />
+    </linearGradient>
+    <linearGradient
+       id="discGrad"
+       x1="695.79307"
+       y1="259.27249"
+       x2="907.92511"
+       y2="471.40452"
+       gradientTransform="matrix(1.1785113,0,0,0.84852814,-78.156405,133.73429)"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         offset="0%"
+         stop-color="#FF9F43"
+         id="stop3" />
+      <stop
+         offset="100%"
+         stop-color="#E67E22"
+         id="stop4" />
+    </linearGradient>
+    <filter
+       id="shadow"
+       x="0"
+       y="0"
+       width="1"
+       height="1">
+      <feDropShadow
+         dx="2"
+         dy="3"
+         stdDeviation="4"
+         flood-opacity="0.2" />
+    </filter>
+  </defs>
+  <rect
+     width="1200"
+     height="600"
+     fill="#ffffff"
+     id="rect4" />
+  <text
+     x="600"
+     y="55"
+     text-anchor="middle"
+     font-size="34"
+     font-family="Arial"
+     font-weight="bold"
+     fill="#222"
+     id="text4">
+        Generative Adversarial Network (GAN)
+    </text>
+  <!-- Noise input -->
+  <circle
+     cx="120"
+     cy="220"
+     r="55"
+     fill="#D6EAF8"
+     stroke="#4F8EF7"
+     stroke-width="3"
+     id="circle4" />
+  <text
+     x="120"
+     y="210"
+     text-anchor="middle"
+     font-size="24"
+     font-family="Arial"
+     font-weight="bold"
+     fill="#1F3A63"
+     id="text5">z</text>
+  <text
+     x="120"
+     y="245"
+     text-anchor="middle"
+     font-size="16"
+     font-family="Arial"
+     fill="#333"
+     id="text6">Random Noise</text>
+  <!-- Generator -->
+  <rect
+     x="250"
+     y="145"
+     width="240"
+     height="150"
+     rx="25"
+     fill="url(#genGrad)"
+     filter="url(#shadow)"
+     id="rect6"
+     style="fill:#000000" />
+  <text
+     x="370"
+     y="205"
+     text-anchor="middle"
+     font-size="30"
+     font-family="Arial"
+     font-weight="bold"
+     fill="white"
+     id="text7"
+     style="fill:#000000">
+        Generator
+    </text>
+  <text
+     x="370"
+     y="245"
+     text-anchor="middle"
+     font-size="18"
+     font-family="Arial"
+     fill="white"
+     id="text8"
+     style="fill:#000000">
+        G(z)
+    </text>
+  <!-- Fake image -->
+  <rect
+     x="580"
+     y="165"
+     width="120"
+     height="110"
+     rx="15"
+     fill="#F8F9F9"
+     stroke="#888"
+     stroke-width="2"
+     id="rect8" />
+  <circle
+     cx="620"
+     cy="205"
+     r="10"
+     fill="#555"
+     id="circle8" />
+  <circle
+     cx="660"
+     cy="205"
+     r="10"
+     fill="#555"
+     id="circle9" />
+  <path
+     d="M620 240 Q640 260 660 240"
+     stroke="#555"
+     stroke-width="4"
+     fill="none"
+     id="path9" />
+  <text
+     x="640"
+     y="295"
+     text-anchor="middle"
+     font-size="16"
+     font-family="Arial"
+     fill="#333"
+     id="text9">
+        Fake Sample
+    </text>
+  <!-- Real image -->
+  <rect
+     x="580"
+     y="375"
+     width="120"
+     height="110"
+     rx="15"
+     fill="#F8F9F9"
+     stroke="#888"
+     stroke-width="2"
+     id="rect9" />
+  <circle
+     cx="620"
+     cy="415"
+     r="10"
+     fill="#555"
+     id="circle10" />
+  <circle
+     cx="660"
+     cy="415"
+     r="10"
+     fill="#555"
+     id="circle11" />
+  <path
+     d="M620 450 Q640 430 660 450"
+     stroke="#555"
+     stroke-width="4"
+     fill="none"
+     id="path11" />
+  <text
+     x="640"
+     y="505"
+     text-anchor="middle"
+     font-size="16"
+     font-family="Arial"
+     fill="#333"
+     id="text11">
+        Real Sample
+    </text>
+  <!-- Discriminator -->
+  <text
+     x="945"
+     y="290"
+     text-anchor="middle"
+     font-size="30"
+     font-family="Arial"
+     font-weight="bold"
+     fill="white"
+     id="text12"
+     style="fill:#000000">
+        Discriminator
+    </text>
+  <text
+     x="945"
+     y="330"
+     text-anchor="middle"
+     font-size="18"
+     font-family="Arial"
+     fill="white"
+     id="text13"
+     style="fill:#000000">
+        D(x)
+    </text>
+  <!-- Outputs -->
+  <text
+     x="1110"
+     y="265"
+     text-anchor="middle"
+     font-size="20"
+     font-family="Arial"
+     font-weight="bold"
+     fill="#27AE60"
+     id="text14">
+        Real = 1
+    </text>
+  <text
+     x="1110"
+     y="360"
+     text-anchor="middle"
+     font-size="20"
+     font-family="Arial"
+     font-weight="bold"
+     fill="#C0392B"
+     id="text15">
+        Fake = 0
+    </text>
+  <!-- Arrows -->
+  <line
+     x1="175"
+     y1="220"
+     x2="250"
+     y2="220"
+     stroke="#333"
+     stroke-width="4"
+     marker-end="url(#arrow)"
+     id="line15"
+     style="fill:#000000" />
+  <line
+     x1="490"
+     y1="220"
+     x2="580"
+     y2="220"
+     stroke="#333"
+     stroke-width="4"
+     marker-end="url(#arrow)"
+     id="line16" />
+  <line
+     x1="700"
+     y1="220"
+     x2="820"
+     y2="270"
+     stroke="#333"
+     stroke-width="4"
+     marker-end="url(#arrow)"
+     id="line17" />
+  <line
+     x1="700"
+     y1="430"
+     x2="820"
+     y2="350"
+     stroke="#333"
+     stroke-width="4"
+     marker-end="url(#arrow)"
+     id="line18" />
+  <line
+     x1="1070"
+     y1="300"
+     x2="1140"
+     y2="300"
+     stroke="#333"
+     stroke-width="4"
+     marker-end="url(#arrow)"
+     id="line19" />
+  <!-- Feedback loop -->
+  <path
+     d="M 930 220 Q 700 60 450 120"
+     fill="none"
+     stroke="#AA0000"
+     stroke-width="4"
+     stroke-dasharray="10 6"
+     marker-end="url(#arrow)"
+     id="path19" />
+  <text
+     x="700"
+     y="90"
+     text-anchor="middle"
+     font-size="18"
+     font-family="Arial"
+     fill="#AA0000"
+     font-weight="bold"
+     id="text19">
+        Adversarial Feedback
+    </text>
+  <!-- Labels -->
+  <text
+     x="600"
+     y="555"
+     text-anchor="middle"
+     font-size="20"
+     font-family="Arial"
+     fill="#333"
+     id="text20">
+        The generator learns to fool the discriminator.
+    </text>
+</svg>
