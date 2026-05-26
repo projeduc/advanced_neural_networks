@@ -9,7 +9,7 @@
 
 \input{options2}
 
-\subtitle[AE \& GANs]{Unsupervised deep learning}  
+\subtitle[Unsupervised DL]{Unsupervised deep learning}  
 
 \changegraphpath{../img/unsupervised/}
 
@@ -21,6 +21,32 @@
 		\frametitle{\inserttitle}
 		\framesubtitle{\insertshortsubtitle: Motivation}
 		
+		\begin{itemize}
+			\item Goal of unsupervised deep learning: learn the underlying data distribution $p_{\text{data}}(x)$.
+			
+			\item Three main modeling principles exist in deep generative learning:
+			
+			\vspace{6pt}
+			
+			\item \textbf{Reconstruction-based models}
+			\begin{itemize}
+				\item Learn compressed representations by reconstructing inputs.
+				\item Example: Autoencoders, Variational Autoencoders.
+			\end{itemize}
+			
+			\item \textbf{Energy-based probabilistic models}
+			\begin{itemize}
+				\item Define a probability distribution via an energy function.
+				\item Example: Boltzmann Machines, RBMs, DBMs.
+			\end{itemize}
+			
+			\item \textbf{Implicit adversarial models}
+			\begin{itemize}
+				\item Learn to generate samples by matching distributions.
+				\item Example: Generative Adversarial Networks (GANs).
+			\end{itemize}
+			
+		\end{itemize}
 		
 	\end{frame}
 	
@@ -74,9 +100,39 @@
 	
 	\subsection{Denoising autoencoder}
 	
+	\begin{subsectionframe}
+		\begin{itemize}
+			
+			\item \textbf{Motivation}
+			\begin{itemize}
+				\item Standard autoencoders may learn trivial identity mappings.
+				\item Real-world data are often corrupted by noise or missing values.
+			\end{itemize}
+			
+			\item \textbf{Core idea}
+			\begin{itemize}
+				\item Corrupt the input before encoding:
+				\[
+				x \rightarrow \tilde{x}
+				\]
+				\item Train the network to reconstruct the original clean input:
+				\[
+				\tilde{x} \rightarrow x
+				\]
+			\end{itemize}
+			
+			\item \textbf{Effect}
+			\begin{itemize}
+				\item Forces the model to learn robust latent representations.
+				\item Improves generalization and noise resistance.
+			\end{itemize}
+			
+		\end{itemize}
+	\end{subsectionframe}
+	
 	\begin{frame}
 		\frametitle{\insertshortsubtitle: \insertsection}
-		\framesubtitle{\insertsubsection}
+		\framesubtitle{\insertsubsection: Architecture}
 		
 		\hgraphpage[\textwidth]{AE-noise.pdf}
 		
@@ -84,18 +140,48 @@
 	
 	\begin{frame}
 		\frametitle{\insertshortsubtitle: \insertsection}
-		\framesubtitle{\insertsubsection: Some application}
+		\framesubtitle{\insertsubsection: Applications}
 		
 		\begin{itemize}
 			\item Improving the quality of speech (audio) \cite{2013-lu}.
-			\item Cleaning dirty documents (refer to this competition: \url{https://www.kaggle.com/c/denoising-dirty-documents}).
-			\item Retrieving historical documents \cite{2019-neji}.
+			\item Cleaning dirty documents (2015 competition: \url{https://www.kaggle.com/c/denoising-dirty-documents}).
+			\item Restoration of degraded historical documents \cite{2019-neji}.
 			\item Completing hidden parts of the face \cite{2017-li-al}.
+			\item Medical image denoising and MRI reconstruction \cite{2016-gondara}.
+			
+			\item Speech enhancement and noise suppression \cite{2020-yu-al}.
+			
+			\item Tabular anomaly detection using diffusion-scheduled denoising autoencoders with contrastive learning \cite{2025-sattarov}.
+			\item Anomaly detection for agricultural vehicles using autoencoders \cite{2022-mujkic}.
 		\end{itemize}
 		
 	\end{frame}
 	
 	\subsection{Sparse autoencoder}
+	
+	\begin{subsectionframe}
+		\begin{itemize}
+			
+			\item \textbf{Motivation}
+			\begin{itemize}
+				\item Large hidden layers may simply learn identity mappings.
+				\item Useful representations should activate only a small subset of neurons.
+			\end{itemize}
+			
+			\item \textbf{Core idea}
+			\begin{itemize}
+				\item Impose sparsity constraints on hidden activations.
+				\item Only a few neurons should be active for each input sample.
+			\end{itemize}
+			
+			\item \textbf{Effect}
+			\begin{itemize}
+				\item Encourages feature selectivity and disentangled representations.
+				\item Learns meaningful latent features useful for downstream tasks.
+			\end{itemize}
+			
+		\end{itemize}
+	\end{subsectionframe}
 	
 	\begin{frame}
 		\frametitle{\insertshortsubtitle: \insertsection}
@@ -181,28 +267,29 @@
 	
 	\subsection{Variational autoencoder}
 	
-	\begin{frame}
-		\frametitle{\insertshortsubtitle: \insertsection}
-		\framesubtitle{\insertsubsection: Motivation}
-		
+	\begin{subsectionframe}
 		\begin{itemize}
-			\item Standard autoencoders learn deterministic latent representations.
 			
-			\item Similar inputs are often separated into isolated latent clusters.
-			
-			\item Random points sampled between clusters may not correspond to valid data.
-			
-			\item This makes content generation difficult.
-			
-			\item \textbf{Idea of VAE:}
+			\item \textbf{Motivation}
 			\begin{itemize}
-				\item learn a smooth probabilistic latent space,
-				\item allow sampling and interpolation,
-				\item generate new realistic data.
+				\item Standard autoencoders learn deterministic latent representations.
+				\item Similar inputs may form isolated latent clusters with discontinuities.
 			\end{itemize}
+			
+			\item \textbf{Core idea}
+			\begin{itemize}
+				\item Learn a smooth probabilistic latent space.
+				\item Represent each input using a probability distribution rather than a single point.
+			\end{itemize}
+			
+			\item \textbf{Effect}
+			\begin{itemize}
+				\item Enables latent space interpolation and random sampling.
+				\item Allows generation of new realistic data.
+			\end{itemize}
+			
 		\end{itemize}
-		
-	\end{frame}
+	\end{subsectionframe}
 	
 	
 	\begin{frame}
@@ -243,29 +330,23 @@
 		\framesubtitle{\insertsubsection: Latent distribution}
 		
 		\begin{itemize}
-			\item Instead of learning a single latent vector, the encoder learns:
+			\item Instead of learning a single latent vector, the encoder learns
+			$\mu(x), \quad \sigma^2(x)$: two vectors of size $h$.
 			
-			\[
-			\mu(x), \sigma(x)
-			\]
-			
-			\item The latent vector is sampled from:
-			
-			\[
-			z \sim \mathcal{N}(\mu, \sigma^2)
-			\]
+			\item The latent vector is sampled from $z \sim \mathcal{N}(\mu, \sigma^2)$.
 			
 			\item Reparameterization trick:
-			
 			\[
-			z = \mu + \sigma \odot \epsilon
+			z = \mu + \sigma \odot \epsilon \quad\quad \epsilon \sim \mathcal{N}(0, I)
 			\]
 			
-			\[
-			\epsilon \sim \mathcal{N}(0, I)
-			\]
+			\item This reparameterization makes stochastic sampling differentiable.
 			
-			\item This allows gradient backpropagation through stochastic sampling.
+			\item The variance must remain positive $\sigma^2 > 0$.
+			
+			\item In practice, the network learns $\log \sigma^2$ instead of directly learning $\sigma^2$.
+			
+			\[\sigma = \exp\left(\frac{1}{2}\log \sigma^2\right)\]
 			
 		\end{itemize}
 		
@@ -285,20 +366,14 @@
 			\end{itemize}
 			
 			\item Final objective:
-			
-%			\[
-%			J_{VAE}
-%			=
-%			J(x, \hat{x})
-%			+
-%			KL\left(
-%			\mathcal{N}(\mu, \sigma^2)
-%			\;||\;
-%			\mathcal{N}(0, I)
-%			\right)
-%			\]
+			\[
+			J_{VAE} = J(x, \hat{x}) + KL\left( \mathcal{N}(\mu, \sigma^2) || \mathcal{N}(0, I) \right)
+			\]
 			
 			\item KL divergence encourages the latent space to remain close to a standard normal distribution.
+			\[
+			KL\left(\mathcal{N}(\mu,\sigma^2)||\mathcal{N}(0,I)\right) = \frac{1}{2} \sum_{j=1}^h \left(\mu_j^2 + \sigma_j^2 - \log \sigma_j^2 - 1 \right) 
+			\]
 			
 			\item This produces smoother latent representations and improves sampling.
 			
@@ -307,38 +382,463 @@
 	\end{frame}
 	
 	
+	\section{Energy-based generative models}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle}
+		\framesubtitle{\insertsection}
+		
+
+		\begin{itemize}
+			\item \textbf{Key idea}:Instead of predicting outputs, the model assigns a \textbf{score} to configurations:
+			\begin{itemize}
+				\item Good (real) data $\rightarrow$ low energy
+				\item Bad (unlikely) data $\rightarrow$ high energy
+			\end{itemize}
+			
+			\item \textbf{Energy-based view}:
+			\begin{itemize}
+				\item Model learns a function $E(x)$
+				\item No direct output prediction
+				\item Instead: ``how compatible is this $x$ with the model?''
+			\end{itemize}
+			
+			\item \textbf{From energy to probability}:
+			\begin{itemize}
+				\item Low energy = high probability
+				\item High energy = low probability
+			\end{itemize}
+			
+			\[
+			P(x) \propto e^{-E(x)}
+			\]
+		\end{itemize}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle}
+		\framesubtitle{\insertsection: Some humor}
+		
+		\begin{center}
+			\vgraphpage{humor/humor_energy.jpg}
+		\end{center}
+		
+	\end{frame}
+	
+	\subsection{Boltzmann Machines}
+	
+	\begin{subsectionframe}
+%		\small
+		\begin{itemize}
+			
+			\item \textbf{Motivation}
+			\begin{itemize}
+				\item We want a model that learns the \textbf{structure of data}, not just a direct input-output mapping.
+				\item Real-world data exhibit complex dependencies between variables (pixels, words, features).
+				\item We need a framework that can model \textbf{joint probability distributions}.
+			\end{itemize}
+			
+			\item \textbf{Core idea}
+			\begin{itemize}
+				\item Associate every configuration of variables with a scalar \textbf{energy}: $E(v, h)$
+				\item Convert energy into probability:
+				\[
+				P(v, h) \propto e^{-E(v,h)}
+				\]
+				\item Learning consists in shaping the energy landscape:
+				\begin{itemize}
+					\item observed data $\rightarrow$ low energy
+					\item unlikely configurations $\rightarrow$ high energy
+				\end{itemize}
+			\end{itemize}
+			
+		\end{itemize}
+	\end{subsectionframe}
+	
 	\begin{frame}
 		\frametitle{\insertshortsubtitle: \insertsection}
-		\framesubtitle{\insertsubsection: Practical remarks}
+		\framesubtitle{\insertsubsection: Architecture}
+		
+		\begin{columns}
+			\column{0.49\textwidth}
+			
+			\begin{itemize}
+				\item Energy-based probabilistic model
+				\item Undirected graphical model
+				\item Two sets of variables:
+				\begin{itemize}
+					\item Visible units $v$ (observed data)
+					\item Hidden units $h$ (latent variables)
+				\end{itemize}
+				\item \textbf{Key property:}
+				\begin{itemize}
+					\item All units can interact (no restriction)
+				\end{itemize}
+			\end{itemize}
+			
+			\column{0.49\textwidth}
+			\hgraphpage{boltzmann.pdf}
+		\end{columns}
+		
+		\textbf{Effect}
+		\begin{itemize}
+			\item Defines a global energy over configurations $(v,h)$
+			\item Hidden variables explain dependencies in observed data
+			\item Enables sampling from a learned distribution
+		\end{itemize}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: Formalism}
 		
 		\begin{itemize}
-			\item Without regularization, the learned distributions may become too broad.
+			\item Interactions:
+			\begin{columns}
+				\column{.4\textwidth}
+				\begin{itemize}
+					\item $R$: visible-visible interactions
+					\item $S$: hidden-hidden interactions
+				\end{itemize}
+				
+				\column{.4\textwidth}
+				\begin{itemize}
+					\item $W$: visible-hidden interactions
+					\item $b, c$: $b, c$: biases
+				\end{itemize}
+			\end{columns}
 			
-			\item KL divergence constrains the latent distributions.
-			
-			\item The variance must remain positive:
-			
+			\vskip0.5cm
+			\item Energy of a configuration:
 			\[
-			\sigma > 0
+			E(v,h) = - v^T R v - v^T W h - h^T S h - b^T v - c^T h
 			\]
 			
-			\item In practice, the network learns:
-			
+			\item Probabilistic model:
 			\[
-			\log \sigma^2
+			P(v,h) = \frac{e^{-E(v,h)}}{Z} 
 			\]
 			
-			instead of directly learning $\sigma$.
+			\item $Z$ is a partition function that ensures that $\sum P(v,h) = 1$.
 			
 		\end{itemize}
 		
 	\end{frame}
 	
-	\section{Deep generative models}
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: Training idea}
+		
+		\textbf{Goal:}
+		\begin{itemize}
+			\item Assign low energy to real data configurations
+			\item Assign high energy to unlikely configurations
+		\end{itemize}
+		
+		\vspace{0.5em}
+		
+		\textbf{But:}
+		\begin{itemize}
+			\item We do NOT directly minimize energy
+			\item We maximize likelihood:
+		\end{itemize}
+		
+		\[
+		\max_\theta \log P_\theta(v)
+		\]
+		
+		\vspace{0.5em}
+		
+		\textbf{Key difficulty:}
+		\begin{itemize}
+			\item Computing $Z$ is intractable
+			\item Requires sampling-based approximation methods
+		\end{itemize}
+		
+	\end{frame}
 	
 	\begin{frame}
-		\frametitle{\insertshortsubtitle}
-		\framesubtitle{\insertsection}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: Learning intuition}
+		
+		\textbf{Learning is based on two phases:}
+		
+		\begin{itemize}
+			
+			\item \textbf{Positive phase}
+			\begin{itemize}
+				\item Increase probability of observed data
+				\item Lower energy of real samples
+			\end{itemize}
+			
+			\item \textbf{Negative phase}
+			\begin{itemize}
+				\item Sample from current model
+				\item Increase energy of generated samples
+			\end{itemize}
+			
+		\end{itemize}
+		
+		\vspace{0.5em}
+		
+		\textbf{Interpretation:}
+		\begin{itemize}
+			\item The model learns by contrasting real vs generated data
+		\end{itemize}
+		
+	\end{frame}
+	
+	\subsection{Restricted Boltzmann Machines}
+	
+	\begin{subsectionframe}
+		\begin{itemize}
+			
+			\item \textbf{Motivation}
+			\begin{itemize}
+				\item Full Boltzmann Machines are difficult to train because all variables interact.
+				\item Exact inference and sampling become computationally intractable.
+			\end{itemize}
+			
+			\vspace{0.5em}
+			
+			\item \textbf{Key idea}
+			\begin{itemize}
+				\item Restrict the connectivity structure:
+				\[
+				R = 0, \qquad S = 0
+				\]
+				\item No visible-visible interactions
+				\item No hidden-hidden interactions
+				\item Only visible-hidden interactions remain
+			\end{itemize}
+			
+		\end{itemize}
+	\end{subsectionframe}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: Architecture}
+		
+		\begin{columns}
+			\column{0.49\textwidth}
+			
+			\begin{itemize}
+				\item Similar to Boltzmann Machines
+				
+				\item \textbf{Key property:}
+				\begin{itemize}
+					\item No visible-visible connections
+					\item No hidden-hidden connections
+					\item Only visible-hidden interactions
+				\end{itemize}
+			\end{itemize}
+			
+			\column{0.49\textwidth}
+			\hgraphpage{rbm.pdf}
+		\end{columns}
+		
+		\textbf{Effect}
+		
+		\begin{itemize}
+			\item Conditional independence between units of the same layer
+			\item Simpler inference and efficient Gibbs sampling
+			\item Practical training of generative energy-based models
+		\end{itemize}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: Formalism}
+		
+		\begin{itemize}
+			
+			\item Simplified energy function:
+			\[
+			E(v,h) = - v^T W h - b^T v - c^T h
+			\]
+			
+			\item Model parameters:
+			\begin{itemize}
+				\item $W$: visible-hidden interactions
+				\item $b$: visible biases
+				\item $c$: hidden biases
+			\end{itemize}
+			
+			\vspace{0.5em}
+			
+			\item Probabilistic model:
+			\[
+			P(v,h) = \frac{e^{-E(v,h)}}{Z} \quad\quad Z = \sum_v \sum_h e^{-E(v,h)}
+			\]
+			
+			\item Conditional distribution:
+			\[
+			P(h|v) = \frac{P(v,h)}{P(v)} = \frac{e^{-E(v,h)}}{\sum_{h'} e^{-E(v,h')}}
+			\qquad
+			P(v|h) = \frac{P(v,h)}{P(h)} = \frac{e^{-E(v,h)}}{\sum_{v'} e^{-E(v',h)}}
+			\]
+			
+		\end{itemize}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: Conditional independence}
+		
+		\textbf{Consequence of the restricted structure:}
+		
+		\begin{itemize}
+			\item Hidden units become conditionally independent given visible units:
+			\[
+			P(h|v) = \prod_j P(h_j|v)
+			\]
+			
+			\item Visible units become conditionally independent given hidden units:
+			\[
+			P(v|h) = \prod_i P(v_i|h)
+			\]
+		\end{itemize}
+		
+		\vspace{0.5em}
+		
+		\textbf{Why this matters}
+		\begin{itemize}
+			\item Units within a layer can be sampled in parallel
+			\item Enables efficient Gibbs sampling
+			\item Makes training computationally feasible
+		\end{itemize}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: Learning intuition}
+		
+		\textbf{RBM learning process}
+		
+		\begin{itemize}
+			\item Visible data activate hidden latent features
+			\item Hidden features generate probable visible configurations
+			\item Learning lowers the energy of observed data
+			\item Unlikely configurations receive higher energy
+		\end{itemize}
+		
+		\vspace{0.5em}
+		
+		\textbf{Interpretation}
+		\begin{itemize}
+			\item Hidden units capture latent structure in data
+			\item The model learns a probability distribution over observations
+		\end{itemize}
+		
+		\vspace{0.5em}
+		
+		\textbf{Connection to deep learning}
+		\begin{itemize}
+			\item Similar to an autoencoder encoder-decoder structure
+			\item Unlike autoencoders, RBMs are probabilistic generative models
+		\end{itemize}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: Contrastive Divergence training}
+		
+		\scriptsize
+		
+		\begin{algorithm}[H]
+			\KwData{Training set $D$, RBM parameters $(W,b,c)$, learning rate $\eta$, Gibbs steps $k$, number of epochs $T$}
+			\KwResult{Trained RBM parameters}
+			
+			Initialize parameters: $W,b,c \sim $ small random values
+			
+			\For{$epoch = 1$ \KwTo $T$}{
+				
+				\ForEach{training sample $v^{(0)} \in D$}{
+					
+					Positive phase: $h^{(0)} \sim P(h \mid v^{(0)})$
+					
+					Initialize Gibbs chain: $v \leftarrow v^{(0)}, \qquad h \leftarrow h^{(0)}$
+					
+					\For{$t = 1$ \KwTo $k$}{
+						
+						Sample visible units: $v \sim P(v \mid h)$
+						
+						Sample hidden units: $h \sim P(h \mid v)$
+					}
+					
+					Negative phase: $v^{(k)} \leftarrow v, \qquad h^{(k)} \leftarrow h$
+					
+					
+					Compute parameter updates:
+					\[
+					\Delta W = v^{(0)} (h^{(0)})^T - v^{(k)} (h^{(k)})^T
+					\quad\quad
+					\Delta b = v^{(0)} - v^{(k)}
+					\quad\quad
+					\Delta c = h^{(0)} - h^{(k)}
+					\]
+					
+					Update parameters:
+					\[
+					W \leftarrow W + \eta \Delta W
+					\quad\quad
+					b \leftarrow b + \eta \Delta b
+					\quad\quad
+					c \leftarrow c + \eta \Delta c
+					\]
+				}
+			}
+			
+			\caption{Iterative Contrastive Divergence training for RBMs}
+			
+		\end{algorithm}
+		
+	\end{frame}
+	
+	\subsection{Deep Boltzmann Machines}
+	
+	\begin{subsectionframe}
+		\begin{itemize}
+			
+			\item \textbf{Motivation}
+			\begin{itemize}
+				\item RBMs learn only one layer of latent representation.
+				\item Many real-world data distributions require multiple levels of abstraction.
+				\item We need a deeper hierarchical generative model.
+			\end{itemize}
+			
+			\vspace{0.5em}
+			
+			\item \textbf{Key idea}
+			\begin{itemize}
+				\item Extend RBM by stacking multiple layers of hidden variables:
+				\[
+				v \leftrightarrow h^{(1)} \leftrightarrow h^{(2)} \leftrightarrow \cdots
+				\]
+				
+				\item Keep only \textbf{adjacent-layer interactions}
+				
+				\item No connections within a layer:
+				\begin{itemize}
+					\item no visible-visible connections
+					\item no hidden-hidden connections within the same layer
+				\end{itemize}
+			\end{itemize}
+			
+		\end{itemize}
+	\end{subsectionframe}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: Architecture}
+		
+		\hgraphpage{drbm.pdf}
 		
 	\end{frame}
 	
@@ -346,12 +846,12 @@
 	
 	\begin{frame}
 		\frametitle{\insertshortsubtitle}
-		\framesubtitle{\insertsection: Motivation}
+		\framesubtitle{\insertsection}
 		
 		\begin{itemize}
 			\item Generative models learn the underlying distribution of the data.
 			\item Their goal is to generate new realistic samples.
-			\item Applications:
+			\item \textbf{Applications}:
 			\begin{itemize}
 				\item Image generation
 				\item Face synthesis
@@ -366,8 +866,17 @@
 	
 	\begin{frame}
 		\frametitle{\insertshortsubtitle}
-		\framesubtitle{\insertsection: Main idea}
+		\framesubtitle{\insertsection: Some humor}
 		
+		\begin{center}
+			\vgraphpage{humor/humor_gan.jpg}
+		\end{center}
+		
+	\end{frame}
+	
+	\subsection{Adversarial learning framework}
+	
+	\begin{subsectionframe}
 		\begin{block}{Adversarial learning}
 			Two neural networks compete against each other:
 		\end{block}
@@ -385,76 +894,66 @@
 				\item Predicts whether a sample is real or fake.
 			\end{itemize}
 		\end{itemize}
-		
-		\begin{center}
-			\textbf{Generator vs Discriminator}
-		\end{center}
-		
-	\end{frame}
+	\end{subsectionframe}
+	
 	
 	\begin{frame}
 		\frametitle{\insertshortsubtitle}
 		\framesubtitle{\insertsection: Architecture}
 		
-		\hgraphpage[0.95\textwidth]{GAN.pdf}
+		\hgraphpage[0.92\textwidth]{GAN.pdf}
 		
-	\end{frame}
-	
-	\begin{frame}
-		\frametitle{\insertshortsubtitle}
-		\framesubtitle{\insertsection: Generator}
+		\vspace{0.2cm}
 		
-		\begin{itemize}
-			\item Input:
-			\begin{itemize}
-				\item Random vector \(z\)
-				\item Usually sampled from a normal or uniform distribution
-			\end{itemize}
+		\scriptsize
+		
+		\begin{tabular}{p{0.10\textwidth}p{0.37\textwidth}p{0.40\textwidth}}
+			\cline{2-3}
 			
-			\item Output:
-			\begin{itemize}
-				\item Synthetic sample \(\hat{x}\)
-			\end{itemize}
+			& \centering\textbf{Generator (G)} 
+			& \centering\arraybackslash\textbf{Discriminator (D)} \\
 			
-			\item Goal:
-			\begin{itemize}
-				\item Produce realistic data
-				\item Fool the discriminator
-			\end{itemize}
-		\end{itemize}
-		
-		\begin{align*}
+			\hline\hline
+			
+			\textbf{Input}
+			&
+			Random vector
+			\[
 			z \sim \mathcal{N}(0,1)
-		\end{align*}
-		
-	\end{frame}
-	
-	\begin{frame}
-		\frametitle{\insertshortsubtitle}
-		\framesubtitle{\insertsection: Discriminator}
-		
-		\begin{itemize}
-			\item Binary classifier:
-			\begin{itemize}
-				\item Real sample \(\rightarrow 1\)
-				\item Fake sample \(\rightarrow 0\)
-			\end{itemize}
+			\]
+			&
+			Real data \(x\) or generated data
+			\[
+			\hat{x} = G(z)
+			\]
+			\\
 			
-			\item Input:
-			\begin{itemize}
-				\item Real data \(x\)
-				\item Generated data \(G(z)\)
-			\end{itemize}
+			\hline
 			
-			\item Output:
-			\begin{itemize}
-				\item Probability that the sample is real
-			\end{itemize}
-		\end{itemize}
-		
-		\begin{align*}
-			D(x) \in [0,1]
-		\end{align*}
+			\textbf{Output}
+			&
+			Synthetic sample \(\hat{x}\)
+			&
+			Probability that a sample is real:
+			\[
+			D(x)\in[0,1]
+			\]
+			\\
+			
+			\hline
+			
+			\textbf{Goal}
+			&
+			• Generate realistic samples \newline
+			• Fool the discriminator
+			&
+			• Distinguish real/fake samples \newline
+			• Detect generated samples
+			\\
+			
+			\hline\hline
+			
+		\end{tabular}
 		
 	\end{frame}
 	
@@ -469,36 +968,76 @@
 		\end{itemize}
 		
 		\begin{align*}
-			\min_G \max_D V(D,G) =
-			& \mathbb{E}_{x \sim p_{data}(x)}[\log D(x)] \\
-			+ &
-			\mathbb{E}_{z \sim p_z(z)}[\log(1 - D(G(z)))]
+			\min_G \max_D V(D,G) = & \mathbb{E}_{x \sim p_{data}(x)}[\log D(x)] \\
+			                     + & \mathbb{E}_{z \sim p_z(z)}[\log(1 - D(G(z)))]
 		\end{align*}
+		
+		\vspace{0.2cm}
+		
+		\begin{itemize}
+			\item In practice, the networks are updated alternately:
+		\end{itemize}
+		
+		\[
+		J_D = -\Big(\log D(x) + \log(1-D(G(z))) \Big)
+		\]
+		
+		\[
+		J_G = -\log D(G(z))
+		\]
 		
 	\end{frame}
 	
-	\begin{frame}
+	\begin{frame}[fragile]
 		\frametitle{\insertshortsubtitle}
 		\framesubtitle{\insertsection: Training process}
 		
-		\begin{enumerate}
-			\item Sample real data from the dataset.
+		\scriptsize
+		
+		\begin{algorithm}[H]
+			\KwData{$X,\alpha_D,\alpha_G,T,b$}
+			\KwResult{$\theta_D,\theta_G$}
 			
-			\item Generate fake samples using the generator.
+			Initialize discriminator parameters $\theta_D$\;
+			Initialize generator parameters $\theta_G$\;
+			$t \leftarrow 0$\;
 			
-			\item Train the discriminator:
-			\begin{itemize}
-				\item Real samples labeled as 1
-				\item Fake samples labeled as 0
-			\end{itemize}
+			\While{$t < T$ and no convergence}{
+				
+				Sample a mini-batch of real samples $x^{(b)} \sim p_{data}(x)$\;
+				
+				Sample random noise vectors
+				$z^{(b)} \sim p_z(z)$\;
+				
+				Generate fake samples:
+				$\hat{x}^{(b)} = G_{\theta_G}(z^{(b)})$\;
+				
+				Update discriminator:
+				\[
+				\theta_D
+				\leftarrow
+				\theta_D
+				-
+				\alpha_D \nabla_{\theta_D} J_D
+				\]
+				
+				Sample another mini-batch of noise vectors
+				$z^{(b)} \sim p_z(z)$\;
+				
+				Update generator:
+				\[
+				\theta_G
+				\leftarrow
+				\theta_G
+				-
+				\alpha_G \nabla_{\theta_G} J_G
+				\]
+				
+				$t \leftarrow t + 1$\;
+			}
 			
-			\item Train the generator:
-			\begin{itemize}
-				\item Update \(G\) to fool \(D\)
-			\end{itemize}
-			
-			\item Repeat until convergence.
-		\end{enumerate}
+			\caption{GAN training process}
+		\end{algorithm}
 		
 	\end{frame}
 	
@@ -507,73 +1046,606 @@
 		\framesubtitle{\insertsection: Challenges}
 		
 		\begin{itemize}
-			\item Training instability
-			\item Difficult convergence
-			\item Sensitive hyperparameters
-			\item Vanishing gradients
+			
+			\item \textbf{Training instability}
+			\begin{itemize}
+				\item Generator and discriminator evolve simultaneously.
+				\item Improvements in one network may destabilize the other.
+			\end{itemize}
+			
+			\item \textbf{Difficult convergence}
+			\begin{itemize}
+				\item GAN training does not minimize a fixed objective.
+				\item Optimization behaves like a dynamic game between two players.
+%				\item Optimization behaves like a minimax game.
+			\end{itemize}
+			
+			\item \textbf{Vanishing gradients}
+			\begin{itemize}
+				\item If the discriminator becomes too strong: $D(G(z)) \approx 0$
+			\end{itemize}
+			
 			\item \textbf{Mode collapse}
 			\begin{itemize}
-				\item The generator produces limited varieties of samples.
-			\end{itemize}
-		\end{itemize}
-		
-	\end{frame}
-	
-	\begin{frame}
-		\frametitle{\insertshortsubtitle}
-		\framesubtitle{\insertsection: Variants}
-		
-		\begin{itemize}
-			\item \textbf{DCGAN}
-			\begin{itemize}
-				\item Uses convolutional neural networks.
+				\item Different noise vectors generate similar outputs.
 			\end{itemize}
 			
-			\item \textbf{Conditional GAN (CGAN)}
+			\item \textbf{Sensitive hyperparameters}
 			\begin{itemize}
-				\item Generation conditioned on labels or text.
+				\item Strong dependence on architecture and learning rates.
 			\end{itemize}
 			
-			\item \textbf{CycleGAN}
-			\begin{itemize}
-				\item Image-to-image translation.
-			\end{itemize}
-			
-			\item \textbf{StyleGAN}
-			\begin{itemize}
-				\item High-quality face generation.
-			\end{itemize}
-		\end{itemize}
-		
-	\end{frame}
-	
-	\begin{frame}
-		\frametitle{\insertshortsubtitle}
-		\framesubtitle{\insertsection: Applications}
-		
-		\begin{itemize}
-			\item Face generation
-			\item Deepfake synthesis
-			\item Image super-resolution
-			\item Art generation
-			\item Medical image synthesis
-			\item Data augmentation
-			\item Image restoration
 		\end{itemize}
 		
 	\end{frame}
 	
 %	\begin{frame}
 %		\frametitle{\insertshortsubtitle}
-%		\framesubtitle{\insertsection: Example}
+%		\framesubtitle{\insertsection: Complexity}
 %		
-%		\begin{center}
-%			\hgraphpage[0.9\textwidth]{GAN-example.jpg}
-%		\end{center}
+%		\begin{itemize}
+%			
+%			\item \textbf{Setting}
+%			\begin{itemize}
+%				\item Mini-batch size: \(B\)
+%				\item One GAN iteration = one discriminator update + one generator update
+%			\end{itemize}
+%			
+%			\item \textbf{Discriminator step}
+%			\begin{itemize}
+%				\item Forward pass on real samples: \(B\) examples
+%				\item Forward pass on generated samples: \(B\) examples
+%				\item Backprop through discriminator
+%			\end{itemize}
+%			
+%			\[
+%			O_D = O\big(B\big)
+%			\]
+%			
+%			\item \textbf{Generator step}
+%			\begin{itemize}
+%				\item Generate \(B\) synthetic samples
+%				\item Backprop through discriminator + generator
+%			\end{itemize}
+%			
+%			\[
+%			O_G = O\big(B\big)
+%			\]
+%			
+%			\item \textbf{Total complexity per iteration}
+%			\[
+%			O_{\text{GAN}} = O(B)
+%			\]
+%			
+%			\item \textbf{Key insight}
+%			\begin{itemize}
+%				\item Fully parallel over batch
+%				\item No sequential dependence (unlike sequence GANs)
+%			\end{itemize}
+%			
+%		\end{itemize}
 %		
 %	\end{frame}
 	
+	\subsection{Sequence-based generator}
 	
+	\begin{subsectionframe}
+		\begin{itemize}
+			
+			\item \textbf{Motivation}
+			\begin{itemize}
+				\item Many data types are sequential (text, speech, time series).
+				\item Generation must be performed step-by-step rather than in a single output.
+			\end{itemize}
+			
+			\item \textbf{Autoregressive generation}
+			\begin{itemize}
+				\item The generator produces a sequence incrementally:
+				\[
+				p(x) = \prod_{t=1}^{T} p(x_t \mid x_{<t})
+				\]
+				\item Each output depends on previously generated tokens.
+			\end{itemize}
+			
+		\end{itemize}
+	\end{subsectionframe}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle}
+		\framesubtitle{\insertsection}
+		
+		\begin{itemize}
+			
+			\item \textbf{Architecture flexibility}
+			\begin{itemize}
+				\item Can be implemented using RNNs, LSTMs, or Transformers.
+				\item The architecture defines how dependencies are modeled, not the GAN framework itself.
+			\end{itemize}
+			
+			\item \textbf{Training difficulty in GAN setting}
+			\begin{itemize}
+				\item Discrete outputs prevent direct gradient flow.
+				\item Solutions include:
+				\begin{itemize}
+					\item Policy gradient (REINFORCE) \cite{williams1992simple}
+					\item Monte Carlo rollouts \cite{yu2017seqgan}
+					\item Continuous relaxations (e.g., Gumbel-Softmax \cite{jang2017categorical})
+				\end{itemize}
+			\end{itemize}
+			
+		\end{itemize}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle}
+		\framesubtitle{\insertsection: Stochastic sampling}
+		
+		\begin{itemize}
+			
+			\item At each time step, the generator predicts:
+			$p(x_t \mid x_{<t}) = [p_1, p_2, \dots, p_V]$
+			
+			\item A token is sampled from this distribution:
+			$x_t \sim p(x_t \mid x_{<t})$
+			
+			\item Sequence sampling (autoregressive process):
+			\begin{itemize}
+				\item Factorized form:
+				$X=(x_1,\dots,x_T), \quad x_t \sim p_\theta(x_t \mid x_{<t})$
+				
+				\item Compact notation:
+				$X \sim G_\theta$
+			\end{itemize}
+			
+			\item The sampled token becomes the next input:
+			$x_1 \rightarrow x_2 \rightarrow \dots \rightarrow x_T$
+			
+			
+			\item Different samplings produce different sequences:
+			$X^{(1)}, X^{(2)}, \dots, X^{(K)}$
+			
+			
+			\item Stochastic sampling is essential for:
+			\begin{itemize}
+				\item exploration during generation,
+				\item Monte Carlo rollouts,
+				\item policy gradient training.
+			\end{itemize}
+			
+		\end{itemize}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle}
+		\framesubtitle{\insertsection: Stochastic sampling (technical)}
+		
+		\begin{itemize}
+			
+			\item Given a probability vector:
+			$p = [p_1, p_2, \dots, p_V], \quad \sum_{i=1}^V p_i = 1$
+			
+			
+			\item Define cumulative distribution:
+			$c_i = \sum_{j=1}^{i} p_j$
+			
+			
+			\item \textbf{Categorical sampling procedure}:
+			\begin{itemize}
+				\item Draw $u \sim \mathcal{U}(0,1)$
+				\item Select smallest index $i$ such that $c_i \ge u$
+			\end{itemize}
+			
+			\item This implements:
+			$x_t \sim p(x_t \mid x_{<t})$
+			
+			\item \textbf{Common implementations}:
+			\begin{itemize}
+				\item \textbf{NumPy}: \texttt{np.random.choice}
+				\item \textbf{PyTorch}: \texttt{torch.multinomial}
+				\item \textbf{TensorFlow}: \texttt{tf.random.categorical}
+			\end{itemize}
+			
+		\end{itemize}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle}
+		\framesubtitle{\insertsection: Policy gradient / REINFORCE}
+		
+		\begin{itemize}
+			
+			\item \textbf{Key issue}
+			\begin{itemize}
+				\item Discrete token sampling prevents direct backpropagation through generated sequences.
+			\end{itemize}
+			
+			\item \textbf{Reinforcement learning formulation}
+			\begin{itemize}
+				\item The generator is viewed as a stochastic policy:
+				$G_\theta \equiv \pi_\theta(x_t \mid x_{<t})$
+			\end{itemize}
+			
+			\item \textbf{Sequence reward}
+			\begin{itemize}
+				\item The discriminator evaluates the complete generated sequence:
+				$R = D(X)$
+			\end{itemize}
+			
+			\item \textbf{Policy gradient objective}
+			\begin{itemize}
+				\item Maximize the expected discriminator reward:
+				$J(\theta) =	\mathbb{E}_{X \sim G_\theta}[R]$
+			\end{itemize}
+			
+			\item \textbf{REINFORCE gradient estimator}
+			\[
+			\nabla_\theta J(\theta)
+			=
+			\mathbb{E}
+			\left[
+			R
+			\sum_{t=1}^{T}
+			\nabla_\theta
+			\log G_\theta(x_t \mid x_{<t})
+			\right]
+			\]
+			
+		\end{itemize}
+		
+	\end{frame}
+	
+	\begin{frame}[fragile]
+		\frametitle{\insertshortsubtitle}
+		\framesubtitle{\insertsection: Policy gradient / REINFORCE (Algorithm)}
+		
+		\scriptsize
+		
+		\begin{algorithm}[H]
+			\KwData{$G_\theta, D, T$}
+			\KwResult{Gradient of one sample $g$}
+			
+			Initialize accumulated gradient:
+			\[
+			g \in \mathbb{R}^{|\theta|}, \quad g \leftarrow 0
+			\]
+			
+			Generate a sequence using stochastic sampling:
+			\[
+%			X=(x_1,x_2,\dots,x_T) \sim G_\theta
+			X=(x_1,\dots,x_T), \quad x_t \sim p_\theta(x_t \mid x_{<t})
+			\]
+			
+			Compute discriminator terminal reward:
+			\[
+			R=D(X)
+			\]
+			
+			\ForEach{time step $t$}{
+				
+				Accumulate gradient contribution:
+				\[
+				g \leftarrow g + R \nabla_\theta \log G_\theta(x_t \mid x_{<t})
+				\]
+				
+			}
+			
+			\Return $g$
+			
+			\caption{REINFORCE update for sequence generation}
+			
+		\end{algorithm}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle}
+		\framesubtitle{\insertsection: Monte Carlo rollouts}
+		
+		\begin{itemize}
+			
+			\item \textbf{Problem}
+			\begin{itemize}
+				\item Discriminator evaluates full sequences, but training requires token-level feedback.
+			\end{itemize}
+			
+			\item \textbf{Idea}
+			\begin{itemize}
+				\item Estimate intermediate rewards using Monte Carlo sampling.
+			\end{itemize}
+			
+			\item \textbf{Procedure}
+			\begin{itemize}
+				\item Given a partial sequence \(x_{1:t}\):
+				\begin{itemize}
+					\item Sample \(K\) completions of the same prefix \(x_{1:t}\).
+					\item Each completion is generated using the model.
+					\item Evaluate full sequences using discriminator.
+					\item Average rewards:
+					\[
+					R_t \approx \frac{1}{K} \sum_{i=1}^{K} D(X^{(i)})
+					\]
+				\end{itemize}
+			\end{itemize}
+			
+			\item \textbf{Effect}
+			\begin{itemize}
+				\item Provides dense reward signal across time steps.
+				\item Reduces variance of policy gradient.
+			\end{itemize}
+			
+		\end{itemize}
+		
+	\end{frame}
+	
+	\begin{frame}[fragile]
+		\frametitle{\insertshortsubtitle}
+		\framesubtitle{\insertsection: Monte Carlo rollouts (algorithm)}
+		
+		\scriptsize
+		
+		\begin{algorithm}[H]
+			\KwData{$G_\theta, D, T, K$}
+			\KwResult{Gradient of one sample $g$}
+			
+			Initialize gradient: $g \in \mathbb{R}^{|\theta|}, \quad g \leftarrow 0$
+			
+			Generate a sequence using stochastic sampling:
+			$X = (x_1,\dots,x_T) \sim G_\theta$
+	
+			
+			\ForEach{time step $t = 1 \dots T$}{
+				
+				Initialize reward: $R_t \leftarrow 0$
+				
+				\For{$k = 1 \dots K$}{
+					
+					Sample completion using stochastic sampling:
+					\[
+					X^{(k)} = (x_{1:t}, x^{(k)}_{t+1:T}) \sim G_\theta
+					\]
+					
+					Evaluate:
+					\[
+					R_t \leftarrow R_t + D(X^{(k)})
+					\]
+				}
+				
+				Average reward:
+				\[
+				R_t \leftarrow \frac{1}{K} R_t
+				\]
+				
+				Accumulate gradient:
+				\[
+				g \leftarrow g + R_t \nabla_\theta \log p_\theta(x_t \mid x_{<t})
+				\]
+			}
+			
+			\Return $g$
+			
+			\caption{Monte Carlo REINFORCE for sequence GAN training}
+		\end{algorithm}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle}
+		\framesubtitle{\insertsection: Monte Carlo rollouts (Some humor)}
+		
+		\begin{center}
+			\hgraphpage[0.3\textwidth]{humor/humor_montecarlo.jpg}
+			\hgraphpage[0.5\textwidth]{humor/humor_opt.jpg}
+		\end{center}
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle}
+		\framesubtitle{\insertsection: Gumbel-Softmax}
+		
+		\begin{itemize}
+			
+			\item \textbf{Problem}
+			\begin{itemize}
+				\item Sampling discrete tokens breaks differentiability.
+			\end{itemize}
+			
+			\item \textbf{Idea}
+			\begin{itemize}
+				\item Replace discrete sampling with a differentiable approximation.
+			\end{itemize}
+			
+			\item \textbf{Gumbel-Softmax trick}
+			\begin{itemize}
+				\item Sample:
+				\[
+				y = \mathrm{softmax}\left(\frac{\log \pi_i + g_i}{\tau}\right)
+				\]
+				\item where \(g_i\) is Gumbel noise and \(\tau\) is temperature.
+			\end{itemize}
+			
+			\item \textbf{Behavior}
+			\begin{itemize}
+				\item High temperature → smooth distribution
+				\item Low temperature → approximates one-hot vectors
+			\end{itemize}
+			
+			\item \textbf{Benefit}
+			\begin{itemize}
+				\item Enables standard backpropagation through generator.
+			\end{itemize}
+			
+		\end{itemize}
+		
+	\end{frame}
+	
+	\begin{frame}[fragile]
+		\frametitle{\insertshortsubtitle}
+		\framesubtitle{\insertsection: Gumbel-Softmax (Algorithm)}
+		
+		\scriptsize
+		
+		\begin{algorithm}[H]
+			\KwData{logits $\pi \in \mathbb{R}^V$, temperature $\tau$}
+			\KwResult{Differentiable sample $y$}
+			
+			\ForEach{class $i = 1 \dots V$}{
+				Sample Gumbel noise:
+				\[
+				g_i = -\log(-\log(u_i)), \quad u_i \sim \mathcal{U}(0,1)
+				\]
+			}
+			
+			Compute perturbed logits:
+			\[
+			\tilde{z}_i = \log \pi_i + g_i
+			\]
+			
+			Softmax relaxation:
+			\[
+			y_i = \frac{\exp(\tilde{z}_i / \tau)}{\sum_{j=1}^V \exp(\tilde{z}_j / \tau)}
+			\]
+			
+			\Return $y$
+			
+			\caption{Gumbel-Softmax reparameterization trick}
+		\end{algorithm}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle}
+		\framesubtitle{\insertsection: Gumbel-Softmax (Some humor)}
+		
+		\begin{center}
+			\hgraphpage[0.43\textwidth]{humor/humor_gumbel-soft1.jpg}
+			\hgraphpage[0.4\textwidth]{humor/humor_gumbel-soft2.jpg}
+		\end{center}
+	\end{frame}
+	
+	\subsection{Conditional GANs (cGANs)}
+	
+	\begin{subsectionframe}
+		\begin{itemize}
+			
+			\item \textbf{Core idea} 
+			\begin{itemize}
+				\item Extend GANs by conditioning both generator and discriminator on auxiliary information.
+				\item Enables controlled generation instead of purely random sampling.
+			\end{itemize}
+			
+			\item \textbf{Types of conditioning}
+			\begin{itemize}
+				\item Class labels (e.g., digit, object category)
+				\item Facial attributes (age, gender, expression)
+				\item Text descriptions (text-to-image generation)
+			\end{itemize}
+			
+			\item Check \cite{mirza2014conditional}
+			
+		\end{itemize}
+	\end{subsectionframe}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle}
+		\framesubtitle{\insertsection: Description}
+		
+		\begin{itemize}
+			\item \textbf{Formulation}
+			\begin{itemize}
+				\item Generator:
+				$G(z, c)$
+				
+				\item Discriminator:
+				$D(x, c)$
+				
+				\item where \(c\) represents conditioning variables (labels, attributes, text, etc.)
+			\end{itemize}
+			
+			\item \textbf{Why conditioning both networks?}
+			\begin{itemize}
+				\item If only \(G\) is conditioned: \(D(x)\) ignores \(c\)
+				\item The discriminator would only check realism, not compatibility with \(c\)
+				\item Conditioning both enforces learning of \(p(x \mid c)\)
+			\end{itemize}
+			
+			\item \textbf{Effect}
+			\begin{itemize}
+				\item Reduces ambiguity in generation
+				\item Improves controllability and semantic consistency
+				\item Aligns generated samples with conditioning information
+			\end{itemize}
+			
+		\end{itemize}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle}
+		\framesubtitle{\insertsection: Example}
+		
+		\begin{itemize}
+			
+			\item \textbf{Face generation conditioned on attributes}
+			\begin{itemize}
+				\item Input noise: $z \sim \mathcal{N}(0, I)$
+				\item Condition: $c = (\text{age}, \text{gender}, \text{expression})$
+			\end{itemize}
+			
+			\item \textbf{Goal}
+			\begin{itemize}
+				\item Generate faces consistent with specified attributes.
+			\end{itemize}
+			
+			\item \textbf{Effect of conditioning}
+			\begin{itemize}
+				\item Instead of modeling $p(x)$, the model learns $p(x \mid c)$.
+			\end{itemize}
+			
+		\end{itemize}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle}
+		\framesubtitle{\insertsection: Some humor}
+		
+		\begin{center}
+			\hgraphpage[0.3\textwidth]{humor/humor_cgan1.jpg}
+			\hgraphpage[0.6\textwidth]{humor/humor_cgan2.jpg}
+		\end{center}
+		
+	\end{frame}
+	
+%	\begin{frame}
+%		\frametitle{\insertshortsubtitle}
+%		\framesubtitle{\insertsection: Variants}
+%		
+%		\begin{itemize}
+%			\item \textbf{DCGAN}
+%			\begin{itemize}
+%				\item Uses convolutional neural networks.
+%			\end{itemize}
+%			
+%			\item \textbf{Conditional GAN (CGAN)}
+%			\begin{itemize}
+%				\item Generation conditioned on labels or text.
+%			\end{itemize}
+%			
+%			\item \textbf{CycleGAN}
+%			\begin{itemize}
+%				\item Image-to-image translation.
+%			\end{itemize}
+%			
+%			\item \textbf{StyleGAN}
+%			\begin{itemize}
+%				\item High-quality face generation.
+%			\end{itemize}
+%		\end{itemize}
+%		
+%	\end{frame}
 	
 	
 	\insertbibliography{DL05L-Unsupervised}{*}

@@ -19,7 +19,27 @@
 		\frametitle{\inserttitle}
 		\framesubtitle{\insertshortsubtitle: Motivation}
 		
-		
+		\begin{itemize}
+			
+			\item Classical Seq2Seq models compress the entire source sequence into a single fixed-size vector.
+			
+			\item \textbf{Problem}:
+			\begin{itemize}
+				\item Information loss for long sequences.
+				\item Difficulty modeling long-range dependencies.
+			\end{itemize}
+			
+			\item \textbf{Intuition}:
+			\begin{itemize}
+				\item Different target words should focus on different parts of the source sequence.
+			\end{itemize}
+			
+			\item \textbf{Solution}:
+			\begin{itemize}
+				\item Attention dynamically measures the relevance between elements.
+			\end{itemize}
+			
+		\end{itemize}
 		
 	\end{frame}
 	
@@ -294,7 +314,7 @@
 	
 	\begin{frame}
 		\frametitle{\insertshortsubtitle: \insertsection}
-		\framesubtitle{\insertsubsection: Gradients}
+		\framesubtitle{\insertsubsection: Gradients (One sample)}
 		
 		\begin{itemize}
 			
@@ -324,11 +344,9 @@
 			
 			\item Softmax backprop:
 			\[
-			\frac{\partial \mathcal{L}}{\partial E_i}
+			\frac{\partial \mathcal{L}}{\partial E_{i,j}}
 			=
-			A_i \left(
-			H_i - \sum_{k} H_k A_k
-			\right)
+			A_{i,j} \left( H_{i,j} - \sum_{k=1}^{T_s} H_{i,k}A_{i,k} \right)
 			\quad \text{where } H = \frac{\partial \mathcal{L}}{\partial A}
 			\]
 			
@@ -527,68 +545,6 @@
 		\end{itemize}
 	\end{frame}
 	
-	\subsection{Multi-Head Attention}
-	
-	\begin{subsectionframe}
-		\begin{itemize}
-			\item \textbf{Objective}:
-			\begin{itemize}
-				\item Learn different representations similar to multiple filters in CNNs.
-			\end{itemize}
-			
-			\item \textbf{Used for}:
-			\begin{itemize}
-				\item Capturing multiple types of relationships simultaneously (syntax, semantics, position)
-				\item Improving representation capacity in Transformer models
-				\item Machine translation, language modeling, and sequence understanding tasks
-			\end{itemize}
-			
-			\item \textbf{Advantages}:
-			\begin{itemize}
-				\item Learn different semantic relationships in parallel.
-				\item Attend to information from different representation subspaces.
-			\end{itemize}
-		\end{itemize}
-	\end{subsectionframe}
-	
-	\begin{frame}
-		\frametitle{\insertshortsubtitle: \insertsection}
-		\framesubtitle{\insertsubsection: Architecture}
-		
-		\begin{figure}
-			\centering
-			\hgraphpage[0.9\textwidth]{multi_head_att_.pdf}
-			
-			%		\vskip-12pt
-			\caption{Multi-Head Attention \cite{2017-vaswani-al}}
-		\end{figure}
-		
-	\end{frame}
-	
-	\begin{frame}
-		\frametitle{\insertshortsubtitle: \insertsection}
-		\framesubtitle{\insertsubsection: Formulas}
-		
-		\[Q \in \mathbb{R}^{T_t \times d_m}, \, K \in \mathbb{R}^{T_s \times d_m}, \, MultiHead(Q, K, V) \in \mathbb{R}^{T_t \times d_m}, V \in \mathbb{R}^{T_s \times d_m} \]
-		
-		\[W^Q_i \in \mathbb{R}^{d_m \times d_k}, \,  W^K_i \in \mathbb{R}^{d_m\times d_k}, \, W^V_i \in \mathbb{R}^{d_m \times d_v}, \, W^O \in \mathbb{R}^{h d_v \times d_m}\]
-		
-		\[head_i = Attention(Q W^Q_i, K W^K_i, V W^V_i)\]
-		
-		\[MultiHead(Q, K, V) = Concat(head_1, \ldots, head_h) \cdot W^O\]
-		
-	\end{frame}
-	
-	\begin{frame}
-		\frametitle{\insertshortsubtitle: \insertsection}
-		\framesubtitle{\insertsubsection: Some humor}
-		
-		\begin{center}
-			\vgraphpage{humor/humor-multihead.jpg}
-		\end{center}
-		
-	\end{frame}
-	
 	\subsection{Self-attention}
 	
 	\begin{subsectionframe}
@@ -619,7 +575,7 @@
 		\framesubtitle{\insertsubsection: Description}
 		
 		\begin{itemize}
-%			\item \textbf{GOAL}: Encode an element of a sequence with respect to the entire sequence.
+			%			\item \textbf{GOAL}: Encode an element of a sequence with respect to the entire sequence.
 			\item \textbf{Example}: \expword{Encode a word with respect to the sentence to capture its semantics}.
 			\item \textbf{Method}:
 			\begin{itemize}
@@ -651,6 +607,64 @@
 		\hgraphpage{humor/humor-self-attention.jpg}
 		
 	\end{frame}
+	
+	\subsection{Multi-Head Attention}
+	
+	\begin{subsectionframe}
+		\begin{itemize}
+			\item \textbf{Objective}:
+			\begin{itemize}
+				\item Learn different representations similar to multiple filters in CNNs.
+			\end{itemize}
+			
+			\item \textbf{Used for}:
+			\begin{itemize}
+				\item Capturing multiple types of relationships simultaneously (syntax, semantics, position)
+				\item Improving representation capacity in Transformer models
+				\item Machine translation, language modeling, and sequence understanding tasks
+			\end{itemize}
+			
+			\item \textbf{Advantages}:
+			\begin{itemize}
+				\item Learn different semantic relationships in parallel.
+				\item Attend to information from different representation subspaces.
+			\end{itemize}
+		\end{itemize}
+	\end{subsectionframe}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: Architecture}
+		
+		\hgraphpage[\textwidth]{multi_head_att_general.pdf}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: Formulas}
+		
+		\[Q \in \mathbb{R}^{T_t \times d_m}, \, K \in \mathbb{R}^{T_s \times d_m}, \, MultiHead(Q, K, V) \in \mathbb{R}^{T_t \times d_m}, V \in \mathbb{R}^{T_s \times d_m} \]
+		
+		\[W^Q_i \in \mathbb{R}^{d_m \times d_k}, \,  W^K_i \in \mathbb{R}^{d_m\times d_k}, \, W^V_i \in \mathbb{R}^{d_m \times d_v}, \, W^O \in \mathbb{R}^{h d_v \times d_m}\]
+		
+		\[head_i = Attention(Q W^Q_i, K W^K_i, V W^V_i)\]
+		
+		\[MultiHead(Q, K, V) = Concat(head_1, \ldots, head_h) \cdot W^O\]
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: Some humor}
+		
+		\begin{center}
+			\vgraphpage{humor/humor-multihead.jpg}
+		\end{center}
+		
+	\end{frame}
+	
+	
 	
 	\section{Transformers}
 	
@@ -716,7 +730,21 @@
 	
 	\begin{frame}
 		\frametitle{\insertshortsubtitle: \insertsection}
-		\framesubtitle{\insertsubsection}
+		\framesubtitle{\insertsubsection: Multi-Head Attention}
+		
+		\begin{figure}
+			\centering
+			\hgraphpage[0.9\textwidth]{multi_head_att_.pdf}
+			
+			%		\vskip-12pt
+			\caption{Multi-Head Attention \cite{2017-vaswani-al}}
+		\end{figure}
+		
+	\end{frame}
+	
+	\begin{frame}
+		\frametitle{\insertshortsubtitle: \insertsection}
+		\framesubtitle{\insertsubsection: Encoder-decoder}
 		
 		\begin{minipage}{0.49\textwidth}
 			\begin{figure}
